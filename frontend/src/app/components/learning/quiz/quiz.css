@@ -1,0 +1,78 @@
+/* Timer color transitions */
+.timer-transition {
+  transition: all 0.3s ease-in-out;
+}
+
+/* Question selection animations */
+.question-option {
+  transition: all 0.2s ease-in-out;
+}
+
+.question-option:hover {
+  transform: translateY(-1px);
+}
+
+/* Progress bar animation */
+.progress-bar {
+  transition: width 0.5s ease-in-out;
+}
+
+/* Mobile responsive adjustments */
+@media (max-width: 768px) {
+  .quiz-container {
+    padding: 1rem;
+  }
+  
+  .quiz-header {
+    flex-direction: column;
+    align-items: stretch;
+  }
+  
+  .quiz-timer {
+    margin-top: 1rem;
+    justify-content: center;
+  }
+}
+
+/* Result animations */
+.result-enter {
+  opacity: 0;
+  transform: scale(0.9);
+}
+
+.result-enter-active {
+  opacity: 1;
+  transform: scale(1);
+  transition: all 0.3s ease-in-out;
+}
+
+/* Button hover effects */
+.btn-hover {
+  transition: all 0.2s ease-in-out;
+}
+
+.btn-hover:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+/* Focus styles */
+.form-radio:focus {
+  ring: 2px solid #14b8a6;
+  ring-offset: 2px;
+}
+
+/* Loading spinner */
+.loading-spinner {
+  border: 3px solid #f3f4f6;
+  border-top: 3px solid #14b8a6;
+  border-radius: 50%;
+  width: 24px;
+  height: 24px;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}

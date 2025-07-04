@@ -31,7 +31,9 @@ export class App {
       '/auth/reset-password',
       '/dashboard/admin',
       '/dashboard/instructor',
-      '/dashboard/student'
+      '/dashboard/student',
+      '/learn', // Hide navbar for learning interface
+      '/live-sessions' // Hide navbar for live sessions
     ];
 
     this.showNavbar = !hideNavbarRoutes.some(route => url.startsWith(route));

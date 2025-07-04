@@ -1,1 +1,24 @@
-<p>course-list works!</p>
+<div class="courses-container">
+  <div class="course-grid">
+    <div class="course-card" *ngFor="let course of courses">
+      <div class="course-content">
+        <h3>{{ course.title }}</h3>
+        <p>{{ course.description }}</p>
+        <div class="course-actions">
+          <button 
+            class="btn btn-primary"
+            (click)="continueLearning(course.id, course.lastLessonId)"
+          >
+            Continue Learning
+          </button>
+          <button 
+            class="btn btn-secondary"
+            (click)="startQuiz(course.id, course.firstQuizId)"
+          >
+            Take Quiz
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

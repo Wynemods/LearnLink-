@@ -21,6 +21,18 @@ export const routes: Routes = [
       import('./components/courses/courses.module').then((m) => m.CoursesModule),
   },
   {
+    path: 'learn',
+    loadChildren: () =>
+      import('./components/learning/learning.module').then((m) => m.LearningModule),
+    canActivate: [authGuard],
+  },
+  {
+    path: 'live-sessions',
+    loadChildren: () =>
+      import('./components/live-sessions/live-session.module').then((m) => m.LiveSessionModule),
+    canActivate: [authGuard],
+  },
+  {
     path: 'quizzes',
     loadChildren: () =>
       import('./components/quizzes/quizzes.module').then((m) => m.QuizzesModule),

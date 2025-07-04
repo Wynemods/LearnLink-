@@ -1,0 +1,153 @@
+body {
+  font-family: 'Inter', sans-serif;
+  background-color: #f0f7f7;
+}
+
+/* Video container animations */
+.video-container {
+  transition: all 0.3s ease-in-out;
+}
+
+/* Control buttons hover effects */
+.control-btn {
+  transition: all 0.2s ease-in-out;
+}
+
+.control-btn:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+/* Participant video animations */
+.participant-video {
+  transition: all 0.3s ease-in-out;
+}
+
+.participant-video:hover {
+  transform: scale(1.05);
+}
+
+/* Chat animations */
+.chat-message {
+  animation: slideIn 0.3s ease-out;
+}
+
+@keyframes slideIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Progress bar animation */
+.progress-bar {
+  transition: width 0.5s ease-in-out;
+}
+
+/* Mobile responsive adjustments */
+@media (max-width: 768px) {
+  .video-container {
+    height: 40vh;
+  }
+  
+  .control-btn {
+    padding: 0.5rem;
+  }
+  
+  .participant-video {
+    width: 8rem;
+    height: 5rem;
+  }
+}
+
+/* Status indicators */
+.status-indicator {
+  animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+  0% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.5;
+  }
+  100% {
+    opacity: 1;
+  }
+}
+
+/* Smooth transitions */
+.transition-all {
+  transition: all 0.3s ease-in-out;
+}
+
+.transition-colors {
+  transition: color 0.2s ease-in-out, background-color 0.2s ease-in-out;
+}
+
+.transition-opacity {
+  transition: opacity 0.2s ease-in-out;
+}
+
+/* Focus styles for accessibility */
+button:focus-visible {
+  outline: 2px solid #14b8a6;
+  outline-offset: 2px;
+}
+
+input:focus {
+  outline: none;
+  ring: 2px solid #14b8a6;
+  ring-offset: 2px;
+}
+
+/* Custom scrollbar */
+::-webkit-scrollbar {
+  width: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: #f1f5f9;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #cbd5e1;
+  border-radius: 3px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #94a3b8;
+}
+
+/* Material Icons sizing */
+.material-icons {
+  font-size: 24px;
+  line-height: 1;
+}
+
+.material-icons.text-sm {
+  font-size: 16px;
+}
+
+/* Backdrop blur support */
+.backdrop-blur-sm {
+  backdrop-filter: blur(4px);
+}
+
+/* Responsive grid for participants */
+@media (max-width: 1024px) {
+  .participant-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 640px) {
+  .participant-grid {
+    grid-template-columns: 1fr;
+  }
+}
