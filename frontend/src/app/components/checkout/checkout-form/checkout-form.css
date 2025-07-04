@@ -1,0 +1,85 @@
+/* Custom styles for checkout form */
+.checkout-container {
+  font-family: 'Poppins', sans-serif;
+}
+
+/* Payment method buttons */
+.payment-method-btn {
+  transition: all 0.2s ease-in-out;
+}
+
+.payment-method-btn:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+/* Form inputs */
+input[type="text"],
+input[type="tel"] {
+  transition: border-color 0.2s ease-in-out;
+}
+
+input[type="text"]:focus,
+input[type="tel"]:focus {
+  border-color: #3b82f6;
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+}
+
+/* Mpesa specific styling */
+.mpesa-input:focus {
+  border-color: #10b981;
+  box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.1);
+}
+
+/* Disabled button styling */
+button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+/* Featured courses hover effect */
+.course-card {
+  transition: transform 0.3s ease-in-out;
+}
+
+.course-card:hover {
+  transform: translateY(-4px);
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .checkout-container {
+    padding: 1rem;
+  }
+  
+  .payment-method-btn {
+    min-width: 120px;
+  }
+}
+
+/* Loading state */
+.loading {
+  opacity: 0.7;
+  pointer-events: none;
+}
+
+/* Success/Error states */
+.success-border {
+  border-color: #10b981;
+}
+
+.error-border {
+  border-color: #ef4444;
+}
+
+/* Animation for payment method switch */
+.payment-form-enter {
+  opacity: 0;
+  transform: translateX(10px);
+}
+
+.payment-form-enter-active {
+  opacity: 1;
+  transform: translateX(0);
+  transition: all 0.3s ease-in-out;
+}
