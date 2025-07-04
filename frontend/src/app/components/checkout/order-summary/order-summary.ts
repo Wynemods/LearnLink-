@@ -2,9 +2,10 @@ import { Component } from '@angular/core';
 
 @Component({
   selector: 'app-order-summary',
+  standalone: true,
   imports: [],
-  templateUrl: './order-summary.html',
-  styleUrl: './order-summary.css'
+  template: `<p>order-summary works!</p>`,
+  styles: []
 })
 export class OrderSummary {
 

@@ -2,9 +2,10 @@ import { Component } from '@angular/core';
 
 @Component({
   selector: 'app-payment-methods',
+  standalone: true,
   imports: [],
-  templateUrl: './payment-methods.html',
-  styleUrl: './payment-methods.css'
+  template: `<p>payment-methods works!</p>`,
+  styles: []
 })
 export class PaymentMethods {
 

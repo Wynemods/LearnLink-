@@ -2,9 +2,10 @@ import { Component } from '@angular/core';
 
 @Component({
   selector: 'app-profile-edit',
+  standalone: true,
   imports: [],
-  templateUrl: './profile-edit.html',
-  styleUrl: './profile-edit.css'
+  template: `<p>profile-edit works!</p>`,
+  styles: []
 })
 export class ProfileEdit {
 

@@ -2,9 +2,10 @@ import { Component } from '@angular/core';
 
 @Component({
   selector: 'app-purchase-history',
+  standalone: true,
   imports: [],
-  templateUrl: './purchase-history.html',
-  styleUrl: './purchase-history.css'
+  template: `<p>purchase-history works!</p>`,
+  styles: []
 })
 export class PurchaseHistory {
 

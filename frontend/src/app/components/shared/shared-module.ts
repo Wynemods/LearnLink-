@@ -4,17 +4,17 @@ import { RouterModule } from '@angular/router';
 import { NavbarComponent } from './navbar/navbar';
 import { FooterComponent } from './footer/footer';
 
-
 @NgModule({
-  declarations: [
+  declarations: [],
+  imports: [
+    CommonModule, 
+    RouterModule,
     NavbarComponent,
-    FooterComponent,
+    FooterComponent
   ],
-  imports: [CommonModule, RouterModule],
   exports: [
     NavbarComponent,
     FooterComponent,
-
   ],
 })
 export class SharedModule {}

@@ -2,9 +2,10 @@ import { Component } from '@angular/core';
 
 @Component({
   selector: 'app-profile-view',
+  standalone: true,
   imports: [],
-  templateUrl: './profile-view.html',
-  styleUrl: './profile-view.css'
+  template: `<p>profile-view works!</p>`,
+  styles: []
 })
 export class ProfileView {
 
