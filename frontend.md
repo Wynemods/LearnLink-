@@ -4,6 +4,7 @@ src/
 │   │   ├── auth.service.ts
 │   │   ├── course.service.ts
 │   │   ├── quiz.service.ts
+│   │   ├── payment.service.ts          // NEW: Payment processing
 │   │   └── api.service.ts
 │   │
 │   ├── guards/
@@ -13,9 +14,12 @@ src/
 │   ├── models/
 │   │   ├── user.model.ts
 │   │   ├── course.model.ts
-│   │   └── quiz.model.ts
+│   │   ├── quiz.model.ts
+│   │   └── payment.model.ts            // NEW: Payment & order models
 │   │
 │   ├── components/
+│   │   ├── landing/
+│   │   │
 │   │   ├── auth/
 │   │   │   ├── login/
 │   │   │   ├── register/
@@ -32,6 +36,13 @@ src/
 │   │   │   ├── course-form/
 │   │   │   └── lesson-viewer/
 │   │   │
+│   │   ├── checkout/                   // NEW: Checkout system
+│   │   │   ├── cart/
+│   │   │   ├── checkout-form/
+│   │   │   ├── payment-methods/
+│   │   │   ├── order-summary/
+│   │   │   └── payment-success/
+│   │   │
 │   │   ├── quizzes/
 │   │   │   ├── quiz-list/
 │   │   │   ├── quiz-form/
@@ -42,12 +53,13 @@ src/
 │   │   │   ├── navbar/
 │   │   │   ├── sidebar/
 │   │   │   ├── loading/
-│   │   │   └── modal/
-|   |   |   └── footer/
+│   │   │   ├── modal/
+│   │   │   └── footer/
 │   │   │
 │   │   └── profile/
 │   │       ├── profile-view/
-│   │       └── profile-edit/
+│   │       ├── profile-edit/
+│   │       └── purchase-history/       // NEW: Order history
 │   │
 │   ├── app.component.ts
 │   ├── app.component.html
