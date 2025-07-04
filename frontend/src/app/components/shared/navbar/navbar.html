@@ -1,1 +1,35 @@
-<p>navbar works!</p>
+<nav class="bg-gray-800 text-white p-4">
+  <div class="container mx-auto flex justify-between items-center">
+    <!-- Logo -->
+    <a routerLink="/" class="text-2xl font-bold">LearnLink</a>
+
+    <!-- Navigation Links -->
+    <div class="hidden md:flex space-x-6">
+      <a routerLink="/courses" class="hover:text-gray-300">Courses</a>
+      <a routerLink="/dashboard" class="hover:text-gray-300">Dashboard</a>
+      <a routerLink="/profile" class="hover:text-gray-300">Profile</a>
+      <a routerLink="/checkout" class="hover:text-gray-300">Checkout</a>
+      <a routerLink="/quizzes" class="hover:text-gray-300">Quizzes</a>
+      <a routerLink="/auth/login" class="hover:text-gray-300">Login</a>
+      <a routerLink="/auth/register" class="hover:text-gray-300">Register</a>
+    </div>
+
+    <!-- Mobile Menu Button -->
+    <button class="md:hidden focus:outline-none" (click)="toggleMobileMenu()">
+      <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16m-7 6h7"></path>
+      </svg>
+    </button>
+  </div>
+
+  <!-- Mobile Menu -->
+  <div *ngIf="isMobileMenuOpen" class="md:hidden mt-4">
+    <a routerLink="/courses" class="block py-2 hover:text-gray-300">Courses</a>
+    <a routerLink="/dashboard" class="block py-2 hover:text-gray-300">Dashboard</a>
+    <a routerLink="/profile" class="block py-2 hover:text-gray-300">Profile</a>
+    <a routerLink="/checkout" class="block py-2 hover:text-gray-300">Checkout</a>
+    <a routerLink="/quizzes" class="block py-2 hover:text-gray-300">Quizzes</a>
+    <a routerLink="/auth/login" class="block py-2 hover:text-gray-300">Login</a>
+    <a routerLink="/auth/register" class="block py-2 hover:text-gray-300">Register</a>
+  </div>
+</nav>

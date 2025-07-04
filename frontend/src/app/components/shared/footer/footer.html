@@ -1,0 +1,24 @@
+<footer class="bg-gray-800 text-white py-8">
+  <div class="container mx-auto px-4">
+    <div class="flex flex-col md:flex-row justify-between items-center">
+      <!-- Logo and Description -->
+      <div class="mb-6 md:mb-0">
+        <h2 class="text-2xl font-bold">LearnLink</h2>
+        <p class="text-gray-400">Empowering education through innovative online learning.</p>
+      </div>
+
+      <!-- Navigation Links -->
+      <div class="flex flex-col md:flex-row space-y-4 md:space-y-0 md:space-x-8">
+        <a routerLink="/about" class="hover:text-gray-300">About Us</a>
+        <a routerLink="/contact" class="hover:text-gray-300">Contact</a>
+        <a routerLink="/terms" class="hover:text-gray-300">Terms of Service</a>
+        <a routerLink="/privacy" class="hover:text-gray-300">Privacy Policy</a>
+      </div>
+    </div>
+
+    <!-- Copyright -->
+    <div class="mt-8 text-center text-gray-400">
+      © {{ currentYear }} LearnLink. All rights reserved.
+    </div>
+  </div>
+</footer>
