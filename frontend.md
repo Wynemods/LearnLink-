@@ -43,6 +43,7 @@ src/
 │   │   │   ├── sidebar/
 │   │   │   ├── loading/
 │   │   │   └── modal/
+|   |   |   └── footer/
 │   │   │
 │   │   └── profile/
 │   │       ├── profile-view/
