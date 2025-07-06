@@ -1,0 +1,119 @@
+body {
+  font-family: 'Roboto', sans-serif;
+}
+
+.course-detail-container {
+  font-family: 'Roboto', sans-serif;
+}
+
+/* Tab transitions */
+.tab-content {
+  transition: all 0.3s ease-in-out;
+}
+
+/* Accordion animations */
+.accordion-content {
+  transition: max-height 0.3s ease-in-out;
+}
+
+.accordion-content.max-h-0 {
+  max-height: 0;
+}
+
+.accordion-content.max-h-96 {
+  max-height: 24rem;
+}
+
+/* Icon rotation */
+.rotate-180 {
+  transform: rotate(180deg);
+}
+
+/* Rating stars animation */
+.rating-stars .material-icons {
+  transition: color 0.2s ease-in-out;
+}
+
+/* Progress bar animation */
+.rating-progress {
+  transition: width 0.8s ease-in-out;
+}
+
+/* Button hover effects */
+.btn-primary {
+  transition: all 0.2s ease-in-out;
+}
+
+.btn-primary:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}
+
+/* Share buttons */
+.share-btn {
+  transition: all 0.2s ease-in-out;
+}
+
+.share-btn:hover {
+  transform: scale(1.1);
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .course-sidebar {
+    margin-top: 2rem;
+  }
+  
+  .course-sidebar .shadow-2xl {
+    margin-top: 0;
+  }
+}
+
+/* Loading states */
+.loading {
+  opacity: 0.7;
+  pointer-events: none;
+}
+
+/* Course feature icons */
+.feature-icon {
+  transition: transform 0.2s ease-in-out;
+}
+
+.feature-item:hover .feature-icon {
+  transform: scale(1.1);
+}
+
+/* Hero image overlay */
+.hero-overlay {
+  background: linear-gradient(rgba(0, 0, 0, 0.3), rgba(0, 0, 0, 0.3));
+}
+
+/* Curriculum specific styles */
+.accordion-item:hover {
+  background-color: #f9fafb;
+}
+
+.lesson-item:hover {
+  background-color: #f3f4f6;
+  padding-left: 1rem;
+  transition: all 0.2s ease-in-out;
+}
+
+/* Custom scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: #f1f5f9;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #14b8a6;
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #0f766e;
+}

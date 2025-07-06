@@ -7,8 +7,6 @@ import { LiveSessionsRoutingModule } from './live-sessions-routing-module';
 import { LiveSessionsRoom } from './live-sessions-room/live-sessions-room';
 import { LiveSessionsDashboard } from './live-sessions-dashboard/live-sessions-dashboard';
 import { LiveSessionsCreate } from './live-sessions-create/live-sessions-create';
-import { LiveSessionsControls } from './live-sessions-controls/live-sessions-controls';
-import { LiveSessionsParticipants } from './live-sessions-participants/live-sessions-participants';
 import { Chat } from './chat/chat';
 
 @NgModule({
@@ -21,16 +19,12 @@ import { Chat } from './chat/chat';
     LiveSessionsRoom,
     LiveSessionsDashboard,
     LiveSessionsCreate,
-    LiveSessionsControls,
-    LiveSessionsParticipants,
     Chat
   ],
   exports: [
     LiveSessionsRoom,
     LiveSessionsDashboard,
     LiveSessionsCreate,
-    LiveSessionsControls,
-    LiveSessionsParticipants,
     Chat
   ]
 })

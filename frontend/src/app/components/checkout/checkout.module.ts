@@ -7,8 +7,7 @@ import { OrderSummary } from './order-summary/order-summary';
 
 
 const routes: Routes = [
-  { path: '', redirectTo: 'cart', pathMatch: 'full' },
-  { path: 'checkout', component: CheckoutForm },
+  { path: '', component: CheckoutForm },
   { path: 'summary', component: OrderSummary },
 ];
 

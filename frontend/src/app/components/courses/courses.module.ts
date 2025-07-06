@@ -12,7 +12,6 @@ const routes: Routes = [
   { path: ':id', component: CourseDetail },
   { path: ':id/edit', component: CourseForm },
   { path: ':id/lesson/:lessonId', component: LessonViewer },
-  // Redirect old lesson routes to new learning module
   { path: ':courseId/continue', redirectTo: '/learn/course/:courseId/lesson/1' }
 ];
 

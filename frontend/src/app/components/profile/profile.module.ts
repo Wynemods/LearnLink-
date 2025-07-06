@@ -8,17 +8,14 @@ import { PurchaseHistory } from './purchase-history/purchase-history';
 const routes: Routes = [
   { path: '', component: ProfileView },
   { path: 'edit', component: ProfileEdit },
-  { path: 'purchase-history', component: PurchaseHistory }
+  { path: 'purchase-history', component: PurchaseHistory },
+  { path: 'certificates', component: ProfileView } // Placeholder for certificates
 ];
 
 @NgModule({
-  declarations: [],
   imports: [
     CommonModule,
-    RouterModule.forChild(routes),
-    ProfileView,
-    ProfileEdit,
-    PurchaseHistory
+    RouterModule.forChild(routes)
   ]
 })
 export class ProfileModule { }

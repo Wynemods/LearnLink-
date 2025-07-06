@@ -1,1 +1,462 @@
-<p>landing works!</p>
+<!-- filepath: /home/jimmie/github/teach2give/LearnLink-/frontend/src/app/components/landing/landing.html -->
+<!-- Hero Section -->
+<div class="relative bg-teal-500 overflow-hidden pb-20">
+  <div class="container mx-auto px-6 md:px-12 lg:px-24 py-16 md:py-24 relative z-10">
+    <div class="flex flex-col lg:flex-row items-center">
+      <div class="lg:w-1/2 text-white text-center lg:text-left">
+        <h1 class="text-4xl md:text-5xl font-bold leading-tight">
+          <span class="text-yellow-300">Studying</span> Online is now much easier
+        </h1>
+        <p class="mt-4 text-lg text-teal-100">
+          LearnLink is an interesting platform that will teach you in a more interactive way.
+        </p>
+        <div class="mt-8 flex justify-center lg:justify-start items-center space-x-6">
+          <a routerLink="/auth/login" 
+             class="bg-white text-teal-600 font-bold py-3 px-6 rounded-full shadow-lg hover:bg-gray-200 transition duration-300">
+            Join for free
+          </a>
+          <div class="flex items-center space-x-2 cursor-pointer">
+            <button class="bg-white rounded-full p-3 shadow-lg">
+              <i class="material-icons text-teal-600 text-3xl">play_arrow</i>
+            </button>
+            <span class="font-semibold text-white">Watch how it works</span>
+          </div>
+        </div>
+      </div>
+      <div class="lg:w-1/2 mt-12 lg:mt-0 relative">
+        <img alt="A female student thinking with a backpack and holding a book" 
+             class="mx-auto" 
+             src="https://lh3.googleusercontent.com/aida-public/AB6AXuDTWF6cvtSjX_yfWSfybzt7WQUZXvUyL8jpYF1Fa-Io0wZSoy7zhWiCImnZmV2asMhLOLL7aGKiHkTvaWgFWTYu4e4Ld9FF0n_f61KpwIZFUOolUV1lAc5hgeLpS0LS3lKkFnOFAHe2w7u7PU7IedlgJ4Q66ZSesZTVuLe6-AczJdcKrlcTkfNR6As_0DhAgiVsjK3l-ifnw98CG_pUmopG1zGywveq86YvyiyngJrcwftJucWaORDeqUFWmSFRJr6hGgyLTohlelYU"/>
+        
+        <!-- Floating Cards -->
+        <div class="absolute top-20 -left-10 bg-white p-3 rounded-lg shadow-lg flex items-center space-x-3 animate-pulse">
+          <div class="bg-blue-100 p-2 rounded-lg">
+            <i class="material-icons text-blue-500 text-3xl">calendar_today</i>
+          </div>
+          <div>
+            <p class="font-bold text-gray-800">250k</p>
+            <p class="text-sm text-gray-500">Assisted Student</p>
+          </div>
+        </div>
+        
+        <div class="absolute top-1/3 right-0 bg-red-500 p-3 rounded-lg shadow-lg animate-bounce">
+          <i class="material-icons text-white text-3xl">bar_chart</i>
+        </div>
+        
+        <div class="absolute top-1/2 -right-10 bg-white p-4 rounded-lg shadow-lg flex items-center space-x-3">
+          <div class="bg-orange-100 p-2 rounded-lg">
+            <i class="material-icons text-orange-500">mail</i>
+          </div>
+          <div>
+            <p class="font-bold text-gray-800">Congratulations</p>
+            <p class="text-sm text-gray-500">Your admission completed</p>
+          </div>
+        </div>
+        
+        <div class="absolute bottom-1/4 -left-12 bg-white p-4 rounded-lg shadow-xl w-64">
+          <div class="flex items-center space-x-3 mb-4">
+            <img alt="User avatar" 
+                 class="w-10 h-10 rounded-full" 
+                 src="https://lh3.googleusercontent.com/aida-public/AB6AXuCgJuGuiPxN-MIYKRBOQm6Vay2Y_SS3c6aVR1U2zuE7XI3a-CRwK7LeyAkDn3lkIY1sx6kPHMtTt2coqPRWDg1ruLC7QcfDW6ZgesCld3LgXSFxszI0oxHwLU27GNOUuwWROIWDxItZapwHcbXrwnduruxTSGNJAQE-ggx-LHkXP0bwexSchI4L30bhwPz8OgQMx7HvWZvdL1DEfgks75srxlVOVpMzD38uqsixHWoij-p1WhRntQkfYv-vIbW_CXgxUSRzslNE6t4f"/>
+            <div>
+              <p class="font-bold text-gray-800">User Experience Class</p>
+              <p class="text-sm text-gray-500">Today at 12.00 PM</p>
+            </div>
+          </div>
+          <button class="w-full bg-pink-500 text-white font-bold py-2 px-4 rounded-lg hover:bg-pink-600 transition duration-300">
+            Join Now
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Success Section -->
+<div class="container mx-auto px-4 py-16">
+  <div class="text-center max-w-2xl mx-auto mb-16">
+    <h2 class="text-4xl font-bold text-gray-800 mb-4">Our Success</h2>
+    <p class="text-gray-600">
+      We've helped thousands of students and educators achieve their learning goals through our innovative platform and comprehensive resources.
+    </p>
+  </div>
+  
+  <div class="grid grid-cols-2 md:grid-cols-5 gap-8 text-center mb-24">
+    <div>
+      <p class="text-5xl font-bold text-blue-500">15K+</p>
+      <p class="text-gray-600 mt-2">Students</p>
+    </div>
+    <div>
+      <p class="text-5xl font-bold text-teal-500">75%</p>
+      <p class="text-gray-600 mt-2">Total success</p>
+    </div>
+    <div>
+      <p class="text-5xl font-bold text-gray-800">35</p>
+      <p class="text-gray-600 mt-2">Main questions</p>
+    </div>
+    <div>
+      <p class="text-5xl font-bold text-gray-800">26</p>
+      <p class="text-gray-600 mt-2">Chief experts</p>
+    </div>
+    <div>
+      <p class="text-5xl font-bold text-gray-800">16</p>
+      <p class="text-gray-600 mt-2">Years of experience</p>
+    </div>
+  </div>
+
+  <div class="text-center max-w-2xl mx-auto mb-16">
+    <h3 class="text-3xl font-bold text-gray-800 mb-4">All-In-One <span class="text-blue-500">Cloud Software.</span></h3>
+    <p class="text-gray-600">
+      LearnLink is one powerful online software suite that combines all the tools needed to run a successful learning environment.
+    </p>
+  </div>
+
+  <div class="grid md:grid-cols-3 gap-8">
+    <div class="bg-white p-8 rounded-2xl shadow-lg text-center flex flex-col items-center">
+      <div class="bg-blue-100 p-4 rounded-full mb-6 inline-block">
+        <i class="material-icons text-blue-500" style="font-size: 36px;">description</i>
+      </div>
+      <h4 class="text-xl font-semibold text-gray-800 mb-3">Online Billing, Invoicing, & Contracts</h4>
+      <p class="text-gray-600">Simple and secure control of your organization's financial and legal transactions. Send customized invoices and contracts</p>
+    </div>
+    
+    <div class="bg-white p-8 rounded-2xl shadow-lg text-center flex flex-col items-center">
+      <div class="bg-teal-100 p-4 rounded-full mb-6 inline-block">
+        <i class="material-icons text-teal-500" style="font-size: 36px;">calendar_today</i>
+      </div>
+      <h4 class="text-xl font-semibold text-gray-800 mb-3">Easy Scheduling & Attendance Tracking</h4>
+      <p class="text-gray-600">Schedule and reserve classrooms at one campus or multiple campuses. Keep detailed records of student attendance</p>
+    </div>
+    
+    <div class="bg-white p-8 rounded-2xl shadow-lg text-center flex flex-col items-center">
+      <div class="bg-cyan-100 p-4 rounded-full mb-6 inline-block">
+        <i class="material-icons text-cyan-500" style="font-size: 36px;">people</i>
+      </div>
+      <h4 class="text-xl font-semibold text-gray-800 mb-3">Customer Tracking</h4>
+      <p class="text-gray-600">Automate and track emails to individuals or groups. LearnLink's built-in system helps organize your organization</p>
+    </div>
+  </div>
+</div>
+
+<!-- What is TOTC Section -->
+<div class="container mx-auto px-4 py-16">
+  <div class="text-center max-w-2xl mx-auto">
+    <h1 class="text-4xl font-bold text-indigo-800 mb-4">What is <span class="text-indigo-500">TOTC</span>?</h1>
+    <p class="text-gray-600 text-lg">
+      TOTC is a platform that allows educators to create online classes whereby they can store the course materials online; manage assignments, quizzes and exams; monitor due dates; grade results and provide students with feedback all in one place.
+    </p>
+  </div>
+  
+  <div class="mt-16 grid md:grid-cols-2 gap-8">
+    <div class="relative rounded-lg overflow-hidden shadow-lg">
+      <img alt="An instructor smiling in a classroom setting" class="w-full h-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAkmDUsYoOXykptRcLjt3g8rZhj5hyWwjDYxQkjIJGicjAd9X0-KAQPPuM9SCa2ALdfjPnm6BZ9bDH3R7mQjn-xhD1dR_klBNQXDgukFuddcqKn8MA_g2bu1LPVMgZvDp6tfARhbN0V5zKjI6EQljDkEctV2qNoh5mv4JE6aI-T7xpnCGCF4_lPg3csTC1C7zIqa6U6rQexvpM-hmoaPYwt1Og720sJVypF-WFJdXKhpudefI1Nsi3XgWON2Aq-NHsRrtwNjIjsu8HE"/>
+      <div class="absolute inset-0 bg-black bg-opacity-40 flex flex-col justify-center items-center text-white p-8">
+        <h2 class="text-2xl font-bold mb-4">FOR INSTRUCTORS</h2>
+        <button class="border border-white text-white font-semibold py-2 px-6 rounded-full hover:bg-white hover:text-gray-800 transition duration-300">Start a class today</button>
+      </div>
+    </div>
+    
+    <div class="relative rounded-lg overflow-hidden shadow-lg">
+      <img alt="A group of students collaborating and smiling" class="w-full h-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCuLASMSEYzLLLCUGvfEOQuuiRuXPjNAI9LmIDAHmgZl2KxEPRKUJO5wNMKJhiUobcSQPO7Y1y0ZSKa6YR38Gbd2xiWte2N_DAJj9Mqq7Iz0Y94KDgSBj9kT4qkWyPTewxDnQCqerX_uSVRHxm4rS7KjXiKu_4sNtJSbOt9hy9GTVRTqOPGmHkh4JkrEdnJARKlfERPdh_qHCMDDLkXIZZhErMFhWuseRJR5RPdTz6Aciu7uIIqrqB2A-nCqUt-DcjNWcmWUCeolh7C"/>
+      <div class="absolute inset-0 bg-black bg-opacity-40 flex flex-col justify-center items-center text-white p-8">
+        <h2 class="text-2xl font-bold mb-4">FOR STUDENTS</h2>
+        <button class="bg-blue-500 text-white font-semibold py-2 px-6 rounded-full hover:bg-blue-600 transition duration-300">Enter access code</button>
+      </div>
+    </div>
+  </div>
+  
+  <div class="mt-24 flex flex-col md:flex-row items-center gap-12">
+    <div class="md:w-1/2 relative">
+      <div class="absolute -top-8 -left-8 w-20 h-20 bg-green-400 rounded-full opacity-50"></div>
+      <div class="absolute -bottom-8 -right-8 w-16 h-16 bg-green-400 rounded-full opacity-50"></div>
+      <h2 class="text-4xl font-bold text-gray-800 leading-tight">Everything you can do in a physical classroom, <span class="text-green-500">you can do with TOTC</span></h2>
+      <p class="text-gray-600 mt-6 text-lg">
+        TOTC's school management software helps traditional and online schools manage scheduling, attendance, payments and virtual classrooms all in one secure cloud-based system.
+      </p>
+      <a class="mt-8 inline-block text-indigo-600 font-semibold hover:underline" href="#">Learn more</a>
+    </div>
+    
+    <div class="md:w-1/2 relative">
+      <div class="absolute -top-4 -left-4 w-20 h-20 bg-cyan-400 rounded-lg transform -rotate-12"></div>
+      <div class="absolute -bottom-4 -right-4 w-24 h-24 bg-green-400 rounded-lg transform rotate-12"></div>
+      <div class="relative z-10 rounded-lg overflow-hidden shadow-2xl">
+        <img alt="A teacher presenting to students in a modern classroom" class="w-full" src="https://lh3.googleusercontent.com/aida-public/AB6AXuA0z9pN2F3-rtXwZnQAcxcmzY5zqEyuFNft-q9r7Iy4doGpFMWenXL6Q7ZxSLh1g1Msx3tzViLLzudyZtCqpCjIeq-0f-GSXukwJcgCQ2ZLVwqRgWu9oeQQFfitTwMKMcXUPsBeYQwOJj5IMKCQTRRRPibsYdC7IFgOLSkyKOB5Y6vnxromZcTPYFSuo8CsO_TNtlAX0nNVIV4v3bG1bsVXnCnZten-Jhf9yzX7LaFdS1OfB9b_BbUFVahs9h086qWd6ppsplnPbqBm"/>
+        <div class="absolute inset-0 flex items-center justify-center">
+          <button class="bg-white bg-opacity-80 rounded-full p-4 hover:bg-opacity-100 transition duration-300">
+            <svg class="h-12 w-12 text-blue-500" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
+              <path clip-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM9.555 7.168A1 1 0 008 8v4a1 1 0 001.555.832l3-2a1 1 0 000-1.664l-3-2z" fill-rule="evenodd"></path>
+            </svg>
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Features Section -->
+<div class="container mx-auto px-6 py-12">
+  <header class="text-center mb-16">
+    <h2 class="text-3xl font-bold text-gray-800">Our <span class="text-teal-500">Features</span></h2>
+    <p class="text-gray-500 mt-2 max-w-2xl mx-auto">This very extraordinary feature, can make learning activities more efficient</p>
+  </header>
+  
+  <main>
+    <section class="flex flex-col md:flex-row items-center justify-between mb-24">
+      <div class="md:w-1/2 relative mb-12 md:mb-0">
+        <div class="absolute top-0 left-0 w-24 h-24 bg-teal-200 rounded-full -translate-x-1/4 -translate-y-1/4"></div>
+        <div class="absolute top-0 left-1/4 w-4 h-4 bg-cyan-400 rounded-full"></div>
+        <div class="absolute bottom-0 right-0 w-6 h-6 bg-red-400 rounded-full"></div>
+        <div class="absolute bottom-1/4 left-1/3 w-3 h-3 bg-indigo-400 rounded-full"></div>
+        <div class="bg-white shadow-2xl rounded-2xl p-4 relative z-10">
+          <div class="grid grid-cols-2 gap-4">
+            <div class="relative">
+              <img alt="Female teacher with glasses" class="rounded-xl w-full h-auto" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAHOy_pNhAiS7kJn4RlX40ih-YhQGkf4fwEda8lVrL7gJUT6ORei6rKbpZrz7R7PKNN2Yn4f9t0ZKAIB7kPnF0xymiByggG3Fuj8a1WXdVySGneTZHSOIy41iPJ3KAzYvxMulNaoT1SymooBb8TBPlOtO08ma4XD-gnpxtgDdam4PPhmavM9hg8ER5VBeoEVF3utIlFR0BoGfaOtaLlmdCgKNdcSGuzitgBeBsQ6BvyZo0TfUX_oHnd7Rg2fMumyZuYz1Azq5tywdd_"/>
+              <div class="absolute bottom-2 left-2 bg-black bg-opacity-50 text-white text-xs px-2 py-1 rounded-full">
+                <span class="material-icons text-sm align-middle mr-1">mic_off</span>
+                <span>Elena Hasbullah</span>
+              </div>
+            </div>
+            <div class="grid grid-rows-2 gap-4">
+              <div class="relative">
+                <img alt="Female student with headphones" class="rounded-xl w-full h-auto object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAHzdUNtFPFK2YLNb_x4vH2fb3PQXRqQV8XSWj0tqBOWQoCuB6D7UU8NRwJBXP5r_Gyy5E_K1BJOCzEZSjk46iWBLFQUBZQtzod5Cldv8iMNdEucYIvti_0Svzdx_lF2ONe3LBcEE_Ii2vLvpeBVBAS4OcTxbS8UOFMfo2NpwIyIF9bzTsmneKd8AZ_AKSz25zeM7jOdP04SIqNwdjM78-SpPtDdRh4bEbVvbL1YtYUlphLj3VXcRZoaM3qazsdM-XIIWzxuSimLBo8"/>
+                <div class="absolute bottom-2 left-2 bg-black bg-opacity-50 text-white text-xs px-2 py-1 rounded-full">
+                  <span class="material-icons text-sm align-middle mr-1">mic</span>
+                  <span>Thomas Lutfi</span>
+                </div>
+              </div>
+              <div class="relative">
+                <img alt="Male student with a beard" class="rounded-xl w-full h-auto object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuB-5xkQ2lSlGc9DSWQoPQql0VyiwjnQ8If5b7kuuxAvlEy3tl8Iprei_ySVlg5Qs44fADawjbBTY4vE2ZeDAtVfnYXZcJ4qiFOj6H20lYSwUQWyTeQpf5Eh5HsnFITWvcfHivltHFd3UL1tmUEnmIx4n8Ql-05qs-xB7-d5qcaWqsAm7Mjg-NqMrTEOSdRJ8qVjkRRV56vjVLEenPrN7kEIdV25OW9A6hemAuL6bALhelH1LfG7Z0e521XgHQfauOwqP8p09AkiSoa7"/>
+                <div class="absolute bottom-2 left-2 bg-black bg-opacity-50 text-white text-xs px-2 py-1 rounded-full">
+                  <span class="material-icons text-sm align-middle mr-1">mic</span>
+                  <span>Adam Levigne</span>
+                </div>
+              </div>
+            </div>
+            <div class="relative col-span-2 grid grid-cols-2 gap-4">
+              <div class="relative">
+                <img alt="Male student with glasses" class="rounded-xl w-full h-auto object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCqUc7kYidRHwOgnuyHBY3czTDo1lEgsEoiI1fP2LJvdUflSV0kFHs0XHyPVlkiLkJgC1N6nQL4WnSwoRLwIG5lgT-SC6sqMYN8_Lr0T3Sl4lQIsSww0ywNRB17YxPgPm7qjTe_xI6--CM9vppFHVK_vEcPPXZYjz_e9ofC6E51jzN-M-xZFB3T8w0jqvAxwIshX0jZvIYBrt5W9FIhH5OW8NCHNFGReTDcToL0anhUh49uNfPn1_KkhE7R2vq0YTXb8GUQeVpd_Jq4"/>
+                <div class="absolute bottom-2 left-2 bg-black bg-opacity-50 text-white text-xs px-2 py-1 rounded-full">
+                  <span class="material-icons text-sm align-middle mr-1">mic_off</span>
+                  <span>Hudhaifa Hadad</span>
+                </div>
+              </div>
+              <div class="relative">
+                <img alt="Smiling female student" class="rounded-xl w-full h-auto object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDEjBj68GSUByTQPPSpQ5HvuAg24KgySuXvwNUhPzWCzMNlW5j9yGgy9a90Bm5l-6t0XchXTJbiiwlkMnMR8QTSLPlzwHPvvr_VGFfFrZWAugkPQBttPwkF1k_TQv4lps8ZblPfr4REdq8WEx4TQNZyvthrM1-vvxfgiAzhy_HtL2UUdUTHN5Jf2xp0Ft1Ysau02eyccOJCBVfT-4qI9wOF5vIwlvLVwYoDjiScmaD6DmU-_DgFacDjdI6-jC66j89W27KgLGyK2w5x"/>
+                <div class="absolute bottom-2 left-2 bg-black bg-opacity-50 text-white text-xs px-2 py-1 rounded-full">
+                  <span class="material-icons text-sm align-middle mr-1">mic</span>
+                  <span>Patricia Mendoza</span>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="flex justify-between items-center mt-4">
+            <button class="bg-blue-600 text-white py-2 px-8 rounded-full font-semibold">Present</button>
+            <button class="bg-red-500 text-white py-2 px-8 rounded-full font-semibold flex items-center">
+              <span class="material-icons mr-2">call</span>
+              Call
+            </button>
+          </div>
+        </div>
+      </div>
+      
+      <div class="md:w-5/12 md:pl-12">
+        <h3 class="text-3xl font-bold text-gray-800 leading-tight mb-8">A <span class="text-blue-600">user interface</span> designed for the classroom</h3>
+        <ul class="space-y-6">
+          <li class="flex items-start">
+            <div class="bg-blue-100 p-2 rounded-lg mr-4">
+              <span class="material-icons text-blue-600">grid_view</span>
+            </div>
+            <p class="text-gray-600">Teachers don't get lost in the grid view and have a dedicated Podium space.</p>
+          </li>
+          <li class="flex items-start">
+            <div class="bg-orange-100 p-2 rounded-lg mr-4">
+              <span class="material-icons text-orange-500">slideshow</span>
+            </div>
+            <p class="text-gray-600">TA's and presenters can be moved to the front of the class.</p>
+          </li>
+          <li class="flex items-start">
+            <div class="bg-gray-200 p-2 rounded-lg mr-4">
+              <span class="material-icons text-gray-600">groups</span>
+            </div>
+            <p class="text-gray-600">Teachers can easily see all students and class data at one time.</p>
+          </li>
+        </ul>
+      </div>
+    </section>
+    
+    <section class="flex flex-col md:flex-row items-center justify-between">
+      <div class="md:w-5/12 mb-12 md:mb-0">
+        <h3 class="text-3xl font-bold text-gray-800 leading-tight mb-4"><span class="text-cyan-500">Tools</span> For Teachers And Learners</h3>
+        <p class="text-gray-600">Class has a dynamic set of teaching tools built to be deployed and used during class. Teachers can handout assignments in real-time for students to complete and submit.</p>
+      </div>
+      <div class="md:w-1/2 relative flex justify-center">
+        <div class="absolute inset-0 bg-gray-100 rounded-full" style="transform: scale(1.1);"></div>
+        <div class="absolute -top-8 -left-4 w-12 h-12 bg-blue-500 text-white flex items-center justify-center rounded-xl shadow-lg transform -rotate-12">
+          <span class="material-icons">bar_chart</span>
+        </div>
+        <div class="absolute -top-4 right-8 w-12 h-12 bg-purple-500 text-white flex items-center justify-center rounded-xl shadow-lg transform rotate-12">
+          <span class="material-icons">quiz</span>
+        </div>
+        <div class="absolute bottom-16 -right-4 w-12 h-12 bg-indigo-500 text-white flex items-center justify-center rounded-xl shadow-lg">
+          <span class="material-icons">view_carousel</span>
+        </div>
+        <div class="absolute bottom-0 -left-8 w-4 h-4 bg-orange-400 rounded-full"></div>
+        <div class="absolute top-1/2 -right-12 w-3 h-3 bg-teal-400 rounded-full"></div>
+        <div class="absolute bottom-1/4 -right-16 w-5 h-5 bg-blue-400 rounded-full"></div>
+        <div class="absolute top-1/4 -left-16 w-2 h-2 bg-green-400 rounded-full"></div>
+        <div class="relative z-10">
+          <div class="w-72 h-72 bg-red-400 rounded-full absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 -z-10 opacity-70"></div>
+          <img alt="Female student thinking with a notebook" class="w-80 h-auto" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAumYR4qf9dmzn_IatIZ6qHCdt8u_KnfdjbjqifXH_T2SGeJQbuqJw0PqYHSzD9ksrZ43fp_o_StTpxcdrd7wDiHYc5Q7PJfBuupcqlyYPxOV9qqQuMRmEwiBTW3SI-jd0n1iSuVTtyg7i83NK2SBE_cMzKs4lBUF7fPoelcIgYwXCre6fYNsHp2hE8W8kAQ4evmAGasm7ncB18kENZcBPETpwE8p-bVz7KRCYSq9vORs__MSGPOaF7N42vAG2uYTxPVgmujs3222p1"/>
+        </div>
+      </div>
+    </section>
+  </main>
+</div>
+
+<!-- Assessments and Class Management Section -->
+<div class="container mx-auto px-6 py-20">
+  <div class="flex flex-col lg:flex-row items-center justify-between">
+    <div class="lg:w-1/2 relative">
+      <div class="absolute top-0 left-0 -translate-x-1/4 -translate-y-1/4 w-32 h-32 bg-blue-500 rounded-full opacity-30"></div>
+      <div class="bg-white rounded-3xl shadow-xl p-8 max-w-md mx-auto relative z-10">
+        <div class="flex justify-between items-center mb-4">
+          <span class="text-sm font-medium text-gray-500 bg-blue-100 px-3 py-1 rounded-full">Question 1</span>
+          <div class="flex space-x-2">
+            <button class="w-8 h-8 rounded-full bg-red-100 text-red-500 flex items-center justify-center">
+              <span class="material-icons text-xl">close</span>
+            </button>
+            <button class="w-8 h-8 rounded-full bg-green-100 text-green-500 flex items-center justify-center">
+              <span class="material-icons text-xl">check</span>
+            </button>
+          </div>
+        </div>
+        <p class="text-xl font-semibold text-gray-800 mb-4">True or false? This play takes place in Italy</p>
+        <div class="relative">
+          <img alt="A picturesque view of Venice, Italy with gondolas on the canal and historic buildings." class="rounded-2xl" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBoxyFF2yC9Z13U9r7PmQXP9xlbgBSRypnOKtToLgPI90rirL9M2WPtpkkyuku1GZDEW1eDiYEYT_dvzcdwegrXR_-LMby-X6CYab_EGHkp-Onu-XPqmhbvXtD-Z8SBEWITanVJpE0t0BCFOcOaA-NVte2_mEwqY8jzolVfaKyOBZK6QtS8VnZ4nQiKxhgohQjZyZAhkDn7srKYswY7tgiKC-JumcMUoWzHiB7jcGvoWLbb1CS6lF-G7ytjqd_iL6F6Uq3EdmYgBr8"/>
+        </div>
+        <div class="mt-6 bg-green-50 rounded-xl p-4 flex items-center space-x-3">
+          <div class="bg-green-500 p-2 rounded-full">
+            <span class="material-icons text-white text-lg transform -rotate-45">send</span>
+          </div>
+          <p class="text-sm font-medium text-green-700">Your answer was sent successfully</p>
+        </div>
+      </div>
+      <div class="absolute bottom-0 left-0 translate-x-1/2 translate-y-1/2 w-4 h-4 bg-green-400 rounded-full"></div>
+    </div>
+    
+    <div class="lg:w-1/2 mt-16 lg:mt-0 lg:pl-20">
+      <h2 class="text-4xl font-bold text-gray-800 mb-4">Assessments, <br/> <span class="text-teal-400">Quizzes, Tests</span></h2>
+      <p class="text-gray-600 leading-relaxed">
+        Easily launch live assignments, quizzes, and tests. Student results are automatically entered in the online gradebook.
+      </p>
+    </div>
+  </div>
+  
+  <div class="flex flex-col lg:flex-row items-center justify-between mt-32">
+    <div class="lg:w-1/2 lg:pr-20 order-2 lg:order-1 mt-16 lg:mt-0">
+      <h2 class="text-4xl font-bold text-gray-800 mb-4"><span class="text-teal-400">Class Management</span><br/> Tools for Educators</h2>
+      <p class="text-gray-600 leading-relaxed">
+        Class provides tools to help run and manage the class such as Class Roster, Attendance, and more. With the Gradebook, teachers can review and grade tests and quizzes in real-time.
+      </p>
+    </div>
+    
+    <div class="lg:w-1/2 relative order-1 lg:order-2">
+      <div class="absolute top-0 right-0 -translate-x-1/4 -translate-y-1/4 w-12 h-12 bg-blue-300 rounded-full opacity-50"></div>
+      <div class="absolute bottom-0 left-0 -translate-x-1/4 translate-y-1/4 w-8 h-8 bg-blue-200 rounded-full opacity-50"></div>
+      <div class="bg-white rounded-3xl shadow-xl p-6 max-w-lg mx-auto relative z-10">
+        <div class="absolute -top-6 -left-6 w-16 h-16 bg-white rounded-full shadow-lg flex items-center justify-center">
+          <span class="material-icons text-yellow-500 text-4xl">star</span>
+        </div>
+        <div class="flex justify-between items-center bg-blue-400 text-white p-4 rounded-xl mb-6">
+          <h3 class="font-semibold">GradeBook</h3>
+          <span class="material-icons">class</span>
+        </div>
+        <div class="space-y-6">
+          <div class="flex items-center space-x-4">
+            <div class="w-16 h-2 bg-blue-200 rounded-full"></div>
+            <img alt="A male student's profile picture." class="w-12 h-12 rounded-full border-4 border-blue-400" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAeisXJML0uyrEtNhRBjDUXxF5OnPEei_XibmcDR1OLiH0DcMxTRwt4QEvHRYQstoIdWD-z1j9f3XJ7Rxq2EjOkZX_2fIOkm_FIVb_GKzdVlfKwYl9I8Ml_SNqAAfXdaMGvQ3N_qMRzXhlwQpW0V98ZZwqYzlfQPFd0QK3nZqYHWZftuoN7bUH70ek1_r-fJp_VHHb4Ok0V0AG9ErOiGI_T6VyHcog5DQ1y8O2BTpRsNPqnLyGYjo6R9D3tKJU2rO7-PyDwfZz4VCE"/>
+            <div class="flex-1 h-2 bg-blue-400 rounded-full relative">
+              <span class="absolute -right-4 -top-3 bg-blue-400 text-white text-xs font-bold px-2 py-1 rounded-full">100</span>
+            </div>
+          </div>
+          <div class="flex items-center space-x-4">
+            <div class="w-24 h-2 bg-blue-200 rounded-full"></div>
+            <img alt="Another male student's profile picture." class="w-12 h-12 rounded-full border-4 border-gray-300" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDa2BOEDVo7ykULgDNauaPvripTfVkIQVBcI4UtIFZM88RIrd3OSCgJmKNeTZ2MciQBpIUS71BZ6fdIn01pwxLceJBkyuPEKEpLMQyygijT47nYFLq80GamcvE590q0ABlo-4knnWqUXKDSFi8nxIIqP46eQxqqG9Dwhfmz3TEfG1x7K_PQtoRTXzwhfSgqaOqbjlQJBOit3cGIWpyfHpVbHrf1utSwHiLn0hHuoF4HIzy6cstusIQrdk8MKdP4tUR-DGyVCG0GDes"/>
+            <div class="flex-1 h-2 bg-gray-300 rounded-full relative">
+              <span class="absolute left-1/4 -top-3 bg-white text-gray-500 text-xs font-bold px-2 py-1 rounded-full border">98</span>
+            </div>
+          </div>
+          <div class="flex items-center space-x-4">
+            <div class="w-8 h-2 bg-green-200 rounded-full"></div>
+            <img alt="A female student's profile picture." class="w-12 h-12 rounded-full border-4 border-green-400" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCmhqOGSVUuQyGnMjF18UsnUwD1FeRZYOxGYzEBwoGapKUWbebb9IDq7ZfCr84CY7MEPu478VWw-1Cqi9c03MLQvCYTjWsZSLYGHs0xVjbPMxckg08Rrx7LFNCk93eOzVOQJX_916vW-qAxkTwebx0key1VkXgomJbD2JRk-Ob7MMR9rY4cRjrcrnLp73ImI-NryczYK0iA1KxF8etB_BEraGYUConh1HLntaNws19M3lX41X0FjFCvRDgyhGv2zKLlcEBz4sd31kY"/>
+            <div class="flex-1 h-2 bg-green-400 rounded-full relative">
+              <span class="absolute right-1/4 -top-3 bg-green-400 text-white text-xs font-bold px-2 py-1 rounded-full">85</span>
+            </div>
+          </div>
+          <div class="flex items-center space-x-4">
+            <div class="w-32 h-2 bg-red-200 rounded-full"></div>
+            <img alt="Another female student's profile picture." class="w-12 h-12 rounded-full border-4 border-red-400" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCe0Fz11NJRpTH8Xp73lVkDQKYj1pIdjGKuWh2ep1qMFgPIvnE5ZTZ2JlqW5AV6AONVp3k0fxXm0Qocm5I5nlPakBdR73Ekb6NGq2GLcRk_LNu_K9JBedLHQdd3jMhFsUS3H9Agu5RcECTYFoinp2OgSeA5iQMWSdgXPm9hRBuTX6QmkkkgIrRXuN4MPv2TpeFtXiGKhd3AICdH6uYzjTVwZ7wGqAwXUefuL3L_47jGDM-ntp4GrjrQ4aNHVvad1BjuIWCWRUnwys4"/>
+            <div class="flex-1 h-2 bg-red-400 rounded-full relative">
+              <span class="absolute left-1/2 -top-3 bg-red-400 text-white text-xs font-bold px-2 py-1 rounded-full">75</span>
+            </div>
+          </div>
+        </div>
+        <div class="mt-8 flex justify-end">
+          <button class="bg-indigo-600 text-white font-semibold px-6 py-3 rounded-full shadow-lg hover:bg-indigo-700 transition-colors">Export</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Testimonial Section -->
+<div class="container mx-auto px-6 py-20">
+  <div class="grid grid-cols-1 md:grid-cols-2 gap-12 items-center">
+    <div class="text-left">
+      <div class="flex items-center mb-4">
+        <div class="h-0.5 w-10 bg-purple-300 mr-3"></div>
+        <p class="text-sm font-semibold tracking-widest text-gray-500 uppercase">TESTIMONIAL</p>
+      </div>
+      <h2 class="text-4xl font-bold text-gray-800 mb-6">What They Say?</h2>
+      <p class="text-gray-600 mb-6">
+        TOTC has got more than 100k positive ratings from our users around the world.
+      </p>
+      <p class="text-gray-600 mb-6">
+        Some of the students and teachers were greatly helped by the Skilline.
+      </p>
+      <p class="text-gray-600 mb-8">
+        Are you too? Please give your assessment
+      </p>
+      <a class="inline-flex items-center px-8 py-4 border border-blue-300 text-blue-400 rounded-full hover:bg-blue-50 transition-colors" href="#">
+        Write your assessment
+        <span class="material-icons ml-2">arrow_forward</span>
+      </a>
+    </div>
+    
+    <div class="relative">
+      <img alt="Smiling student holding books" class="rounded-lg w-full" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAyRjcMppewaMteApvVISPKZN3d4KeDlKMv-I-VBbjG6WOLBSRJnT7Fc1K93VABiYgl0N_WGD4XHvOWHhlN7e3G9zqRR-zTUCv30EL0j3MIaAVFQzJDNJzTihG5ONZMG1EFs0nfJJxqzLMm2Moc3m9t6-FDktJnBsQRKyoCnZWYhejQxf9TkU7oZ1XsQc_Xcq183sJ09EMFFiK5X2az__gPM4QOPGczgkoURNn_VTIZkKFxqDwoC1i1pNWWLEGvItJRhNCMu9CjAbXW"/>
+      <button class="absolute top-1/2 right-0 transform -translate-y-1/2 translate-x-1/2 bg-white p-3 rounded-full shadow-lg">
+        <span class="material-icons text-gray-600">chevron_right</span>
+      </button>
+      
+      <div class="absolute bottom-0 left-0 transform translate-y-1/4 -translate-x-4 w-full max-w-md">
+        <div class="bg-white p-8 rounded-lg shadow-lg border-l-4 border-red-400">
+          <p class="text-gray-600 mb-6 italic">"Thank you so much for your help. It's exactly what I've been looking for. You won't regret it. It really saves me time and effort. TOTC is exactly what our business has been lacking."</p>
+          <div class="flex items-center justify-between">
+            <p class="font-semibold text-gray-800">Gloria Rose</p>
+            <div>
+              <div class="flex text-yellow-500">
+                <span class="material-icons">star</span>
+                <span class="material-icons">star</span>
+                <span class="material-icons">star</span>
+                <span class="material-icons">star</span>
+                <span class="material-icons">star_half</span>
+              </div>
+              <p class="text-xs text-gray-500 mt-1">12 reviews at Yelp</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

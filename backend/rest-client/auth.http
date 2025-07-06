@@ -1,0 +1,596 @@
+### Variables
+@baseUrl = http://localhost:3000/api
+@contentType = application/json
+
+### Test server connection
+GET {{baseUrl}}/
+
+###
+
+### 1. Register a new student
+POST {{baseUrl}}/auth/register
+Content-Type: {{contentType}}
+
+{
+  "firstName": "Jimmy",
+  "lastName": "Kimunyi",
+  "email": "jkkimunyi@gmail.com",
+  "password": "Password123",
+  "confirmPassword": "Password123",
+  "accountType": "student"
+}
+
+###
+
+### 2. Register a new instructor
+POST {{baseUrl}}/auth/register
+Content-Type: {{contentType}}
+
+{
+  "firstName": "Jimmy",
+  "lastName": "Kimunyi",
+  "email": "kimunyijimmy@gmail.com",
+  "password": "Password123",
+  "confirmPassword": "Password123",
+  "accountType": "instructor"
+}
+
+###
+
+### 3. Register another student
+POST {{baseUrl}}/auth/register
+Content-Type: {{contentType}}
+
+{
+  "firstName": "Jimmy",
+  "lastName": "Kimunyi",
+  "email": "jimmykimunyi@gmail.com",
+  "password": "Password123",
+  "confirmPassword": "Password123",
+  "accountType": "student"
+}
+
+###
+
+### 4. Register with validation errors (passwords don't match)
+POST {{baseUrl}}/auth/register
+Content-Type: {{contentType}}
+
+{
+  "firstName": "Jimmy",
+  "lastName": "Kimunyi",
+  "email": "jkkimunyi@gmail.com",
+  "password": "Password123",
+  "confirmPassword": "Password456",
+  "accountType": "student"
+}
+
+###
+
+### 5. Register with weak password
+POST {{baseUrl}}/auth/register
+Content-Type: {{contentType}}
+
+{
+  "firstName": "Jimmy",
+  "lastName": "Kimunyi",
+  "email": "kimunyijimmy@gmail.com",
+  "password": "weak",
+  "confirmPassword": "weak",
+  "accountType": "student"
+}
+
+###
+
+### 6. Register with existing email
+POST {{baseUrl}}/auth/register
+Content-Type: {{contentType}}
+
+{
+  "firstName": "Jimmy",
+  "lastName": "Kimunyi",
+  "email": "jkkimunyi@gmail.com",
+  "password": "Password123",
+  "confirmPassword": "Password123",
+  "accountType": "student"
+}
+
+###
+
+### 7. Login with unverified account
+POST {{baseUrl}}/auth/login
+Content-Type: {{contentType}}
+
+{
+  "username": "jkkimunyi@gmail.com",
+  "password": "Password123",
+  "rememberMe": false
+}
+
+###
+
+### 8. Verify email (replace TOKEN with actual token from email)
+GET {{baseUrl}}/auth/verify-email?token=19b2f14f2b80f8259b53b71f8e38fcc32f53f062046c85997be13f673a527196
+
+###
+
+### 9. Login with verified account
+POST {{baseUrl}}/auth/login
+Content-Type: {{contentType}}
+
+{
+  "username": "jkkimunyi@gmail.com",
+  "password": "Password123",
+  "rememberMe": false
+}
+
+###
+
+### 10. Login with remember me
+POST {{baseUrl}}/auth/login
+Content-Type: {{contentType}}
+
+{
+  "username": "kimunyijimmy@gmail.com",
+  "password": "Password123",
+  "rememberMe": true
+}
+
+###
+
+### 11. Login with invalid credentials
+POST {{baseUrl}}/auth/login
+Content-Type: {{contentType}}
+
+{
+  "username": "jkkimunyi@gmail.com",
+  "password": "WrongPassword",
+  "rememberMe": false
+}
+
+###
+
+### 12. Login with non-existent user
+POST {{baseUrl}}/auth/login
+Content-Type: {{contentType}}
+
+{
+  "username": "nonexistent@gmail.com",
+  "password": "Password123",
+  "rememberMe": false
+}
+
+###
+
+### 13. Get user profile (requires JWT token)
+GET {{baseUrl}}/auth/profile
+Authorization: Bearer REPLACE_WITH_JWT_TOKEN
+
+###
+
+### 14. Forgot password - User 1
+POST {{baseUrl}}/auth/forgot-password
+Content-Type: {{contentType}}
+
+{
+  "email": "jkkimunyi@gmail.com"
+}
+
+###
+
+### 15. Forgot password - User 2
+POST {{baseUrl}}/auth/forgot-password
+Content-Type: {{contentType}}
+
+{
+  "email": "kimunyijimmy@gmail.com"
+}
+
+###
+
+### 16. Forgot password - User 3
+POST {{baseUrl}}/auth/forgot-password
+Content-Type: {{contentType}}
+
+{
+  "email": "jimmykimunyi@gmail.com"
+}
+
+###
+
+### 17. Forgot password with non-existent email
+POST {{baseUrl}}/auth/forgot-password
+Content-Type: {{contentType}}
+
+{
+  "email": "nonexistent@gmail.com"
+}
+
+###
+
+### 18. Reset password (replace TOKEN with actual reset token from email)
+POST {{baseUrl}}/auth/reset-password
+Content-Type: {{contentType}}
+
+{
+  "token": "REPLACE_WITH_RESET_TOKEN",
+  "password": "NewPassword123",
+  "confirmPassword": "NewPassword123"
+}
+
+###
+
+### 19. Reset password with mismatched passwords
+POST {{baseUrl}}/auth/reset-password
+Content-Type: {{contentType}}
+
+{
+  "token": "REPLACE_WITH_RESET_TOKEN",
+  "password": "NewPassword123",
+  "confirmPassword": "DifferentPassword123"
+}
+
+###
+
+### 20. Reset password with invalid token
+POST {{baseUrl}}/auth/reset-password
+Content-Type: {{contentType}}
+
+{
+  "token": "invalid-token",
+  "password": "NewPassword123",
+  "confirmPassword": "NewPassword123"
+}
+
+###
+
+### 21. Reset password with weak password
+POST {{baseUrl}}/auth/reset-password
+Content-Type: {{contentType}}
+
+{
+  "token": "REPLACE_WITH_RESET_TOKEN",
+  "password": "weak",
+  "confirmPassword": "weak"
+}
+
+###
+
+### Test Cases with Edge Cases
+
+### 22. Register with invalid email format
+POST {{baseUrl}}/auth/register
+Content-Type: {{contentType}}
+
+{
+  "firstName": "Jimmy",
+  "lastName": "Kimunyi",
+  "email": "invalid-email",
+  "password": "Password123",
+  "confirmPassword": "Password123",
+  "accountType": "student"
+}
+
+###
+
+### 23. Register with empty fields
+POST {{baseUrl}}/auth/register
+Content-Type: {{contentType}}
+
+{
+  "firstName": "",
+  "lastName": "",
+  "email": "",
+  "password": "",
+  "confirmPassword": "",
+  "accountType": "student"
+}
+
+###
+
+### 24. Register with invalid account type
+POST {{baseUrl}}/auth/register
+Content-Type: {{contentType}}
+
+{
+  "firstName": "Jimmy",
+  "lastName": "Kimunyi",
+  "email": "jkkimunyi@gmail.com",
+  "password": "Password123",
+  "confirmPassword": "Password123",
+  "accountType": "admin"
+}
+
+###
+
+### 25. Login with empty credentials
+POST {{baseUrl}}/auth/login
+Content-Type: {{contentType}}
+
+{
+  "username": "",
+  "password": ""
+}
+
+###
+
+### 26. Forgot password with invalid email
+POST {{baseUrl}}/auth/forgot-password
+Content-Type: {{contentType}}
+
+{
+  "email": "invalid-email"
+}
+
+###
+
+### 27. Forgot password with empty email
+POST {{baseUrl}}/auth/forgot-password
+Content-Type: {{contentType}}
+
+{
+  "email": ""
+}
+
+###
+
+### Test Protected Routes
+
+### 28. Access protected route without token
+GET {{baseUrl}}/auth/profile
+
+###
+
+### 29. Access protected route with invalid token
+GET {{baseUrl}}/auth/profile
+Authorization: Bearer invalid-token
+
+###
+
+### 30. Access protected route with expired token
+GET {{baseUrl}}/auth/profile
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ.SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c
+
+###
+
+### Admin Test Cases
+
+### 31. Login as admin (if admin exists)
+POST {{baseUrl}}/auth/login
+Content-Type: {{contentType}}
+
+{
+  "username": "jkkimunyi@gmail.com",
+  "password": "AdminPassword123",
+  "rememberMe": false
+}
+
+###
+
+### Bulk Test Data Creation
+
+### 32. Create student account
+POST {{baseUrl}}/auth/register
+Content-Type: {{contentType}}
+
+{
+  "firstName": "Jimmy",
+  "lastName": "Kimunyi",
+  "email": "jkkimunyi@gmail.com",
+  "password": "Password123",
+  "confirmPassword": "Password123",
+  "accountType": "student"
+}
+
+###
+
+### 33. Create instructor account
+POST {{baseUrl}}/auth/register
+Content-Type: {{contentType}}
+
+{
+  "firstName": "Jimmy",
+  "lastName": "Kimunyi",
+  "email": "kimunyijimmy@gmail.com",
+  "password": "Password123",
+  "confirmPassword": "Password123",
+  "accountType": "instructor"
+}
+
+###
+
+### 34. Create another student account
+POST {{baseUrl}}/auth/register
+Content-Type: {{contentType}}
+
+{
+  "firstName": "Jimmy",
+  "lastName": "Kimunyi",
+  "email": "jimmykimunyi@gmail.com",
+  "password": "Password123",
+  "confirmPassword": "Password123",
+  "accountType": "student"
+}
+
+###
+
+### Performance Testing
+
+### 35. Concurrent login attempts - User 1
+POST {{baseUrl}}/auth/login
+Content-Type: {{contentType}}
+
+{
+  "username": "jkkimunyi@gmail.com",
+  "password": "Password123",
+  "rememberMe": false
+}
+
+###
+
+### 36. Concurrent login attempts - User 2
+POST {{baseUrl}}/auth/login
+Content-Type: {{contentType}}
+
+{
+  "username": "kimunyijimmy@gmail.com",
+  "password": "Password123",
+  "rememberMe": false
+}
+
+###
+
+### 37. Concurrent login attempts - User 3
+POST {{baseUrl}}/auth/login
+Content-Type: {{contentType}}
+
+{
+  "username": "jimmykimunyi@gmail.com",
+  "password": "Password123",
+  "rememberMe": false
+}
+
+###
+
+### Security Testing
+
+### 38. SQL Injection attempt in login
+POST {{baseUrl}}/auth/login
+Content-Type: {{contentType}}
+
+{
+  "username": "jkkimunyi@gmail.com'; DROP TABLE users; --",
+  "password": "Password123"
+}
+
+###
+
+### 39. XSS attempt in registration
+POST {{baseUrl}}/auth/register
+Content-Type: {{contentType}}
+
+{
+  "firstName": "<script>alert('xss')</script>",
+  "lastName": "Kimunyi",
+  "email": "jkkimunyi@gmail.com",
+  "password": "Password123",
+  "confirmPassword": "Password123",
+  "accountType": "student"
+}
+
+###
+
+### 40. Long password test
+POST {{baseUrl}}/auth/register
+Content-Type: {{contentType}}
+
+{
+  "firstName": "Jimmy",
+  "lastName": "Kimunyi",
+  "email": "kimunyijimmy@gmail.com",
+  "password": "ThisIsAVeryLongPasswordThatShouldBeHandledProperly123456789",
+  "confirmPassword": "ThisIsAVeryLongPasswordThatShouldBeHandledProperly123456789",
+  "accountType": "student"
+}
+
+###
+
+### Unicode and Special Characters
+
+### 41. Register with special characters in name
+POST {{baseUrl}}/auth/register
+Content-Type: {{contentType}}
+
+{
+  "firstName": "Jimmy-K",
+  "lastName": "Kimunyi-Test",
+  "email": "jimmykimunyi@gmail.com",
+  "password": "Password123",
+  "confirmPassword": "Password123",
+  "accountType": "student"
+}
+
+###
+
+### Workflow Testing
+
+### 42. Complete registration flow - User 1
+POST {{baseUrl}}/auth/register
+Content-Type: {{contentType}}
+
+{
+  "firstName": "Jimmy",
+  "lastName": "Kimunyi",
+  "email": "jkkimunyi@gmail.com",
+  "password": "Password123",
+  "confirmPassword": "Password123",
+  "accountType": "student"
+}
+
+###
+
+### 43. Login after verification - User 1
+POST {{baseUrl}}/auth/login
+Content-Type: {{contentType}}
+
+{
+  "username": "jkkimunyi@gmail.com",
+  "password": "Password123",
+  "rememberMe": false
+}
+
+###
+
+### 44. Get profile after login - User 1
+GET {{baseUrl}}/auth/profile
+Authorization: Bearer REPLACE_WITH_JWT_TOKEN_FROM_LOGIN
+
+###
+
+### 45. Test password reset flow - User 1
+POST {{baseUrl}}/auth/forgot-password
+Content-Type: {{contentType}}
+
+{
+  "email": "jkkimunyi@gmail.com"
+}
+
+###
+
+### 46. Complete password reset - User 1
+POST {{baseUrl}}/auth/reset-password
+Content-Type: {{contentType}}
+
+{
+  "token": "REPLACE_WITH_RESET_TOKEN_FROM_EMAIL",
+  "password": "NewPassword123",
+  "confirmPassword": "NewPassword123"
+}
+
+###
+
+### 47. Login with new password - User 1
+POST {{baseUrl}}/auth/login
+Content-Type: {{contentType}}
+
+{
+  "username": "jkkimunyi@gmail.com",
+  "password": "NewPassword123",
+  "rememberMe": false
+}
+
+###
+
+# Instructions for use:
+# 1. Make sure your backend server is running on http://localhost:3000
+# 2. Replace REPLACE_WITH_JWT_TOKEN with actual JWT token from login response
+# 3. Replace REPLACE_WITH_ACTUAL_TOKEN with actual verification token from email
+# 4. Replace REPLACE_WITH_RESET_TOKEN with actual reset token from email
+# 5. Run tests in sequence, especially for verification and reset flows
+# 6. Check your email (jkkimunyi@gmail.com, kimunyijimmy@gmail.com, jimmykimunyi@gmail.com) for verification and reset tokens
+# 7. For production testing, update the @baseUrl variable to your production URL
+#
+# Test Users:
+# - jkkimunyi@gmail.com (Student)
+# - kimunyijimmy@gmail.com (Instructor)
+# - jimmykimunyi@gmail.com (Student)

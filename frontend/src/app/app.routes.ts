@@ -1,9 +1,9 @@
 import { Routes } from '@angular/router';
-import { LandingComponent } from './components/landing/landing.component';
+import { Landing } from './components/landing/landing';
 import { authGuard } from './guards/auth-guard';
 
 export const routes: Routes = [
-  { path: '', component: LandingComponent },
+  { path: '', component: Landing },
   {
     path: 'auth',
     loadChildren: () =>
@@ -33,11 +33,6 @@ export const routes: Routes = [
     canActivate: [authGuard],
   },
   {
-    path: 'quizzes',
-    loadChildren: () =>
-      import('./components/quizzes/quizzes.module').then((m) => m.QuizzesModule),
-  },
-  {
     path: 'checkout',
     loadChildren: () =>
       import('./components/checkout/checkout.module').then((m) => m.CheckoutModule),
@@ -55,10 +50,14 @@ export const routes: Routes = [
       import('./components/instructors/instructors.component').then((m) => m.InstructorsComponent),
   },
   {
+    path: 'instructors/:id',
+    loadComponent: () =>
+      import('./components/instructors/instructor-detail/instructor-detail').then((m) => m.InstructorDetail),
+  },
+  {
     path: 'community',
     loadComponent: () =>
       import('./components/community/community.component').then((m) => m.CommunityComponent),
   },
-  
   { path: '**', redirectTo: '' }
 ];

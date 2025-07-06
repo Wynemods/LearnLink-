@@ -1,0 +1,79 @@
+<div class="relative flex size-full min-h-screen flex-col bg-white group/design-root overflow-x-hidden" style='font-family: Lexend, "Noto Sans", sans-serif;' *ngIf="instructor">
+  <div class="layout-container flex h-full grow flex-col">
+    <div class="px-40 flex flex-1 justify-center py-5">
+      <div class="layout-content-container flex flex-col max-w-[960px] flex-1">
+        <!-- Back button -->
+        <div class="p-4">
+          <button 
+            (click)="goBack()"
+            class="flex items-center text-[#637488] hover:text-[#111418] transition-colors cursor-pointer"
+          >
+            <span class="material-icons mr-2">arrow_back</span>
+            Back to Instructors
+          </button>
+        </div>
+
+        <!-- Instructor Profile -->
+        <div class="flex p-4 @container">
+          <div class="flex w-full flex-col gap-4 @[520px]:flex-row @[520px]:justify-between @[520px]:items-center">
+            <div class="flex gap-4">
+              <div
+                class="bg-center bg-no-repeat aspect-square bg-cover rounded-full min-h-32 w-32"
+                [style.background-image]="'url(' + instructor.image + ')'"
+              ></div>
+              <div class="flex flex-col justify-center">
+                <p class="text-[#121416] text-[22px] font-bold leading-tight tracking-[-0.015em]">{{ instructor.name }}</p>
+                <p class="text-[#6a7581] text-base font-normal leading-normal">{{ instructor.title }}</p>
+                <p class="text-[#6a7581] text-base font-normal leading-normal">
+                  Expertise: {{ instructor.expertise }} | {{ instructor.experience }} of experience | {{ instructor.students }}+ students | Rating: {{ instructor.rating }} | {{ instructor.courses }} courses
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- About Section -->
+        <h2 class="text-[#121416] text-[22px] font-bold leading-tight tracking-[-0.015em] px-4 pb-3 pt-5">About</h2>
+        <p class="text-[#121416] text-base font-normal leading-normal pb-3 pt-1 px-4">
+          {{ instructor.about }}
+        </p>
+
+        <!-- Courses Section -->
+        <h2 class="text-[#121416] text-[22px] font-bold leading-tight tracking-[-0.015em] px-4 pb-3 pt-5">Courses</h2>
+        <div class="p-4" *ngFor="let course of instructor.coursesList">
+          <div class="flex items-stretch justify-between gap-4 rounded-xl">
+            <div class="flex flex-[2_2_0px] flex-col gap-4">
+              <div class="flex flex-col gap-1">
+                <p class="text-[#121416] text-base font-bold leading-tight">{{ course.title }}</p>
+                <p class="text-[#6a7581] text-sm font-normal leading-normal">{{ course.description }}</p>
+              </div>
+              <button
+                (click)="viewCourse(course.id)"
+                class="flex min-w-[84px] max-w-[480px] cursor-pointer items-center justify-center overflow-hidden rounded-full h-8 px-4 flex-row-reverse bg-[#f1f2f4] text-[#121416] text-sm font-medium leading-normal w-fit hover:bg-[#e5e7eb] transition-colors"
+              >
+                <span class="truncate">View Course</span>
+              </button>
+            </div>
+            <div
+              class="w-full bg-center bg-no-repeat aspect-video bg-cover rounded-xl flex-1"
+              [style.background-image]="'url(' + course.image + ')'"
+            ></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Loading/Error state -->
+<div *ngIf="!instructor" class="flex items-center justify-center min-h-screen">
+  <div class="text-center">
+    <p class="text-[#637488] text-lg">Instructor not found</p>
+    <button 
+      (click)="goBack()"
+      class="mt-4 px-4 py-2 bg-[#f1f2f4] text-[#121416] rounded-full hover:bg-[#e5e7eb] transition-colors"
+    >
+      Back to Instructors
+    </button>
+  </div>
+</div>

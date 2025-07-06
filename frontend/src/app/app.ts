@@ -29,6 +29,7 @@ export class App {
       '/auth/login',
       '/auth/register',
       '/auth/reset-password',
+      '/auth/forgot-password',
       '/dashboard/admin',
       '/dashboard/instructor',
       '/dashboard/student',

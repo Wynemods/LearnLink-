@@ -1,132 +1,108 @@
-<!DOCTYPE html>
-<html lang="en"><head>
-<meta charset="utf-8"/>
-<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
-<title>E-Learning Dashboard</title>
-<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
-<link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&amp;display=swap" rel="stylesheet"/>
-<link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet"/>
-<style type="text/tailwindcss">
-</style>
-</head>
-<body class="bg-gray-50 font-sans">
-<div class="flex h-screen">
-<aside class="w-80 bg-gray-800 text-white shadow-md p-6 overflow-y-auto">
-<button class="flex items-center text-gray-300 hover:text-white mb-8">
-<span class="material-icons">arrow_back</span>
-<span class="ml-2 font-semibold">Change Simplification</span>
-</button>
-<nav>
-<ul>
-<li class="mb-4">
-<a class="flex items-center p-3 bg-teal-500 text-white rounded-lg shadow" href="#">
-<span class="material-icons text-white">book</span>
-<span class="ml-3 text-sm font-medium">Lesson 01 : Introduction about XD</span>
-<span class="ml-auto text-xs">30 mins</span>
-</a>
-</li>
-<li class="mb-4">
-<a class="flex items-center p-3 bg-gray-700 text-gray-300 hover:bg-gray-600 hover:text-white rounded-lg" href="#">
-<span class="material-icons text-blue-400">book</span>
-<span class="ml-3 text-sm font-medium">Lesson 02 : Basic Tools in XD</span>
-<span class="ml-auto text-xs text-gray-400">45 mins</span>
-</a>
-</li>
-<li class="mb-4">
-<a class="flex items-center p-3 bg-gray-700 text-gray-300 hover:bg-gray-600 hover:text-white rounded-lg" href="#">
-<span class="material-icons text-red-400">book</span>
-<span class="ml-3 text-sm font-medium">Lesson 03 : Prototyping</span>
-<span class="ml-auto text-xs text-gray-400">60 mins</span>
-</a>
-</li>
-</ul>
-</nav>
-<h2 class="text-sm font-semibold text-gray-400 uppercase tracking-wider my-6">Practice Quiz</h2>
-<nav>
-<ul>
-<li class="mb-4">
-<a class="flex items-center p-3 bg-gray-700 text-gray-300 hover:bg-gray-600 hover:text-white rounded-lg" href="#">
-<span class="material-icons text-blue-400">quiz</span>
-<span class="ml-3 text-sm font-medium">Quiz 1: XD Basics</span>
-<span class="ml-auto text-xs text-gray-400">15 mins</span>
-</a>
-</li>
-<li class="mb-4">
-<a class="flex items-center p-3 bg-gray-700 text-gray-300 hover:bg-gray-600 hover:text-white rounded-lg" href="#">
-<span class="material-icons text-yellow-400">quiz</span>
-<span class="ml-3 text-sm font-medium">Quiz 2: Tools Mastery</span>
-<span class="ml-auto text-xs text-gray-400">20 mins</span>
-</a>
-</li>
-<li class="mb-4">
-<a class="flex items-center p-3 bg-gray-700 text-gray-300 hover:bg-gray-600 hover:text-white rounded-lg" href="#">
-<span class="material-icons text-red-400">quiz</span>
-<span class="ml-3 text-sm font-medium">Quiz 3: Prototyping Challenge</span>
-<span class="ml-auto text-xs text-gray-400">25 mins</span>
-</a>
-</li>
-</ul>
-</nav>
-</aside>
-<main class="flex-1 flex flex-col">
-<header class="bg-white text-gray-800 p-8 border-b">
-<div class="flex justify-between items-center">
-<div>
-<h1 class="text-3xl font-bold">Lesson 01: Introduction about XD</h1>
-<p class="text-gray-500 mt-1">Get started with the basics of Adobe XD.</p>
-</div>
-<div class="flex items-center">
-<button class="bg-gray-200 text-gray-600 font-semibold py-2 px-4 rounded-lg mr-4 hover:bg-gray-300 transition">Previous Lesson</button>
-<button class="bg-teal-500 text-white font-semibold py-2 px-4 rounded-lg hover:bg-teal-600 transition">Next Lesson</button>
-</div>
-</div>
-</header>
-<div class="flex-1 p-8 overflow-y-auto bg-gray-100">
-<div class="bg-white p-8 rounded-2xl shadow-lg">
-<div class="aspect-w-16 aspect-h-9 mb-8">
-<iframe allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen="" class="rounded-lg" frameborder="0" src="https://www.youtube.com/embed/68w2V4z4vss"></iframe>
-</div>
-<div class="mb-8">
-<h2 class="text-2xl font-bold text-gray-800 mb-4">Overview</h2>
-<p class="text-gray-600 leading-relaxed">
-                            In this introductory lesson, we will cover the fundamental concepts of Adobe XD. You will learn about the user interface, how to create and manage artboards, and the basic tools for designing and prototyping. This lesson is designed for beginners and will provide a solid foundation for your journey into UI/UX design with Adobe XD. By the end of this lesson, you will be able to navigate the software with confidence and create a simple mobile app screen.
-                        </p>
-</div>
-<div>
-<h2 class="text-2xl font-bold text-gray-800 mb-4">Resources</h2>
-<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-<a class="block p-4 border border-gray-200 rounded-lg hover:shadow-md transition" href="#">
-<div class="flex items-center">
-<span class="material-icons text-teal-500 mr-3">picture_as_pdf</span>
-<div>
-<h3 class="font-semibold text-gray-800">Lesson Slides (PDF)</h3>
-<p class="text-sm text-gray-500">Download the presentation slides.</p>
-</div>
-</div>
-</a>
-<a class="block p-4 border border-gray-200 rounded-lg hover:shadow-md transition" href="#">
-<div class="flex items-center">
-<span class="material-icons text-blue-500 mr-3">folder_zip</span>
-<div>
-<h3 class="font-semibold text-gray-800">Exercise Files (ZIP)</h3>
-<p class="text-sm text-gray-500">Get the project files to follow along.</p>
-</div>
-</div>
-</a>
-<a class="block p-4 border border-gray-200 rounded-lg hover:shadow-md transition" href="#">
-<div class="flex items-center">
-<span class="material-icons text-red-500 mr-3">link</span>
-<div>
-<h3 class="font-semibold text-gray-800">Useful Links</h3>
-<p class="text-sm text-gray-500">External resources and articles.</p>
-</div>
-</div>
-</a>
-</div>
-</div>
-</div>
-</div>
-</main>
-</div>
+<html>
+  <head>
+    <link rel="preconnect" href="https://fonts.gstatic.com/" crossorigin="" />
+    <link
+      rel="stylesheet"
+      as="style"
+      onload="this.rel='stylesheet'"
+      href="https://fonts.googleapis.com/css2?display=swap&amp;family=Lexend%3Awght%40400%3B500%3B700%3B900&amp;family=Noto+Sans%3Awght%40400%3B500%3B700%3B900"
+    />
 
-</body></html>
+    <title>Stitch Design</title>
+    <link rel="icon" type="image/x-icon" href="data:image/x-icon;base64," />
+
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+  </head>
+  <body>
+    <div class="relative flex size-full min-h-screen flex-col bg-white group/design-root overflow-x-hidden" style='font-family: Lexend, "Noto Sans", sans-serif;'>
+      <div class="layout-container flex h-full grow flex-col">
+        
+        <div class="px-40 flex flex-1 justify-center py-5">
+          <div class="layout-content-container flex flex-col max-w-[960px] flex-1">
+            <div class="flex p-4 @container">
+              <div class="flex w-full flex-col gap-4 @[520px]:flex-row @[520px]:justify-between @[520px]:items-center">
+                <div class="flex gap-4">
+                  <div
+                    class="bg-center bg-no-repeat aspect-square bg-cover rounded-full min-h-32 w-32"
+                    style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuCXQRhcUlrxfPiFB6cwxn6mJHMwgcw5S1j6f1XvdmiKjPP0OkFA2lPolJ1Et1ELMrHOwkdhtLUHKOcV09MyKr4KIH2ec-g5pIOdatmg4m__AZl8nN02gq-HAZpqya94790dfssfdhdCTALUEtOMxShRO5FZTGYKOh0Vo74VhCIG9Cn7oDMSX9ewYLVAdJcAYagmJ0GqEOvPAd-oad4_5h9AqS4p699PgjdJa8i61JvCykkgYscSEeKy3ga_8D0VWSFrMnukye3HSw");'
+                  ></div>
+                  <div class="flex flex-col justify-center">
+                    <p class="text-[#121416] text-[22px] font-bold leading-tight tracking-[-0.015em]">Dr. Anya Sharma</p>
+                    <p class="text-[#6a7581] text-base font-normal leading-normal">Professor of Computer Science</p>
+                    <p class="text-[#6a7581] text-base font-normal leading-normal">
+                      Expertise: Data Structures and Algorithms | 15+ years of experience | 10,000+ students | Rating: 4.8 | 20 courses
+                    </p>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <h2 class="text-[#121416] text-[22px] font-bold leading-tight tracking-[-0.015em] px-4 pb-3 pt-5">About</h2>
+            <p class="text-[#121416] text-base font-normal leading-normal pb-3 pt-1 px-4">
+              Dr. Anya Sharma is a distinguished professor of computer science with over 15 years of experience in teaching and research. Her expertise lies in data structures and
+              algorithms, and she has mentored over 10,000 students. Dr. Sharma is known for her engaging teaching style and her ability to make complex topics accessible to
+              students of all levels. She holds a PhD in Computer Science from a top university and has published numerous research papers in leading academic journals.
+            </p>
+            <h2 class="text-[#121416] text-[22px] font-bold leading-tight tracking-[-0.015em] px-4 pb-3 pt-5">Courses</h2>
+            <div class="p-4">
+              <div class="flex items-stretch justify-between gap-4 rounded-xl">
+                <div class="flex flex-[2_2_0px] flex-col gap-4">
+                  <div class="flex flex-col gap-1">
+                    <p class="text-[#121416] text-base font-bold leading-tight">Advanced Data Structures and Algorithms</p>
+                    <p class="text-[#6a7581] text-sm font-normal leading-normal">Learn advanced data structures and algorithms for efficient problem-solving.</p>
+                  </div>
+                  <button
+                    class="flex min-w-[84px] max-w-[480px] cursor-pointer items-center justify-center overflow-hidden rounded-full h-8 px-4 flex-row-reverse bg-[#f1f2f4] text-[#121416] text-sm font-medium leading-normal w-fit"
+                  >
+                    <span class="truncate">View Course</span>
+                  </button>
+                </div>
+                <div
+                  class="w-full bg-center bg-no-repeat aspect-video bg-cover rounded-xl flex-1"
+                  style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuBO4gf-IDklK25IZBou2lmAmxnnc6LXJyAh1l-YZfIm-JeEmGzyVigKRIGadruw3BhCkh8e4XlteJlYxlHzycCdQRCRdaY9ozrsvYfN4F5YIZFCrB2bDdIW93n424PQj3mp1pRxY1mSOU9ALPNj69mCBsiat6x-G-IdOYs5RghEKc0SdHSRys8QGLcXKr4Up5VwwTB09N1BX2qfkDKM0yl4FJ6TKR0iEll5cgXTD4dSNIjmXoqpxjUjLup9Kn3QcfiQ7116TBu-QA");'
+                ></div>
+              </div>
+            </div>
+            <div class="p-4">
+              <div class="flex items-stretch justify-between gap-4 rounded-xl">
+                <div class="flex flex-[2_2_0px] flex-col gap-4">
+                  <div class="flex flex-col gap-1">
+                    <p class="text-[#121416] text-base font-bold leading-tight">Introduction to Programming with Python</p>
+                    <p class="text-[#6a7581] text-sm font-normal leading-normal">A beginner-friendly course to learn programming fundamentals using Python.</p>
+                  </div>
+                  <button
+                    class="flex min-w-[84px] max-w-[480px] cursor-pointer items-center justify-center overflow-hidden rounded-full h-8 px-4 flex-row-reverse bg-[#f1f2f4] text-[#121416] text-sm font-medium leading-normal w-fit"
+                  >
+                    <span class="truncate">View Course</span>
+                  </button>
+                </div>
+                <div
+                  class="w-full bg-center bg-no-repeat aspect-video bg-cover rounded-xl flex-1"
+                  style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuBTR8tpDM6XXd7e_HbBR7AVy-CQM1FB9ddwzHgB17LMzRNguNL5hDiYf_qXbEbJ-GpeNnd7KU3QT4o-Al65Z27co5MvFyqIPRSznoi3eQWG6Q-JfLpSlT-Y9EoXMr5WLJwFej8LNujJeO56VCgUOpWFAm5VCYj23eAeqDMdKJZHmM0ZY-hcv4i4Co_j2ef2s086KpzlZc3Cz2OB0Yob0Q_DFWSesSs9QvxAjRGxaCxGLk2-QgME02YOWwJFov8lVzsF-nqLxBXwfg");'
+                ></div>
+              </div>
+            </div>
+            <div class="p-4">
+              <div class="flex items-stretch justify-between gap-4 rounded-xl">
+                <div class="flex flex-[2_2_0px] flex-col gap-4">
+                  <div class="flex flex-col gap-1">
+                    <p class="text-[#121416] text-base font-bold leading-tight">Machine Learning Fundamentals</p>
+                    <p class="text-[#6a7581] text-sm font-normal leading-normal">Explore the basics of machine learning and build your first models.</p>
+                  </div>
+                  <button
+                    class="flex min-w-[84px] max-w-[480px] cursor-pointer items-center justify-center overflow-hidden rounded-full h-8 px-4 flex-row-reverse bg-[#f1f2f4] text-[#121416] text-sm font-medium leading-normal w-fit"
+                  >
+                    <span class="truncate">View Course</span>
+                  </button>
+                </div>
+                <div
+                  class="w-full bg-center bg-no-repeat aspect-video bg-cover rounded-xl flex-1"
+                  style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuAwnST76Dj8yMlst569b3iuFf2gb5FJ12LqOIXR-AY5WwL7XnNlBL2m54tCCvn9fp625E-J95h-yiO_fyDYT_Xd45qqJ0Hox1H_RDTM7twKIBbiIY8frblOhMIYAaqPpyxuOF8sBORtcNnp9TCo_En_t4czEcYsX4snhE0hzvQOdwcEWA45OYZPYOrN4JzvEWDpclaKJrj-fqI69-tOuIzTQcEQGHKGliJiU1oxmEBo0cvKtn9NTrfBPPJCh-NsHvGsHZokMRSYTQ");'
+                ></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </body>
+</html>
