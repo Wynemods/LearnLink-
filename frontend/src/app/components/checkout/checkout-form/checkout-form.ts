@@ -1,6 +1,7 @@
 import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import { PaymentService } from '../../../services/payment.service';
 
 export interface CartItem {
   id: string;
@@ -86,6 +87,8 @@ export class CheckoutForm {
     }
   ];
 
+  constructor(private paymentService: PaymentService) {}
+
   selectPaymentMethod(method: 'visa' | 'mpesa'): void {
     this.selectedPaymentMethod = method;
     // Clear form data when switching payment methods
@@ -147,11 +150,57 @@ export class CheckoutForm {
   }
 
   private processMpesaPayment(): void {
-    console.log('Processing Mpesa payment...', {
+    if (!this.phoneNumber) {
+      alert('Please enter your phone number');
+      return;
+    }
+
+    console.log('Processing M-Pesa payment...', {
+      phoneNumber: this.phoneNumber,
+      amount: this.orderSummary.total
+    });
+
+    const paymentData = {
       phoneNumber: this.phoneNumber,
       amount: this.orderSummary.total,
-      saveInfo: this.saveInfo
+      accountNumber: 'COURSE001'
+    };
+
+    this.paymentService.initiateMpesaPayment(paymentData).subscribe({
+      next: (response) => {
+        console.log('Payment initiated:', response);
+        if (response.success && response.data?.requestId) {
+          this.checkPaymentStatus(response.data.requestId);
+        } else {
+          alert('Payment initiation failed: ' + response.message);
+        }
+      },
+      error: (error) => {
+        console.error('Payment error:', error);
+        alert('Payment failed: ' + (error.error?.message || 'Unknown error'));
+      }
     });
-    // Implement Mpesa payment processing logic
+  }
+
+  private checkPaymentStatus(checkoutRequestId: string): void {
+    // You can implement a polling mechanism or WebSocket to check payment status
+    setTimeout(() => {
+      this.paymentService.checkPaymentStatus(checkoutRequestId).subscribe({
+        next: (status) => {
+          if (status.status === 'COMPLETED') {
+            alert('Payment successful!');
+            // Redirect to success page
+          } else if (status.status === 'FAILED') {
+            alert('Payment failed. Please try again.');
+          } else {
+            // Continue polling if still pending
+            this.checkPaymentStatus(checkoutRequestId);
+          }
+        },
+        error: (error) => {
+          console.error('Status check error:', error);
+        }
+      });
+    }, 5000); // Check every 5 seconds
   }
 }

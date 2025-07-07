@@ -51,60 +51,11 @@ export class CourseService {
       .pipe(map(response => response.data));
   }
 
-  getRecommendedCourses(limit: number = 10): Observable<Course[]> {
-    return this.http.get<any>(`${this.API_URL}/courses/recommended?limit=${limit}`)
-      .pipe(map(response => response.data));
-  }
-
-  getMyCourses(): Observable<Course[]> {
-    return this.http.get<any>(`${this.API_URL}/courses/my-courses`)
-      .pipe(map(response => response.data));
-  }
-
-  // Add the missing getCategories method
   getCategories(): Observable<any[]> {
     return this.http.get<any>(`${this.API_URL}/courses/categories`)
       .pipe(map(response => response.data));
   }
 
-  // Additional methods for course management
-  enrollInCourse(courseId: string): Observable<any> {
-    return this.http.post<any>(`${this.API_URL}/courses/${courseId}/enroll`, {})
-      .pipe(map(response => response.data));
-  }
-
-  getCourseProgress(courseId: string): Observable<any> {
-    return this.http.get<any>(`${this.API_URL}/courses/${courseId}/progress`)
-      .pipe(map(response => response.data));
-  }
-
-  updateCourseProgress(courseId: string, progressData: any): Observable<any> {
-    return this.http.put<any>(`${this.API_URL}/courses/${courseId}/progress`, progressData)
-      .pipe(map(response => response.data));
-  }
-
-  rateCourse(courseId: string, rating: number, comment?: string): Observable<any> {
-    return this.http.post<any>(`${this.API_URL}/courses/${courseId}/rate`, {
-      rating,
-      comment
-    }).pipe(map(response => response.data));
-  }
-
-  searchCourses(query: string, filters?: any): Observable<any> {
-    const params = new URLSearchParams();
-    params.append('search', query);
-    
-    if (filters) {
-      Object.keys(filters).forEach(key => {
-        if (filters[key]) {
-          params.append(key, filters[key]);
-        }
-      });
-    }
-
-    return this.http.get<any>(`${this.API_URL}/courses/search?${params.toString()}`)
-      .pipe(map(response => response.data));
-  }
   createCourse(courseData: any): Observable<any> {
     return this.http.post<any>(`${this.API_URL}/courses`, courseData)
       .pipe(map(response => response.data));
@@ -113,6 +64,11 @@ export class CourseService {
   updateCourse(courseId: string, courseData: any): Observable<any> {
     return this.http.put<any>(`${this.API_URL}/courses/${courseId}`, courseData)
       .pipe(map(response => response.data));
+  }
+
+  deleteCourse(courseId: string): Observable<any> {
+    return this.http.delete<any>(`${this.API_URL}/courses/${courseId}`)
+      .pipe(map(response => response));
   }
 
   getInstructorCourses(): Observable<any[]> {
@@ -127,6 +83,21 @@ export class CourseService {
 
   getInstructorAnalytics(): Observable<any> {
     return this.http.get<any>(`${this.API_URL}/courses/instructor/analytics`)
+      .pipe(map(response => response.data));
+  }
+
+  enrollInCourse(courseId: string): Observable<any> {
+    return this.http.post<any>(`${this.API_URL}/courses/${courseId}/enroll`, {})
+      .pipe(map(response => response.data));
+  }
+
+  publishCourse(courseId: string): Observable<any> {
+    return this.http.put<any>(`${this.API_URL}/courses/${courseId}`, { isPublished: true })
+      .pipe(map(response => response.data));
+  }
+
+  unpublishCourse(courseId: string): Observable<any> {
+    return this.http.put<any>(`${this.API_URL}/courses/${courseId}`, { isPublished: false })
       .pipe(map(response => response.data));
   }
 }

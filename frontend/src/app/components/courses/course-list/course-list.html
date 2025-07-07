@@ -1,7 +1,38 @@
 <div class="container mx-auto px-4 py-8">
+  <!-- Categories Section - Moved to Top -->
+  <div class="mb-16" *ngIf="categories.length > 0">
+    <h2 class="text-2xl font-semibold text-gray-800 text-center mb-10">
+      Choose your favorite course category
+    </h2>
+    
+    <!-- Loading state for categories -->
+    <div *ngIf="loadingCategories" class="flex justify-center py-8">
+      <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-teal-500"></div>
+    </div>
+    
+    <div *ngIf="!loadingCategories" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-8">
+      <div 
+        *ngFor="let category of categories" 
+        class="bg-white p-8 rounded-2xl shadow-lg text-center transform hover:-translate-y-2 transition-transform duration-300 cursor-pointer"
+        [class.ring-2]="selectedCategory === category.slug"
+        [class.ring-teal-500]="selectedCategory === category.slug"
+        (click)="selectCategory(category.slug)"
+      >
+        <div class="inline-block p-4 rounded-xl mb-4" [ngClass]="getCategoryColorClass(category.color)">
+          <span class="material-icons text-3xl">{{ category.icon }}</span>
+        </div>
+        <h3 class="text-xl font-semibold text-gray-800 mb-2">{{ category.name }}</h3>
+        <p class="text-gray-500 text-sm">{{ category.description }}</p>
+      </div>
+    </div>
+  </div>
+
   <!-- Header Section -->
   <div class="flex justify-between items-center mb-8">
-    <h1 class="text-2xl font-semibold text-gray-800">Welcome back, ready for your next lesson?</h1>
+    <h1 class="text-2xl font-semibold text-gray-800">
+      <span *ngIf="!selectedCategory">Welcome back, ready for your next lesson?</span>
+      <span *ngIf="selectedCategory">{{ getCategoryName(selectedCategory) }} Courses</span>
+    </h1>
     <button 
       (click)="viewHistory()"
       class="text-teal-500 font-medium hover:text-teal-600 transition-colors"
@@ -15,26 +46,8 @@
     <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-teal-500"></div>
   </div>
 
-  <!-- Empty State for No Courses -->
-  <div *ngIf="hasNoCourses && !loading" class="bg-gradient-to-br from-blue-50 to-teal-50 p-8 rounded-2xl shadow-sm mb-16 text-center">
-    <div class="max-w-md mx-auto">
-      <div class="w-20 h-20 bg-teal-100 rounded-full flex items-center justify-center mx-auto mb-6">
-        <span class="material-icons text-teal-500 text-3xl">school</span>
-      </div>
-      <h2 class="text-2xl font-bold text-gray-800 mb-4">No Courses Yet</h2>
-      <p class="text-gray-600 mb-6">{{ emptyStateMessage }}</p>
-      <button 
-        (click)="exploreCoursesCategory()"
-        class="bg-teal-500 text-white px-6 py-3 rounded-lg font-medium hover:bg-teal-600 transition-colors inline-flex items-center"
-      >
-        <span class="material-icons mr-2">explore</span>
-        Explore Courses
-      </button>
-    </div>
-  </div>
-
-  <!-- My Courses Section -->
-  <div *ngIf="myCourses.length > 0" class="bg-blue-50 p-6 rounded-2xl shadow-sm mb-16">
+  <!-- My Courses Section (only show if no category selected) -->
+  <div *ngIf="myCourses.length > 0 && !selectedCategory" class="bg-blue-50 p-6 rounded-2xl shadow-sm mb-16">
     <div class="flex justify-between items-center mb-6">
       <h2 class="text-2xl font-semibold text-gray-800">My Courses</h2>
       <span class="text-sm text-gray-500">{{ myCourses.length }} course(s)</span>
@@ -86,32 +99,49 @@
     </div>
   </div>
 
+  <!-- Empty State for No Courses -->
+  <div *ngIf="hasNoCourses && !loading && !selectedCategory" class="bg-gradient-to-br from-blue-50 to-teal-50 p-8 rounded-2xl shadow-sm mb-16 text-center">
+    <div class="max-w-md mx-auto">
+      <div class="w-20 h-20 bg-teal-100 rounded-full flex items-center justify-center mx-auto mb-6">
+        <span class="material-icons text-teal-500 text-3xl">school</span>
+      </div>
+      <h2 class="text-2xl font-bold text-gray-800 mb-4">No Courses Yet</h2>
+      <p class="text-gray-600 mb-6">{{ emptyStateMessage }}</p>
+      <button 
+        (click)="clearCategoryFilter()"
+        class="bg-teal-500 text-white px-6 py-3 rounded-lg font-medium hover:bg-teal-600 transition-colors inline-flex items-center"
+      >
+        <span class="material-icons mr-2">explore</span>
+        Explore Courses
+      </button>
+    </div>
+  </div>
+
   <!-- All Courses Section -->
   <div class="bg-sky-100 p-8 rounded-2xl mb-16">
     <div class="flex justify-between items-center mb-6">
-      <h2 class="text-2xl font-semibold text-gray-800">All Courses</h2>
+      <h2 class="text-2xl font-semibold text-gray-800">
+        <span *ngIf="!selectedCategory">All Courses</span>
+        <span *ngIf="selectedCategory">{{ getCategoryName(selectedCategory) }} Courses</span>
+      </h2>
       <div class="flex items-center space-x-4">
-        <span class="text-sm text-gray-500" *ngIf="!loadingRecommended">
-          {{ recommendedCourses.length }} course(s) available
-        </span>
         <button 
-          (click)="seeAllRecommended()"
-          class="text-sky-500 font-medium hover:text-sky-600 transition-colors"
+          *ngIf="selectedCategory"
+          (click)="clearCategoryFilter()"
+          class="text-gray-500 font-medium hover:text-gray-700 transition-colors"
         >
-          View All
+          Clear Filter
         </button>
+        <span class="text-sm text-gray-500" *ngIf="!loading">
+          {{ filteredCourses.length }} course(s) available
+        </span>
       </div>
     </div>
 
-    <!-- Loading state for recommended courses -->
-    <div *ngIf="loadingRecommended" class="flex justify-center py-8">
-      <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-sky-500"></div>
-    </div>
-
-    <!-- Recommended Courses Grid -->
-    <div *ngIf="!loadingRecommended" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+    <!-- Courses Grid -->
+    <div *ngIf="!loading" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
       <div 
-        *ngFor="let course of paginatedRecommendedCourses" 
+        *ngFor="let course of paginatedFilteredCourses" 
         class="bg-white rounded-2xl shadow-lg p-4 flex flex-col cursor-pointer hover:shadow-xl transition-shadow duration-300"
         (click)="viewCourseDetails(course.id)"
       >
@@ -166,54 +196,28 @@
       </div>
     </div>
 
-    <!-- Recommended Courses Pagination -->
-    <div class="flex justify-center mt-8" *ngIf="totalRecommendedPages > 1">
+    <!-- Pagination -->
+    <div class="flex justify-center mt-8" *ngIf="totalFilteredPages > 1">
       <div class="flex space-x-2">
         <button 
-          (click)="previousRecommendedPage()"
-          [disabled]="!canGoPreviousRecommended"
+          (click)="previousPage()"
+          [disabled]="!canGoPrevious"
           class="bg-white p-2 rounded-md shadow mr-2 text-gray-400 hover:text-gray-600 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
         >
           <span class="material-icons">chevron_left</span>
         </button>
         
         <span class="px-4 py-2 text-sm text-gray-600 flex items-center">
-          Page {{ recommendedCurrentPage + 1 }} of {{ totalRecommendedPages }}
+          Page {{ currentPage }} of {{ totalFilteredPages }}
         </span>
         
         <button 
-          (click)="nextRecommendedPage()"
-          [disabled]="!canGoNextRecommended"
+          (click)="nextPage()"
+          [disabled]="!canGoNext"
           class="bg-sky-500 text-white p-2 rounded-md shadow hover:bg-sky-600 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
         >
           <span class="material-icons">chevron_right</span>
         </button>
-      </div>
-    </div>
-  </div>
-
-  <!-- Categories Section -->
-  <div class="mt-16" *ngIf="categories.length > 0">
-    <h2 class="text-2xl font-semibold text-gray-800 text-center mb-10">
-      Choose your favorite course category
-    </h2>
-    
-    <!-- Loading state for categories -->
-    <div *ngIf="loadingCategories" class="flex justify-center py-8">
-      <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-teal-500"></div>
-    </div>
-    
-    <div *ngIf="!loadingCategories" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-8">
-      <div 
-        *ngFor="let category of categories" 
-        class="bg-white p-8 rounded-2xl shadow-lg text-center transform hover:-translate-y-2 transition-transform duration-300 cursor-pointer"
-        (click)="selectCategory(category.slug)"
-      >
-        <div class="inline-block p-4 rounded-xl mb-4" [ngClass]="getCategoryColorClass(category.color)">
-          <span class="material-icons text-3xl">{{ category.icon }}</span>
-        </div>
-        <h3 class="text-xl font-semibold text-gray-800 mb-2">{{ category.name }}</h3>
-        <p class="text-gray-500 text-sm">{{ category.description }}</p>
       </div>
     </div>
   </div>

@@ -53,6 +53,7 @@ model User {
   assignments       Assignment[]
   submissions       Submission[]
   reviews           Review[]
+  payments          Payment[]
   
   @@map("users")
 }
@@ -96,6 +97,7 @@ model Course {
   lessons          Lesson[]
   enrollments      Enrollment[]
   reviews          Review[]
+  payments         Payment[]
   createdAt        DateTime @default(now())
   updatedAt        DateTime @updatedAt
 
@@ -188,5 +190,27 @@ model Review {
 
   @@unique([userId, courseId])
   @@map("reviews")
+}
+
+model Payment {
+  id                   String    @id @default(cuid())
+  checkoutRequestId    String?   @unique
+  merchantRequestId    String?
+  phoneNumber          String
+  amount               Float
+  accountReference     String?
+  status               String    @default("PENDING") // PENDING, COMPLETED, FAILED, CANCELLED
+  mpesaReceiptNumber   String?
+  transactionDate      DateTime?
+  resultCode           String?   // Add this field
+  resultDescription    String?   // Add this field too for better error handling
+  courseId             String?
+  course               Course?   @relation(fields: [courseId], references: [id])
+  userId               String?
+  user                 User?     @relation(fields: [userId], references: [id])
+  createdAt            DateTime  @default(now())
+  updatedAt            DateTime  @updatedAt
+
+  @@map("payments")
 }
 

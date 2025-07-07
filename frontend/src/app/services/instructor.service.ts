@@ -46,7 +46,7 @@ export class InstructorService {
 
   constructor(private http: HttpClient) {}
 
-  getInstructors(page: number = 1, limit: number = 10, search?: string): Observable<any> {
+  getInstructors(page: number = 1, limit: number = 10, search?: string): Observable<Instructor[]> {
     const params = new URLSearchParams();
     params.append('page', page.toString());
     params.append('limit', limit.toString());

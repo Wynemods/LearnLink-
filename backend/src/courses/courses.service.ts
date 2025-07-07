@@ -214,37 +214,17 @@ export class CoursesService {
   }
 
   async create(createCourseDto: CreateCourseDto, user: User): Promise<any> {
+    // Only instructors can create courses
     if (user.role !== 'INSTRUCTOR') {
       throw new ForbiddenException('Only instructors can create courses');
     }
 
-    const courseData: any = {
-      title: createCourseDto.title,
-      description: createCourseDto.description,
-      price: createCourseDto.price,
-      originalPrice: createCourseDto.originalPrice,
-      discount: createCourseDto.discount,
-      duration: createCourseDto.duration,
-      level: createCourseDto.level,
-      modules: createCourseDto.modules,
-      thumbnail: createCourseDto.thumbnail,
-      heroImage: createCourseDto.heroImage,
-      features: createCourseDto.features,
-      learningOutcomes: createCourseDto.learningOutcomes,
-      requirements: createCourseDto.requirements,
-      instructorId: user.id,
-      isPublished: createCourseDto.isPublished || false,
-    };
-
-    // Handle category relationship
-    if (createCourseDto.categoryId) {
-      courseData.category = {
-        connect: { id: createCourseDto.categoryId }
-      };
-    }
-
     const course = await this.prisma.course.create({
-      data: courseData,
+      data: {
+        ...createCourseDto,
+        instructorId: user.id,
+        isPublished: createCourseDto.isPublished || false,
+      },
       include: {
         instructor: {
           select: {
@@ -252,33 +232,19 @@ export class CoursesService {
             firstName: true,
             lastName: true,
             profilePicture: true,
-          },
+          }
         },
-        category: {
+        category: true,
+        _count: {
           select: {
-            id: true,
-            name: true,
-            slug: true,
-          },
-        },
-      },
+            enrollments: true,
+            lessons: true,
+          }
+        }
+      }
     });
 
-    return {
-      id: course.id,
-      title: course.title,
-      description: course.description,
-      instructor: `${course.instructor.firstName} ${course.instructor.lastName}`,
-      category: course.category?.name || 'General',
-      price: course.price,
-      originalPrice: course.originalPrice,
-      discount: course.discount,
-      duration: course.duration,
-      level: course.level,
-      modules: course.modules,
-      isPublished: course.isPublished,
-      createdAt: course.createdAt,
-    };
+    return course;
   }
 
   async update(id: string, updateCourseDto: UpdateCourseDto, user: User): Promise<any> {
@@ -747,6 +713,186 @@ export class CoursesService {
     }
 
     return createdCourses;
+  }
+
+  async getInstructorCourses(instructorId: string): Promise<any[]> {
+    const courses = await this.prisma.course.findMany({
+      where: {
+        instructorId,
+      },
+      include: {
+        category: true,
+        _count: {
+          select: {
+            enrollments: true,
+            lessons: true,
+            reviews: true,
+          }
+        },
+        enrollments: {
+          include: {
+            student: {
+              select: {
+                id: true,
+                firstName: true,
+                lastName: true,
+                email: true,
+                profilePicture: true,
+              }
+            }
+          }
+        }
+      },
+      orderBy: {
+        createdAt: 'desc'
+      }
+    });
+
+    return courses.map(course => ({
+      ...course,
+      totalStudents: course._count.enrollments,
+      totalLessons: course._count.lessons,
+      totalReviews: course._count.reviews,
+    }));
+  }
+
+  async getInstructorStudents(instructorId: string): Promise<any[]> {
+    const enrollments = await this.prisma.enrollment.findMany({
+      where: {
+        course: {
+          instructorId,
+        }
+      },
+      include: {
+        student: {
+          select: {
+            id: true,
+            firstName: true,
+            lastName: true,
+            email: true,
+            profilePicture: true,
+            createdAt: true,
+          }
+        },
+        course: {
+          select: {
+            id: true,
+            title: true,
+            thumbnail: true,
+          }
+        }
+      },
+      orderBy: {
+        enrolledAt: 'desc'
+      }
+    });
+
+    return enrollments.map(enrollment => ({
+      id: enrollment.student.id,
+      name: `${enrollment.student.firstName} ${enrollment.student.lastName}`,
+      email: enrollment.student.email,
+      avatar: enrollment.student.profilePicture,
+      enrolledDate: enrollment.enrolledAt,
+      progress: enrollment.progress,
+      coursesEnrolled: [enrollment.course.title],
+      lastActive: enrollment.lastAccessedAt,
+      courseId: enrollment.course.id,
+      courseTitle: enrollment.course.title,
+    }));
+  }
+
+  async getInstructorAnalytics(instructorId: string): Promise<any> {
+    const [
+      totalCourses,
+      totalStudents,
+      totalRevenue,
+      courseStats,
+      monthlyEnrollments,
+      recentActivities
+    ] = await Promise.all([
+      this.prisma.course.count({
+        where: { instructorId }
+      }),
+      this.prisma.enrollment.count({
+        where: {
+          course: { instructorId }
+        }
+      }),
+      this.prisma.course.aggregate({
+        where: { instructorId },
+        _sum: { price: true }
+      }),
+      this.prisma.course.findMany({
+        where: { instructorId },
+        include: {
+          _count: {
+            select: {
+              enrollments: true,
+              reviews: true,
+            }
+          }
+        },
+        orderBy: {
+          createdAt: 'desc'
+        }
+      }),
+      this.prisma.enrollment.groupBy({
+        by: ['enrolledAt'],
+        where: {
+          course: { instructorId },
+          enrolledAt: {
+            gte: new Date(Date.now() - 30 * 24 * 60 * 60 * 1000) // Last 30 days
+          }
+        },
+        _count: true
+      }),
+      this.prisma.enrollment.findMany({
+        where: {
+          course: { instructorId }
+        },
+        include: {
+          student: {
+            select: {
+              firstName: true,
+              lastName: true,
+              profilePicture: true,
+            }
+          },
+          course: {
+            select: {
+              title: true,
+            }
+          }
+        },
+        orderBy: {
+          enrolledAt: 'desc'
+        },
+        take: 10
+      })
+    ]);
+
+    const averageRating = courseStats.reduce((acc, course) => acc + (course.rating || 0), 0) / courseStats.length || 0;
+
+    return {
+      totalCourses,
+      totalStudents,
+      totalRevenue: totalRevenue._sum.price || 0,
+      averageRating: Math.round(averageRating * 10) / 10,
+      courseProgress: courseStats.map(course => ({
+        id: course.id,
+        title: course.title,
+        progress: Math.round((course._count.enrollments / (course._count.enrollments + 10)) * 100),
+        color: 'bg-teal-500'
+      })),
+      monthlyEnrollments,
+      recentActivities: recentActivities.map(activity => ({
+        id: activity.id,
+        type: 'enrollment',
+        message: `${activity.student.firstName} ${activity.student.lastName} enrolled in ${activity.course.title}`,
+        timestamp: activity.enrolledAt,
+        avatar: activity.student.profilePicture
+      }))
+    };
   }
 
   private async updateCourseRating(courseId: string): Promise<void> {

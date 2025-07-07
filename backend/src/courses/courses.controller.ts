@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body, Param, Query, UseGuards, ValidationPipe, Put, Delete } from '@nestjs/common';
+import { Controller, Get, Post, Body, Param, Query, UseGuards, ValidationPipe, Put, Delete, ForbiddenException } from '@nestjs/common';
 import { CoursesService } from './courses.service';
 import { CreateCourseDto, UpdateCourseDto, RateCourseDto, UpdateProgressDto, BulkCreateCoursesDto } from './dto/course.dto';
 import { PaginationDto, PaginatedResponse } from '../common/dto/pagination.dto';
@@ -125,5 +125,38 @@ export class CoursesController {
   async remove(@Param('id') id: string, @GetUser() user: any): Promise<ApiResponse<null>> {
     await this.coursesService.remove(id, user);
     return new ApiResponse(true, 'Course deleted successfully', null);
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @Get('instructor/my-courses')
+  async getInstructorCourses(@GetUser() user: any): Promise<ApiResponse<any[]>> {
+    if (user.role !== 'INSTRUCTOR') {
+      throw new ForbiddenException('Only instructors can access this endpoint');
+    }
+    
+    const courses = await this.coursesService.getInstructorCourses(user.id);
+    return new ApiResponse(true, 'Instructor courses retrieved successfully', courses);
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @Get('instructor/students')
+  async getInstructorStudents(@GetUser() user: any): Promise<ApiResponse<any[]>> {
+    if (user.role !== 'INSTRUCTOR') {
+      throw new ForbiddenException('Only instructors can access this endpoint');
+    }
+    
+    const students = await this.coursesService.getInstructorStudents(user.id);
+    return new ApiResponse(true, 'Instructor students retrieved successfully', students);
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @Get('instructor/analytics')
+  async getInstructorAnalytics(@GetUser() user: any): Promise<ApiResponse<any>> {
+    if (user.role !== 'INSTRUCTOR') {
+      throw new ForbiddenException('Only instructors can access this endpoint');
+    }
+    
+    const analytics = await this.coursesService.getInstructorAnalytics(user.id);
+    return new ApiResponse(true, 'Instructor analytics retrieved successfully', analytics);
   }
 }

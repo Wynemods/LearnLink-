@@ -19,13 +19,13 @@
             <div class="flex gap-4">
               <div
                 class="bg-center bg-no-repeat aspect-square bg-cover rounded-full min-h-32 w-32"
-                [style.background-image]="'url(' + instructor.image + ')'"
+                [style.background-image]="'url(' + getInstructorImage() + ')'"
               ></div>
               <div class="flex flex-col justify-center">
-                <p class="text-[#121416] text-[22px] font-bold leading-tight tracking-[-0.015em]">{{ instructor.name }}</p>
-                <p class="text-[#6a7581] text-base font-normal leading-normal">{{ instructor.title }}</p>
+                <p class="text-[#121416] text-[22px] font-bold leading-tight tracking-[-0.015em]">{{ getInstructorName() }}</p>
+                <p class="text-[#6a7581] text-base font-normal leading-normal">{{ instructor.title || 'Instructor' }}</p>
                 <p class="text-[#6a7581] text-base font-normal leading-normal">
-                  Expertise: {{ instructor.expertise }} | {{ instructor.experience }} of experience | {{ instructor.students }}+ students | Rating: {{ instructor.rating }} | {{ instructor.courses }} courses
+                  Expertise: {{ instructor.expertise || 'Various topics' }} | {{ instructor.experience || 'Experienced' }} of experience | {{ instructor.students || instructor.totalStudents || 0 }}+ students | Rating: {{ instructor.rating || 4.5 }} | {{ instructor.courses || instructor.coursesCount || 0 }} courses
                 </p>
               </div>
             </div>
@@ -35,12 +35,12 @@
         <!-- About Section -->
         <h2 class="text-[#121416] text-[22px] font-bold leading-tight tracking-[-0.015em] px-4 pb-3 pt-5">About</h2>
         <p class="text-[#121416] text-base font-normal leading-normal pb-3 pt-1 px-4">
-          {{ instructor.about }}
+          {{ instructor.about || instructor.bio || 'No bio available.' }}
         </p>
 
         <!-- Courses Section -->
         <h2 class="text-[#121416] text-[22px] font-bold leading-tight tracking-[-0.015em] px-4 pb-3 pt-5">Courses</h2>
-        <div class="p-4" *ngFor="let course of instructor.coursesList">
+        <div class="p-4" *ngFor="let course of instructor.coursesList || []">
           <div class="flex items-stretch justify-between gap-4 rounded-xl">
             <div class="flex flex-[2_2_0px] flex-col gap-4">
               <div class="flex flex-col gap-1">
@@ -56,9 +56,14 @@
             </div>
             <div
               class="w-full bg-center bg-no-repeat aspect-video bg-cover rounded-xl flex-1"
-              [style.background-image]="'url(' + course.image + ')'"
+              [style.background-image]="'url(' + getCourseImage(course) + ')'"
             ></div>
           </div>
+        </div>
+        
+        <!-- No courses message -->
+        <div *ngIf="!instructor.coursesList || instructor.coursesList.length === 0" class="p-4 text-center text-gray-500">
+          <p>No courses available from this instructor.</p>
         </div>
       </div>
     </div>
@@ -66,7 +71,7 @@
 </div>
 
 <!-- Loading/Error state -->
-<div *ngIf="!instructor" class="flex items-center justify-center min-h-screen">
+<div *ngIf="!instructor && !loading" class="flex items-center justify-center min-h-screen">
   <div class="text-center">
     <p class="text-[#637488] text-lg">Instructor not found</p>
     <button 
@@ -76,4 +81,9 @@
       Back to Instructors
     </button>
   </div>
+</div>
+
+<!-- Loading state -->
+<div *ngIf="loading" class="flex items-center justify-center min-h-screen">
+  <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-teal-500"></div>
 </div>

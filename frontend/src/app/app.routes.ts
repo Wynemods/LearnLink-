@@ -1,6 +1,7 @@
 import { Routes } from '@angular/router';
 import { Landing } from './components/landing/landing';
 import { authGuard } from './guards/auth-guard';
+import { InstructorGuard } from './guards/instructor-guard';
 
 export const routes: Routes = [
   { path: '', component: Landing },

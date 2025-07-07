@@ -1,1 +1,227 @@
-<p>course-form works!</p>
+<div class="max-w-4xl mx-auto p-6 bg-white rounded-lg shadow-lg">
+  <div class="mb-6">
+    <h1 class="text-2xl font-bold text-gray-900">
+      {{ isEditMode ? 'Edit Course' : 'Create New Course' }}
+    </h1>
+    <p class="text-gray-600 mt-2">
+      {{ isEditMode ? 'Update your course information' : 'Fill in the details to create a new course' }}
+    </p>
+  </div>
+
+  <form [formGroup]="courseForm" (ngSubmit)="onSubmit()" class="space-y-6">
+    <!-- Basic Information -->
+    <div class="bg-gray-50 p-6 rounded-lg">
+      <h2 class="text-lg font-semibold mb-4">Basic Information</h2>
+      
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div class="md:col-span-2">
+          <label class="block text-sm font-medium text-gray-700 mb-2">Course Title</label>
+          <input
+            type="text"
+            formControlName="title"
+            class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-teal-500"
+            placeholder="Enter course title"
+          />
+          <div *ngIf="courseForm.get('title')?.invalid && courseForm.get('title')?.touched" class="text-red-500 text-sm mt-1">
+            Course title is required (minimum 3 characters)
+          </div>
+        </div>
+
+        <div class="md:col-span-2">
+          <label class="block text-sm font-medium text-gray-700 mb-2">Description</label>
+          <textarea
+            formControlName="description"
+            rows="4"
+            class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-teal-500"
+            placeholder="Describe your course..."
+          ></textarea>
+          <div *ngIf="courseForm.get('description')?.invalid && courseForm.get('description')?.touched" class="text-red-500 text-sm mt-1">
+            Description is required (minimum 10 characters)
+          </div>
+        </div>
+
+        <div>
+          <label class="block text-sm font-medium text-gray-700 mb-2">Category</label>
+          <select
+            formControlName="categoryId"
+            class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-teal-500"
+          >
+            <option value="">Select a category</option>
+            <option *ngFor="let category of categories" [value]="category.id">
+              {{ category.name }}
+            </option>
+          </select>
+        </div>
+
+        <div>
+          <label class="block text-sm font-medium text-gray-700 mb-2">Level</label>
+          <select
+            formControlName="level"
+            class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-teal-500"
+          >
+            <option value="beginner">Beginner</option>
+            <option value="intermediate">Intermediate</option>
+            <option value="advanced">Advanced</option>
+          </select>
+        </div>
+
+        <div>
+          <label class="block text-sm font-medium text-gray-700 mb-2">Duration</label>
+          <input
+            type="text"
+            formControlName="duration"
+            class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-teal-500"
+            placeholder="e.g., 10 hours"
+          />
+        </div>
+
+        <div>
+          <label class="block text-sm font-medium text-gray-700 mb-2">Price ($)</label>
+          <input
+            type="number"
+            formControlName="price"
+            min="0"
+            step="0.01"
+            class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-teal-500"
+            placeholder="0.00"
+          />
+        </div>
+
+        <div>
+          <label class="block text-sm font-medium text-gray-700 mb-2">Original Price ($)</label>
+          <input
+            type="number"
+            formControlName="originalPrice"
+            min="0"
+            step="0.01"
+            class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-teal-500"
+            placeholder="0.00"
+          />
+        </div>
+      </div>
+    </div>
+
+    <!-- Course Features -->
+    <div class="bg-gray-50 p-6 rounded-lg">
+      <h2 class="text-lg font-semibold mb-4">Course Features</h2>
+      
+      <div formArrayName="features" class="space-y-2">
+        <div *ngFor="let feature of features.controls; let i = index" class="flex items-center gap-2">
+          <input
+            type="text"
+            [formControlName]="i"
+            class="flex-1 px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-teal-500"
+            placeholder="Enter feature"
+          />
+          <button
+            type="button"
+            (click)="removeFeature(i)"
+            class="px-3 py-2 bg-red-500 text-white rounded-md hover:bg-red-600"
+          >
+            Remove
+          </button>
+        </div>
+      </div>
+      
+      <button
+        type="button"
+        (click)="addFeature()"
+        class="mt-2 px-4 py-2 bg-teal-500 text-white rounded-md hover:bg-teal-600"
+      >
+        Add Feature
+      </button>
+    </div>
+
+    <!-- Learning Outcomes -->
+    <div class="bg-gray-50 p-6 rounded-lg">
+      <h2 class="text-lg font-semibold mb-4">Learning Outcomes</h2>
+      
+      <div formArrayName="learningOutcomes" class="space-y-2">
+        <div *ngFor="let outcome of learningOutcomes.controls; let i = index" class="flex items-center gap-2">
+          <input
+            type="text"
+            [formControlName]="i"
+            class="flex-1 px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-teal-500"
+            placeholder="What will students learn?"
+          />
+          <button
+            type="button"
+            (click)="removeLearningOutcome(i)"
+            class="px-3 py-2 bg-red-500 text-white rounded-md hover:bg-red-600"
+          >
+            Remove
+          </button>
+        </div>
+      </div>
+      
+      <button
+        type="button"
+        (click)="addLearningOutcome()"
+        class="mt-2 px-4 py-2 bg-teal-500 text-white rounded-md hover:bg-teal-600"
+      >
+        Add Learning Outcome
+      </button>
+    </div>
+
+    <!-- Requirements -->
+    <div class="bg-gray-50 p-6 rounded-lg">
+      <h2 class="text-lg font-semibold mb-4">Requirements</h2>
+      
+      <div formArrayName="requirements" class="space-y-2">
+        <div *ngFor="let requirement of requirements.controls; let i = index" class="flex items-center gap-2">
+          <input
+            type="text"
+            [formControlName]="i"
+            class="flex-1 px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-teal-500"
+            placeholder="What do students need?"
+          />
+          <button
+            type="button"
+            (click)="removeRequirement(i)"
+            class="px-3 py-2 bg-red-500 text-white rounded-md hover:bg-red-600"
+          >
+            Remove
+          </button>
+        </div>
+      </div>
+      
+      <button
+        type="button"
+        (click)="addRequirement()"
+        class="mt-2 px-4 py-2 bg-teal-500 text-white rounded-md hover:bg-teal-600"
+      >
+        Add Requirement
+      </button>
+    </div>
+
+    <!-- Publish Option -->
+    <div class="bg-gray-50 p-6 rounded-lg">
+      <label class="flex items-center">
+        <input
+          type="checkbox"
+          formControlName="isPublished"
+          class="mr-2"
+        />
+        <span class="text-sm font-medium text-gray-700">Publish this course immediately</span>
+      </label>
+    </div>
+
+    <!-- Form Actions -->
+    <div class="flex gap-4 justify-end">
+      <button
+        type="button"
+        (click)="onCancel()"
+        class="px-6 py-2 bg-gray-500 text-white rounded-md hover:bg-gray-600"
+      >
+        Cancel
+      </button>
+      <button
+        type="submit"
+        [disabled]="!courseForm.valid || loading"
+        class="px-6 py-2 bg-teal-500 text-white rounded-md hover:bg-teal-600 disabled:opacity-50"
+      >
+        {{ loading ? 'Saving...' : (isEditMode ? 'Update Course' : 'Create Course') }}
+      </button>
+    </div>
+  </form>
+</div>

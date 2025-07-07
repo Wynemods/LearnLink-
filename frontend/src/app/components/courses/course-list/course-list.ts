@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { Router } from '@angular/router';
+import { Router, ActivatedRoute } from '@angular/router';
 import { CourseService } from '../../../services/course';
 
 export interface Course {
@@ -45,37 +45,37 @@ export interface CourseCategory {
 export class CourseList implements OnInit {
   // Pagination
   currentPage = 1;
-  coursesPerPage = 10;
+  coursesPerPage = 12;
   totalCourses = 0;
   
   // Data
   courses: Course[] = [];
   myCourses: Course[] = [];
-  recommendedCourses: Course[] = [];
   categories: CourseCategory[] = [];
+  selectedCategory: string | null = null;
   
   // Loading states
   loading = false;
-  loadingRecommended = false;
   loadingCategories = false;
-  
-  // Pagination for different sections
-  recommendedCurrentPage = 0;
-  recommendedCoursesPerPage = 8; // Show more courses
   
   constructor(
     private router: Router,
+    private route: ActivatedRoute,
     private courseService: CourseService
   ) {}
 
   ngOnInit() {
-    this.loadAllData();
+    // Check for category filter from query params
+    this.route.queryParams.subscribe(params => {
+      this.selectedCategory = params['category'] || null;
+      this.currentPage = 1; // Reset to first page when category changes
+      this.loadAllData();
+    });
   }
 
   private async loadAllData() {
     await Promise.all([
       this.loadCourses(),
-      this.loadRecommendedCourses(),
       this.loadCategories(),
       this.loadMyCourses()
     ]);
@@ -86,7 +86,8 @@ export class CourseList implements OnInit {
     try {
       const response = await this.courseService.getCourses(
         this.currentPage, 
-        this.coursesPerPage
+        this.coursesPerPage,
+        undefined // search term
       ).toPromise();
       
       this.courses = response.data || [];
@@ -99,27 +100,12 @@ export class CourseList implements OnInit {
     }
   }
 
-  async loadRecommendedCourses() {
-    this.loadingRecommended = true;
-    try {
-      // Load more recommended courses to show all
-      const courses = await this.courseService.getRecommendedCourses(20).toPromise();
-      this.recommendedCourses = courses || [];
-    } catch (error) {
-      console.error('Error loading recommended courses:', error);
-      this.recommendedCourses = [];
-    } finally {
-      this.loadingRecommended = false;
-    }
-  }
-
   async loadMyCourses() {
     try {
       const courses = await this.courseService.getMyCourses().toPromise();
       this.myCourses = courses || [];
     } catch (error) {
       console.error('Error loading my courses:', error);
-      // User might not be logged in or have no courses
       this.myCourses = [];
     }
   }
@@ -127,12 +113,10 @@ export class CourseList implements OnInit {
   async loadCategories() {
     this.loadingCategories = true;
     try {
-      // You'll need to add this method to CourseService
       const response = await this.courseService.getCategories().toPromise();
       this.categories = response || [];
     } catch (error) {
       console.error('Error loading categories:', error);
-      // Fallback to default categories
       this.categories = this.getDefaultCategories();
     } finally {
       this.loadingCategories = false;
@@ -172,17 +156,84 @@ export class CourseList implements OnInit {
         icon: 'analytics',
         color: 'purple',
         description: 'Data analysis and machine learning courses'
+      },
+      {
+        id: 'marketing',
+        name: 'Marketing',
+        slug: 'marketing',
+        icon: 'campaign',
+        color: 'orange',
+        description: 'Digital marketing and growth courses'
       }
     ];
+  }
+
+  // Category filtering
+  selectCategory(categorySlug: string): void {
+    this.router.navigate(['/courses'], { 
+      queryParams: { category: categorySlug } 
+    });
+  }
+
+  clearCategoryFilter(): void {
+    this.router.navigate(['/courses']);
+  }
+
+  getCategoryName(slug: string): string {
+    const category = this.categories.find(c => c.slug === slug);
+    return category ? category.name : 'Category';
+  }
+
+  // Filtered courses based on selected category
+  get filteredCourses(): Course[] {
+    if (!this.selectedCategory) {
+      return this.courses;
+    }
+    
+    return this.courses.filter(course => {
+      const categoryMatch = course.category?.toLowerCase() === this.selectedCategory?.toLowerCase();
+      return categoryMatch;
+    });
+  }
+
+  get paginatedFilteredCourses(): Course[] {
+    const start = (this.currentPage - 1) * this.coursesPerPage;
+    return this.filteredCourses.slice(start, start + this.coursesPerPage);
+  }
+
+  get totalFilteredPages(): number {
+    return Math.ceil(this.filteredCourses.length / this.coursesPerPage);
+  }
+
+  get canGoNext(): boolean {
+    return this.currentPage < this.totalFilteredPages;
+  }
+
+  get canGoPrevious(): boolean {
+    return this.currentPage > 1;
+  }
+
+  async previousPage(): Promise<void> {
+    if (this.canGoPrevious) {
+      this.currentPage--;
+      if (!this.selectedCategory) {
+        await this.loadCourses();
+      }
+    }
+  }
+
+  async nextPage(): Promise<void> {
+    if (this.canGoNext) {
+      this.currentPage++;
+      if (!this.selectedCategory) {
+        await this.loadCourses();
+      }
+    }
   }
 
   // Navigation methods
   continueLearning(courseId: string, lastLessonId: string = '1'): void {
     this.router.navigate(['/learn/course', courseId, 'lesson', lastLessonId]);
-  }
-
-  startQuiz(courseId: string, quizId: string): void {
-    this.router.navigate(['/learn/course', courseId, 'quiz', quizId]);
   }
 
   viewCourseDetails(courseId: string) {
@@ -193,85 +244,14 @@ export class CourseList implements OnInit {
     this.router.navigate(['/learn/course', courseId, 'lesson', '1']);
   }
 
-  selectCategory(categorySlug: string): void {
-    this.router.navigate(['/courses'], { 
-      queryParams: { category: categorySlug } 
-    });
-  }
-
   viewHistory(): void {
     this.router.navigate(['/dashboard/student/history']);
   }
 
-  // Pagination for all courses
-  get paginatedCourses() {
-    return this.myCourses; // Show enrolled courses first
-  }
-
-  get totalPages(): number {
-    return Math.ceil(this.totalCourses / this.coursesPerPage);
-  }
-
-  get canGoNext(): boolean {
-    return this.currentPage < this.totalPages;
-  }
-
-  get canGoPrevious(): boolean {
-    return this.currentPage > 1;
-  }
-
-  async previousPage(): Promise<void> {
-    if (this.canGoPrevious) {
-      this.currentPage--;
-      await this.loadCourses();
-    }
-  }
-
-  async nextPage(): Promise<void> {
-    if (this.canGoNext) {
-      this.currentPage++;
-      await this.loadCourses();
-    }
-  }
-
-  // Pagination for recommended courses
-  get paginatedRecommendedCourses() {
-    const start = this.recommendedCurrentPage * this.recommendedCoursesPerPage;
-    return this.recommendedCourses.slice(start, start + this.recommendedCoursesPerPage);
-  }
-
-  get totalRecommendedPages(): number {
-    return Math.ceil(this.recommendedCourses.length / this.recommendedCoursesPerPage);
-  }
-
-  get canGoNextRecommended(): boolean {
-    return this.recommendedCurrentPage < this.totalRecommendedPages - 1;
-  }
-
-  get canGoPreviousRecommended(): boolean {
-    return this.recommendedCurrentPage > 0;
-  }
-
-  previousRecommendedPage(): void {
-    if (this.canGoPreviousRecommended) {
-      this.recommendedCurrentPage--;
-    }
-  }
-
-  nextRecommendedPage(): void {
-    if (this.canGoNextRecommended) {
-      this.recommendedCurrentPage++;
-    }
-  }
-
-  seeAllRecommended(): void {
-    this.router.navigate(['/courses'], { 
-      queryParams: { recommended: 'true' } 
-    });
-  }
-
   // Utility methods
-  getCategoryIcon(category: string): string {
+  getCategoryIcon(category: string | undefined): string {
+    if (!category) return 'school';
+    
     const iconMap: { [key: string]: string } = {
       'development': 'code',
       'design': 'brush',
@@ -279,7 +259,7 @@ export class CourseList implements OnInit {
       'data-science': 'analytics',
       'marketing': 'campaign'
     };
-    return iconMap[category?.toLowerCase()] || 'school';
+    return iconMap[category.toLowerCase()] || 'school';
   }
 
   getCategoryColorClass(color: string): string {
@@ -295,17 +275,14 @@ export class CourseList implements OnInit {
   }
 
   get hasNoCourses(): boolean {
-    return this.myCourses.length === 0 && !this.loading;
+    return this.filteredCourses.length === 0 && !this.loading;
   }
 
   get emptyStateMessage(): string {
+    if (this.selectedCategory) {
+      return `No courses found in ${this.getCategoryName(this.selectedCategory)} category.`;
+    }
     return "You haven't enrolled in any courses yet. Start your learning journey by exploring our course catalog!";
-  }
-
-  exploreCoursesCategory() {
-    this.router.navigate(['/courses'], { 
-      queryParams: { explore: 'true' } 
-    });
   }
 
   // Format data for display
