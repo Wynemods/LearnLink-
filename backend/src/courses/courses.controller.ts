@@ -1,6 +1,8 @@
 import { Controller, Get, Post, Body, Param, Query, UseGuards, ValidationPipe, Put, Delete, ForbiddenException } from '@nestjs/common';
 import { CoursesService } from './courses.service';
 import { CreateCourseDto, UpdateCourseDto, RateCourseDto, UpdateProgressDto, BulkCreateCoursesDto } from './dto/course.dto';
+import { CreateQuizDto } from './dto/quiz.dto';
+import { CreateCertificateDto } from './dto/certificate.dto';
 import { PaginationDto, PaginatedResponse } from '../common/dto/pagination.dto';
 import { ApiResponse } from '../common/dto/response.dto';
 import { JwtAuthGuard } from '../common/guards/jwt-auth.guard';
@@ -177,5 +179,56 @@ export class CoursesController {
     
     const analytics = await this.coursesService.getInstructorAnalytics(user.id);
     return new ApiResponse(true, 'Instructor analytics retrieved successfully', analytics);
+  }
+
+  // --- QUIZ ROUTES ---
+  @UseGuards(JwtAuthGuard)
+  @Post(':id/quiz')
+  async createQuiz(@Param('id') id: string, @Body() dto: CreateQuizDto, @GetUser() user: any) {
+    return new ApiResponse(true, 'Quiz created', await this.coursesService.createQuiz(id, dto, user));
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @Get(':id/quiz')
+  async getCourseQuizzes(@Param('id') id: string) {
+    return new ApiResponse(true, 'Quizzes fetched', await this.coursesService.getCourseQuizzes(id));
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @Put('quiz/:quizId')
+  async updateQuiz(@Param('quizId') quizId: string, @Body() dto: Partial<CreateQuizDto>, @GetUser() user: any) {
+    return new ApiResponse(true, 'Quiz updated', await this.coursesService.updateQuiz(quizId, dto, user));
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @Delete('quiz/:quizId')
+  async deleteQuiz(@Param('quizId') quizId: string, @GetUser() user: any) {
+    return new ApiResponse(true, 'Quiz deleted', await this.coursesService.deleteQuiz(quizId, user));
+  }
+
+  // --- CERTIFICATE ROUTES ---
+  @UseGuards(JwtAuthGuard)
+  @Post(':id/certificates')
+  async createCertificate(@Param('id') id: string, @Body() dto: CreateCertificateDto, @GetUser() user: any) {
+    dto.courseId = id;
+    return new ApiResponse(true, 'Certificate created', await this.coursesService.createCertificate(dto, user));
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @Get(':id/certificates')
+  async getCourseCertificates(@Param('id') id: string, @GetUser() user: any) {
+    return new ApiResponse(true, 'Certificates fetched', await this.coursesService.getCourseCertificates(id, user));
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @Get(':id/certificates/me')
+  async getMyCertificate(@Param('id') id: string, @GetUser() user: any) {
+    return new ApiResponse(true, 'My certificate', await this.coursesService.getMyCertificate(id, user));
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @Delete('certificates/:certId')
+  async deleteCertificate(@Param('certId') certId: string, @GetUser() user: any) {
+    return new ApiResponse(true, 'Certificate deleted', await this.coursesService.deleteCertificate(certId, user));
   }
 }

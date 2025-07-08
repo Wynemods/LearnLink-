@@ -262,14 +262,13 @@ export class CheckoutForm implements OnInit {
   private processMpesaPayment(): void {
     const courseId = this.orderSummary.items[0]?.id;
     const amount = this.orderSummary.total;
-    
+
     if (!courseId) {
       this.paymentStatus = 'failed';
       this.paymentMessage = 'Course information is missing';
       return;
     }
 
-    // Double-check authentication
     const currentUser = this.authService.getCurrentUser();
     if (!this.authService.isAuthenticated() || !currentUser) {
       this.paymentStatus = 'failed';
@@ -282,23 +281,24 @@ export class CheckoutForm implements OnInit {
       return;
     }
 
-    console.log('Processing payment for user:', currentUser);
-    console.log('Course ID:', courseId);
-    console.log('Amount:', amount);
-    console.log('Phone:', this.phoneNumber);
-
     this.paymentStatus = 'processing';
     this.paymentMessage = 'Initiating M-Pesa payment...';
-    
-    this.paymentService.buyCourse(courseId, this.phoneNumber, amount).subscribe({
+
+    const paymentData = {
+      phoneNumber: this.phoneNumber,
+      amount: amount,
+      courseId: courseId
+    };
+
+    this.paymentService.initiateMpesaPayment(paymentData).subscribe({
       next: (response) => {
-        console.log('Payment response:', response);
-        if (response.success) {
+        if (response.success || response.status === 'success') {
           this.paymentStatus = 'success';
           this.paymentMessage = response.message;
-          this.checkoutRequestId = response.data?.requestId || '';
-          
-          // Auto-redirect after 3 seconds
+          this.checkoutRequestId = response.data?.checkoutRequestId || '';
+          // Optionally display merchantRequestId and mpesaReceiptNumber
+          // e.g., this.merchantRequestId = response.data?.merchantRequestId;
+          // this.mpesaReceiptNumber = response.data?.mpesaReceiptNumber;
           setTimeout(() => {
             this.router.navigate(['/courses', courseId]);
           }, 3000);
@@ -308,7 +308,6 @@ export class CheckoutForm implements OnInit {
         }
       },
       error: (error) => {
-        console.error('Payment error:', error);
         this.paymentStatus = 'failed';
         this.paymentMessage = error.message || 'Payment failed. Please try again.';
       }

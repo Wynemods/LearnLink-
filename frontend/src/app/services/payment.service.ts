@@ -12,12 +12,14 @@ export interface MpesaPaymentRequest {
 
 export interface PaymentResponse {
   success: boolean;
+  status? : string,
   message: string;
   data?: {
-    requestId: string;
-    merchantRequestId: string;
-    paymentId: string;
-    enrolled: boolean;
+    paymentId: string,
+        merchantRequestId : string,
+        checkoutRequestId : string,
+        mpesaReceiptNumber : string,
+        enrolled: boolean
   };
 }
 
@@ -30,7 +32,6 @@ export class PaymentService {
   constructor(private http: HttpClient) { }
 
   initiateMpesaPayment(paymentData: MpesaPaymentRequest): Observable<PaymentResponse> {
-    // Check if user is authenticated
     const token = localStorage.getItem('token');
     const isAuthenticated = localStorage.getItem('isAuthenticated') === 'true';
 
@@ -38,23 +39,12 @@ export class PaymentService {
       return throwError(() => new Error('User must be logged in to make payments'));
     }
 
-    // For production, use real API
-    // return this.http.post<PaymentResponse>(`${this.API_URL}/payments/mpesa/stkpush`, paymentData);
-
-    // For testing - simulate successful payment for logged-in users
-    console.log('Processing test payment for course:', paymentData.courseId);
-    console.log('User authenticated:', !!token);
-
-    return of({
-      success: true,
-      message: 'Payment initiated successfully. Please check your phone for M-Pesa prompt.',
-      data: {
-        requestId: 'TEST_' + Date.now(),
-        merchantRequestId: 'TEST_MERCHANT_' + Date.now(),
-        paymentId: 'test-payment-' + Date.now(),
-        enrolled: true
-      }
-    }).pipe(delay(2000)); // Simulate 2 second processing time
+    // Use real API
+    return this.http.post<PaymentResponse>(
+      `${this.API_URL}/payments/`,
+      paymentData,
+      { headers: { Authorization: `Bearer ${token}` } }
+    );
   }
 
   checkPaymentStatus(checkoutRequestId: string): Observable<any> {
@@ -77,8 +67,7 @@ export class PaymentService {
       }
     }).pipe(delay(1000));
 
-    // For production, use real API
-    // return this.http.get<any>(`${this.API_URL}/payments/mpesa/status/${checkoutRequestId}`);
+    
   }
 
   getPaymentHistory(): Observable<any[]> {

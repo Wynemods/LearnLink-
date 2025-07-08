@@ -3,6 +3,8 @@ import { PrismaService } from '../prisma/prisma.service';
 import { CreateCourseDto, UpdateCourseDto } from './dto/course.dto';
 import { PaginationDto, PaginatedResponse } from '../common/dto/pagination.dto';
 import { User } from '@prisma/client';
+import { CreateQuizDto } from './dto/quiz.dto';
+import { CreateCertificateDto } from './dto/certificate.dto';
 
 @Injectable()
 export class CoursesService {
@@ -946,6 +948,77 @@ export class CoursesService {
         avatar: activity.student.profilePicture
       }))
     };
+  }
+
+  // Quiz CRUD (Instructor only)
+  async createQuiz(courseId: string, dto: CreateQuizDto, user: any) {
+    // Only instructor of this course
+    const course = await this.prisma.course.findUnique({ where: { id: courseId } });
+    if (!course || course.instructorId !== user.id) throw new ForbiddenException('Not allowed');
+    return this.prisma.quiz.create({
+      data: {
+        ...dto,
+        courseId,
+        isPublished: true,
+        order: 1,
+        questions: dto.questions,
+      },
+    });
+  }
+
+  async updateQuiz(quizId: string, dto: Partial<CreateQuizDto>, user: any) {
+    const quiz = await this.prisma.quiz.findUnique({ where: { id: quizId }, include: { course: true } });
+    if (!quiz || quiz.course.instructorId !== user.id) throw new ForbiddenException('Not allowed');
+    return this.prisma.quiz.update({ where: { id: quizId }, data: dto });
+  }
+
+  async deleteQuiz(quizId: string, user: any) {
+    const quiz = await this.prisma.quiz.findUnique({ where: { id: quizId }, include: { course: true } });
+    if (!quiz || quiz.course.instructorId !== user.id) throw new ForbiddenException('Not allowed');
+    return this.prisma.quiz.delete({ where: { id: quizId } });
+  }
+
+  async getCourseQuizzes(courseId: string) {
+    return this.prisma.quiz.findMany({ where: { courseId } });
+  }
+
+  // Certificate CRUD (Instructor only for create, update, delete)
+  async createCertificate(dto: CreateCertificateDto, user: any) {
+    // Only instructor of this course
+    const course = await this.prisma.course.findUnique({ where: { id: dto.courseId } });
+    if (!course || course.instructorId !== user.id) throw new ForbiddenException('Not allowed');
+    return this.prisma.certificate.create({ data: dto });
+  }
+
+  async getCourseCertificates(courseId: string, user: any) {
+    // Instructor: all, Student: only their own
+    const course = await this.prisma.course.findUnique({ where: { id: courseId } });
+    if (user.role === 'INSTRUCTOR' && course.instructorId === user.id) {
+      return this.prisma.certificate.findMany({ where: { courseId } });
+    }
+    // Student: only their own
+    return this.prisma.certificate.findMany({ where: { courseId, studentId: user.id } });
+  }
+
+  async getMyCertificate(courseId: string, user: any) {
+    return this.prisma.certificate.findFirst({ where: { courseId, studentId: user.id } });
+  }
+
+  async deleteCertificate(certId: string, user: any) {
+    const cert = await this.prisma.certificate.findUnique({ where: { id: certId }, include: { course: true } });
+    if (!cert || cert.course.instructorId !== user.id) throw new ForbiddenException('Not allowed');
+    return this.prisma.certificate.delete({ where: { id: certId } });
+  }
+
+  // Issue certificate if score >= 80%
+  async issueCertificateIfEligible(courseId: string, userId: string, score: number) {
+    if (score < 80) throw new ForbiddenException('Score too low for certificate');
+    // Check if already issued
+    const exists = await this.prisma.certificate.findUnique({ where: { studentId_courseId: { studentId: userId, courseId } } });
+    if (exists) return exists;
+    return this.prisma.certificate.create({
+      data: { studentId: userId, courseId, score, url: '' }
+    });
   }
 
   private async updateCourseRating(courseId: string): Promise<void> {

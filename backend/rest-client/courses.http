@@ -7,17 +7,24 @@ POST {{baseUrl}}/auth/login
 Content-Type: {{contentType}}
 
 {
-  "username": "jkkimunyi@gmail.com",
+  "username": "kimunyi.jimmy@gmail.com",
   "password": "Password123",
   "rememberMe": false
 }
 
 ### Step 2: Copy the token from login response and replace with actual token
-@token = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJjbWNzeWx1ZmIwMDA1OXpnZDhhMWt1bWN0IiwidXNlcm5hbWUiOiJqaW1teV9raW11bnlpIiwiZW1haWwiOiJqa2tpbXVueWlAZ21haWwuY29tIiwicm9sZSI6IklOU1RSVUNUT1IiLCJpYXQiOjE3NTE4ODUwNTAsImV4cCI6MTc1MjQ4OTg1MH0.e0SYaGCst4y1IaoPY8xMd0rBPYjhRc9Qguc3ZBi59LQ
+@token = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJjbWN1ZzVzbDEwMDA3aXRnbnhjbzZzNGwzIiwidXNlcm5hbWUiOiJraW11bnlpX2ppbW15IiwiZW1haWwiOiJraW11bnlpLmppbW15QGdtYWlsLmNvbSIsInJvbGUiOiJTVFVERU5UIiwiaWF0IjoxNzUxOTc1MjgyLCJleHAiOjE3NTI1ODAwODJ9.Ju_zscKrIQ5km1bacmZ9XM3sdbLZVlrVns9sPdPGw0A
 
 ### Debug: Check if courses exist
 GET {{baseUrl}}/courses
 Accept: application/json
+
+### Step 3: Enroll in a course (replace COURSE_ID with actual course id)
+POST {{baseUrl}}/courses/cmcug64pj0021itgnienj568r/enroll
+Content-Type: {{contentType}}
+Authorization: Bearer {{token}}
+
+{}
 
 ### Debug: Get categories first (to get category IDs)
 GET {{baseUrl}}/courses/categories
@@ -269,6 +276,35 @@ Authorization: Bearer {{token}}
   ],
   "isPublished": true
 }
+
+### Create a quiz for a course (INSTRUCTOR ONLY)
+POST {{baseUrl}}/courses/{{courseId}}/quiz
+Content-Type: {{contentType}}
+Authorization: Bearer {{token}}
+
+{
+  "title": "Sample Quiz",
+  "description": "Test your knowledge",
+  "duration": 20,
+  "questions": [
+    {
+      "id": "1",
+      "question": "What is 2 + 2?",
+      "type": "multiple_choice",
+      "options": [
+        { "id": "a", "text": "3", "correct": false },
+        { "id": "b", "text": "4", "correct": true }
+      ],
+      "points": 10,
+      "explanation": "Basic math"
+    }
+  ]
+}
+
+### Get all certificates for a course (auto-issue if eligible, STUDENT or INSTRUCTOR)
+GET {{baseUrl}}/courses/{{courseId}}/certificates
+Content-Type: {{contentType}}
+Authorization: Bearer {{token}}
 
 ### Debug: Check courses after creation
 GET {{baseUrl}}/courses?limit=20
