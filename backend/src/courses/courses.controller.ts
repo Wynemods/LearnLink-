@@ -16,15 +16,41 @@ export class CoursesController {
   async findAll(
     @Query() paginationDto: PaginationDto,
   ): Promise<ApiResponse<PaginatedResponse<any>>> {
-    const courses = await this.coursesService.findAll(paginationDto);
-    return new ApiResponse(true, 'Courses retrieved successfully', courses);
+    try {
+      const courses = await this.coursesService.findAll(paginationDto);
+      return new ApiResponse(true, 'Courses retrieved successfully', courses);
+    } catch (error) {
+      console.error('Error fetching courses:', error);
+      return new ApiResponse(false, 'Failed to retrieve courses', null);
+    }
+  }
+
+  @Public()
+  @Get('search')
+  async searchCourses(
+    @Query('q') searchTerm: string,
+    @Query() paginationDto: PaginationDto,
+  ): Promise<ApiResponse<PaginatedResponse<any>>> {
+    try {
+      const searchDto = { ...paginationDto, search: searchTerm };
+      const courses = await this.coursesService.findAll(searchDto);
+      return new ApiResponse(true, 'Search results retrieved successfully', courses);
+    } catch (error) {
+      console.error('Error searching courses:', error);
+      return new ApiResponse(false, 'Failed to search courses', null);
+    }
   }
 
   @Public()
   @Get('categories')
   async getCategories(): Promise<ApiResponse<any[]>> {
-    const categories = await this.coursesService.getCategories();
-    return new ApiResponse(true, 'Categories retrieved successfully', categories);
+    try {
+      const categories = await this.coursesService.getCategories();
+      return new ApiResponse(true, 'Categories retrieved successfully', categories);
+    } catch (error) {
+      console.error('Error fetching categories:', error);
+      return new ApiResponse(false, 'Failed to retrieve categories', []);
+    }
   }
 
   @Public()
@@ -43,13 +69,6 @@ export class CoursesController {
   async getMyCourses(@GetUser() user: any): Promise<ApiResponse<any[]>> {
     const courses = await this.coursesService.getMyCourses(user.id);
     return new ApiResponse(true, 'My courses retrieved successfully', courses);
-  }
-
-  @Public()
-  @Get('search')
-  async search(@Query() query: PaginationDto): Promise<ApiResponse<PaginatedResponse<any>>> {
-    const courses = await this.coursesService.findAll(query);
-    return new ApiResponse(true, 'Search results retrieved successfully', courses);
   }
 
   @Public()

@@ -30,6 +30,11 @@ export class AuthService {
     return this.currentUserSubject.value;
   }
 
+  // Add this method to match the usage in checkout-form
+  getCurrentUser(): User | null {
+    return this.currentUser;
+  }
+
   login(user: User): void {
     localStorage.setItem('currentUser', JSON.stringify(user));
     this.currentUserSubject.next(user);

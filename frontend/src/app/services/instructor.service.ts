@@ -11,31 +11,33 @@ export interface Instructor {
   email: string;
   image: string;
   profilePicture?: string;
-  bio?: string;
-  about?: string;
-  title?: string;
-  specialty?: string;
-  experience?: string;
-  expertise?: string;
+  bio: string;
+  title: string;
+  specialty: string;
+  experience: string;
+  expertise: string;
   rating: number;
   students: number;
   totalStudents?: number;
   courses: number;
   coursesCount?: number;
-  coursesList: CourseItem[];
-  createdAt?: Date;
+  about: string;
+  coursesList: any[];
+  createdAt: Date;
 }
 
-export interface CourseItem {
-  id: string;
-  title: string;
-  description: string;
-  image: string;
-  thumbnail?: string;
-  rating?: number;
-  reviews?: number;
-  totalReviews?: number;
-  price?: number;
+export interface ApiResponse<T> {
+  success: boolean;
+  message: string;
+  data: T;
+}
+
+export interface PaginatedResponse<T> {
+  data: T[];
+  total: number;
+  page: number;
+  limit: number;
+  totalPages: number;
 }
 
 @Injectable({
@@ -46,23 +48,15 @@ export class InstructorService {
 
   constructor(private http: HttpClient) {}
 
-  getInstructors(page: number = 1, limit: number = 10, search?: string): Observable<Instructor[]> {
-    const params = new URLSearchParams();
-    params.append('page', page.toString());
-    params.append('limit', limit.toString());
-    if (search) params.append('search', search);
-
-    return this.http.get<any>(`${this.API_URL}/instructors?${params.toString()}`)
-      .pipe(map(response => response.data));
+  getInstructors(): Observable<ApiResponse<PaginatedResponse<Instructor>>> {
+    return this.http.get<ApiResponse<PaginatedResponse<Instructor>>>(`${this.API_URL}/instructors`);
   }
 
-  getInstructor(id: string): Observable<Instructor> {
-    return this.http.get<any>(`${this.API_URL}/instructors/${id}`)
-      .pipe(map(response => response.data));
+  getInstructor(id: string): Observable<ApiResponse<Instructor>> {
+    return this.http.get<ApiResponse<Instructor>>(`${this.API_URL}/instructors/${id}`);
   }
 
-  getTopInstructors(limit: number = 5): Observable<Instructor[]> {
-    return this.http.get<any>(`${this.API_URL}/instructors/top?limit=${limit}`)
-      .pipe(map(response => response.data));
+  getTopInstructors(limit: number = 5): Observable<ApiResponse<Instructor[]>> {
+    return this.http.get<ApiResponse<Instructor[]>>(`${this.API_URL}/instructors/top?limit=${limit}`);
   }
 }

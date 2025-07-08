@@ -7,60 +7,31 @@ POST {{baseUrl}}/auth/login
 Content-Type: {{contentType}}
 
 {
-  "username": "kimunyijimmy@gmail.com",
+  "username": "jkkimunyi@gmail.com",
   "password": "Password123",
   "rememberMe": false
 }
 
-### Step 2: Copy the token from login response and replace YOUR_JWT_TOKEN_HERE below
-@token = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJjbWNzOXFjamUwMDA2OXo2MDRmcDkwdnQ5IiwidXNlcm5hbWUiOiJraW11bnlpamltbXkiLCJlbWFpbCI6ImtpbXVueWlqaW1teUBnbWFpbC5jb20iLCJyb2xlIjoiSU5TVFJVQ1RPUiIsImlhdCI6MTc1MTg0MzYwMywiZXhwIjoxNzUyNDQ4NDAzfQ._6phZHS_iwVBdmUn-Ol_Yd3vlUkkyxsltw1nuUhQJKQ
+### Step 2: Copy the token from login response and replace with actual token
+@token = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJjbWNzeWx1ZmIwMDA1OXpnZDhhMWt1bWN0IiwidXNlcm5hbWUiOiJqaW1teV9raW11bnlpIiwiZW1haWwiOiJqa2tpbXVueWlAZ21haWwuY29tIiwicm9sZSI6IklOU1RSVUNUT1IiLCJpYXQiOjE3NTE4ODUwNTAsImV4cCI6MTc1MjQ4OTg1MH0.e0SYaGCst4y1IaoPY8xMd0rBPYjhRc9Qguc3ZBi59LQ
 
-### Get all courses
+### Debug: Check if courses exist
 GET {{baseUrl}}/courses
 Accept: application/json
 
-### Get courses with pagination
-GET {{baseUrl}}/courses?page=1&limit=5
+### Debug: Get categories first (to get category IDs)
+GET {{baseUrl}}/courses/categories
 Accept: application/json
 
-### Get courses with search
-GET {{baseUrl}}/courses?search=JavaScript
-Accept: application/json
-
-### Get courses by category (using real category slugs from seed.ts)
-GET {{baseUrl}}/courses?category=development
-Accept: application/json
-
-### Get courses by level
-GET {{baseUrl}}/courses?level=beginner
-Accept: application/json
-
-### Get courses by price range
-GET {{baseUrl}}/courses?priceMin=100&priceMax=200
-Accept: application/json
-
-### Get course by ID (replace with actual course ID from database)
-GET {{baseUrl}}/courses/COURSE_ID_HERE
-Accept: application/json
-
-### Get recommended courses
-GET {{baseUrl}}/courses/recommended
-Accept: application/json
-
-### Get my courses (requires authentication)
-GET {{baseUrl}}/courses/my-courses
-Accept: application/json
-Authorization: Bearer {{token}}
-
-### Create a course (requires authentication as instructor)
+### Create test course with proper structure (React course - Development category)
 POST {{baseUrl}}/courses
 Content-Type: {{contentType}}
 Authorization: Bearer {{token}}
 
 {
-  "title": "Advanced React Development - Test Course",
-  "description": "Master React with hooks, context, and advanced patterns through hands-on projects",
-  "categoryId": "CATEGORY_ID_HERE",
+  "title": "Complete React Development Course",
+  "description": "Master React from basics to advanced concepts including hooks, context, routing, and state management. Build real-world projects and become a React expert.",
+  "categoryId": "cmcsyltmy00029zgd88au99m3",
   "price": 199.99,
   "originalPrice": 299.99,
   "discount": 33,
@@ -69,222 +40,247 @@ Authorization: Bearer {{token}}
   "modules": 8,
   "thumbnail": "https://images.unsplash.com/photo-1633356122544-f134324a6cee?w=400&h=300&fit=crop",
   "heroImage": "https://images.unsplash.com/photo-1633356122544-f134324a6cee?w=800&h=600&fit=crop",
-  "features": ["Lifetime access", "Certificate of completion", "30-day money back guarantee", "Mobile access"],
-  "learningOutcomes": ["Master React hooks", "Build complex applications", "Understand state management", "Deploy to production"],
-  "requirements": ["Basic JavaScript knowledge", "HTML/CSS fundamentals", "Node.js basics"],
+  "features": [
+    "25+ hours of video content",
+    "8 comprehensive modules",
+    "Real-world projects",
+    "Lifetime access",
+    "Certificate of completion",
+    "30-day money back guarantee",
+    "Mobile access",
+    "Source code included"
+  ],
+  "learningOutcomes": [
+    "Master React fundamentals and advanced concepts",
+    "Build complex applications with hooks and context",
+    "Implement routing and navigation",
+    "Understand state management patterns",
+    "Deploy applications to production",
+    "Write clean, maintainable React code",
+    "Debug React applications effectively",
+    "Integrate with APIs and external services"
+  ],
+  "requirements": [
+    "Basic JavaScript knowledge (ES6+)",
+    "HTML/CSS fundamentals",
+    "Node.js basics",
+    "Text editor (VS Code recommended)",
+    "Git version control basics"
+  ],
   "isPublished": true
 }
 
-### Update a course (requires authentication as course owner)
-PUT {{baseUrl}}/courses/COURSE_ID_HERE
+### Create JavaScript course (Development category)
+POST {{baseUrl}}/courses
 Content-Type: {{contentType}}
 Authorization: Bearer {{token}}
 
 {
-  "title": "Updated Course Title - Advanced React Mastery",
-  "description": "Updated comprehensive course description with new content",
+  "title": "JavaScript Fundamentals for Beginners",
+  "description": "Learn JavaScript from scratch with hands-on exercises and projects. Perfect for absolute beginners who want to master the fundamentals.",
+  "categoryId": "USE_DEVELOPMENT_CATEGORY_ID_FROM_ABOVE",
+  "price": 99.99,
+  "originalPrice": 149.99,
+  "discount": 33,
+  "duration": "15 hours",
+  "level": "beginner",
+  "modules": 6,
+  "thumbnail": "https://images.unsplash.com/photo-1627398242454-45a1465c2479?w=400&h=300&fit=crop",
+  "heroImage": "https://images.unsplash.com/photo-1627398242454-45a1465c2479?w=800&h=600&fit=crop",
+  "features": [
+    "15+ hours of beginner-friendly content",
+    "6 structured modules",
+    "Hands-on exercises",
+    "Practice projects",
+    "Lifetime access",
+    "Certificate of completion",
+    "Community support"
+  ],
+  "learningOutcomes": [
+    "Understand JavaScript syntax and concepts",
+    "Work with variables, functions, and objects",
+    "Handle events and DOM manipulation",
+    "Use arrays and loops effectively",
+    "Debug JavaScript code",
+    "Build interactive web pages"
+  ],
+  "requirements": [
+    "Basic computer skills",
+    "Web browser",
+    "Text editor",
+    "No prior programming experience needed"
+  ],
+  "isPublished": true
+}
+
+### Create Node.js course (Development category)
+POST {{baseUrl}}/courses
+Content-Type: {{contentType}}
+Authorization: Bearer {{token}}
+
+{
+  "title": "Advanced Node.js and Express Development",
+  "description": "Master backend development with Node.js and Express. Learn to build scalable APIs, handle authentication, and deploy to production.",
+  "categoryId": "USE_DEVELOPMENT_CATEGORY_ID_FROM_ABOVE",
+  "price": 249.99,
+  "originalPrice": 349.99,
+  "discount": 28,
+  "duration": "30 hours",
+  "level": "advanced",
+  "modules": 10,
+  "thumbnail": "https://images.unsplash.com/photo-1558494949-ef010cbdcc31?w=400&h=300&fit=crop",
+  "heroImage": "https://images.unsplash.com/photo-1558494949-ef010cbdcc31?w=800&h=600&fit=crop",
+  "features": [
+    "30+ hours of advanced content",
+    "10 comprehensive modules",
+    "Real-world API projects",
+    "Authentication & Authorization",
+    "Database integration",
+    "Testing strategies",
+    "Deployment guides",
+    "Performance optimization"
+  ],
+  "learningOutcomes": [
+    "Build RESTful APIs with Express",
+    "Implement JWT authentication",
+    "Work with databases (MongoDB, PostgreSQL)",
+    "Write comprehensive tests",
+    "Deploy to cloud platforms",
+    "Optimize API performance",
+    "Handle file uploads and processing",
+    "Implement real-time features"
+  ],
+  "requirements": [
+    "Solid JavaScript knowledge",
+    "Basic understanding of HTTP",
+    "Command line familiarity",
+    "Database concepts",
+    "Git version control"
+  ],
+  "isPublished": true
+}
+
+### Create Python course (Data Science category)
+POST {{baseUrl}}/courses
+Content-Type: {{contentType}}
+Authorization: Bearer {{token}}
+
+{
+  "title": "Python for Data Science",
+  "description": "Learn Python programming for data analysis, visualization, and machine learning.",
+  "categoryId": "USE_DATA_SCIENCE_CATEGORY_ID_FROM_ABOVE",
+  "price": 179.99,
+  "originalPrice": 249.99,
+  "discount": 28,
+  "duration": "20 hours",
+  "level": "intermediate",
+  "modules": 7,
+  "thumbnail": "https://images.unsplash.com/photo-1526379879527-8559ecfcaec0?w=400&h=300&fit=crop",
+  "heroImage": "https://images.unsplash.com/photo-1526379879527-8559ecfcaec0?w=800&h=600&fit=crop",
+  "features": [
+    "20+ hours content",
+    "Data science projects",
+    "Jupyter notebooks",
+    "Real datasets"
+  ],
+  "learningOutcomes": [
+    "Master Python basics",
+    "Data analysis with Pandas",
+    "Create visualizations",
+    "Build ML models"
+  ],
+  "requirements": [
+    "Basic math knowledge",
+    "Computer with internet"
+  ],
+  "isPublished": true
+}
+
+### Create UI/UX course (Design category)
+POST {{baseUrl}}/courses
+Content-Type: {{contentType}}
+Authorization: Bearer {{token}}
+
+{
+  "title": "UI/UX Design Fundamentals",
+  "description": "Learn the principles of user interface and user experience design.",
+  "categoryId": "USE_DESIGN_CATEGORY_ID_FROM_ABOVE",
   "price": 149.99,
   "originalPrice": 199.99,
-  "discount": 25
+  "discount": 25,
+  "duration": "18 hours",
+  "level": "beginner",
+  "modules": 6,
+  "thumbnail": "https://images.unsplash.com/photo-1561070791-2526d30994b5?w=400&h=300&fit=crop",
+  "heroImage": "https://images.unsplash.com/photo-1561070791-2526d30994b5?w=800&h=600&fit=crop",
+  "features": [
+    "Design software tutorials",
+    "Portfolio projects",
+    "Industry insights",
+    "Design systems"
+  ],
+  "learningOutcomes": [
+    "Understand design principles",
+    "Create user personas",
+    "Design wireframes",
+    "Build prototypes"
+  ],
+  "requirements": [
+    "Creative mindset",
+    "Computer access",
+    "Design software (Figma/Adobe XD)"
+  ],
+  "isPublished": true
 }
 
-### Delete a course (requires authentication as course owner)
-DELETE {{baseUrl}}/courses/COURSE_ID_HERE
-Authorization: Bearer {{token}}
-
-### Enroll in a course (requires authentication as student)
-POST {{baseUrl}}/courses/COURSE_ID_HERE/enroll
-Content-Type: {{contentType}}
-Authorization: Bearer {{token}}
-
-### Get course progress (requires authentication and enrollment)
-GET {{baseUrl}}/courses/COURSE_ID_HERE/progress
-Authorization: Bearer {{token}}
-
-### Update course progress (requires authentication and enrollment)
-PUT {{baseUrl}}/courses/COURSE_ID_HERE/progress
-Content-Type: {{contentType}}
-Authorization: Bearer {{token}}
-
-{
-  "currentLesson": 5,
-  "progress": 75,
-  "completedLessons": ["lesson-1", "lesson-2", "lesson-3", "lesson-4", "lesson-5"]
-}
-
-### Get course categories (public endpoint)
-GET {{baseUrl}}/courses/categories
-Accept: application/json
-
-### Create bulk courses (for testing - requires instructor authentication)
-POST {{baseUrl}}/courses/bulk-create
+### Create Digital Marketing course (Marketing category)
+POST {{baseUrl}}/courses
 Content-Type: {{contentType}}
 Authorization: Bearer {{token}}
 
 {
-  "courses": [
-    {
-      "title": "JavaScript Fundamentals for Beginners",
-      "description": "Learn JavaScript from scratch with practical examples and projects",
-      "categoryId": "DEVELOPMENT_CATEGORY_ID",
-      "price": 99.99,
-      "originalPrice": 149.99,
-      "discount": 33,
-      "duration": "15 hours",
-      "level": "beginner",
-      "modules": 6,
-      "features": ["Lifetime access", "Certificate", "Source code"],
-      "learningOutcomes": ["Master JS fundamentals", "Build projects", "DOM manipulation"],
-      "requirements": ["Basic computer skills", "Text editor"]
-    },
-    {
-      "title": "Python for Data Science Complete Course",
-      "description": "Master Python for data analysis, visualization, and machine learning",
-      "categoryId": "DATA_SCIENCE_CATEGORY_ID",
-      "price": 199.99,
-      "originalPrice": 299.99,
-      "discount": 33,
-      "duration": "30 hours",
-      "level": "intermediate",
-      "modules": 10,
-      "features": ["Jupyter notebooks", "Real datasets", "Career guidance"],
-      "learningOutcomes": ["Data analysis with Pandas", "Machine learning", "Data visualization"],
-      "requirements": ["Basic Python knowledge", "Math fundamentals"]
-    }
-  ]
+  "title": "Digital Marketing Mastery",
+  "description": "Complete guide to digital marketing including SEO, social media, and paid advertising.",
+  "categoryId": "USE_MARKETING_CATEGORY_ID_FROM_ABOVE",
+  "price": 129.99,
+  "originalPrice": 179.99,
+  "discount": 27,
+  "duration": "16 hours",
+  "level": "beginner",
+  "modules": 8,
+  "thumbnail": "https://images.unsplash.com/photo-1460925895917-afdab827c52f?w=400&h=300&fit=crop",
+  "heroImage": "https://images.unsplash.com/photo-1460925895917-afdab827c52f?w=800&h=600&fit=crop",
+  "features": [
+    "Marketing tools",
+    "Case studies",
+    "Campaign templates",
+    "Analytics training"
+  ],
+  "learningOutcomes": [
+    "Create marketing strategies",
+    "Run social media campaigns",
+    "Optimize for SEO",
+    "Analyze marketing data"
+  ],
+  "requirements": [
+    "Basic internet knowledge",
+    "Social media familiarity",
+    "Business interest"
+  ],
+  "isPublished": true
 }
 
-### Rate a course (requires authentication and enrollment)
-POST {{baseUrl}}/courses/COURSE_ID_HERE/rate
-Content-Type: {{contentType}}
-Authorization: Bearer {{token}}
-
-{
-  "rating": 5,
-  "comment": "Excellent course! The instructor explains complex concepts very clearly. Highly recommended for anyone wanting to master React development."
-}
-
-### Get course reviews (public endpoint)
-GET {{baseUrl}}/courses/COURSE_ID_HERE/reviews
+### Debug: Check courses after creation
+GET {{baseUrl}}/courses?limit=20
 Accept: application/json
 
-### Search courses with multiple filters
-GET {{baseUrl}}/courses/search?q=React&category=development&level=intermediate&priceMin=50&priceMax=300
-Accept: application/json
-
-### Get courses by specific instructor (using real instructor from seed.ts)
-GET {{baseUrl}}/courses?instructorId=INSTRUCTOR_ID_HERE
-Accept: application/json
-
-### Get featured/trending courses
-GET {{baseUrl}}/courses?sortBy=rating&sortOrder=desc&limit=10
-Accept: application/json
-
-### Get recently added courses
-GET {{baseUrl}}/courses?sortBy=createdAt&sortOrder=desc&limit=5
-Accept: application/json
-
-### Test Authentication Endpoints
-
-### Login as Student (from seed.ts)
-POST {{baseUrl}}/auth/login
-Content-Type: {{contentType}}
-
-{
-  "username": "jkkimunyi@gmail.com",
-  "password": "Password123",
-  "rememberMe": false
-}
-
-### Login as Instructor (from seed.ts)
-POST {{baseUrl}}/auth/login
-Content-Type: {{contentType}}
-
-{
-  "username": "kimunyijimmy@gmail.com",
-  "password": "Password123",
-  "rememberMe": false
-}
-
-### Login as Another Student (from seed.ts)
-POST {{baseUrl}}/auth/login
-Content-Type: {{contentType}}
-
-{
-  "username": "jimmykimunyi@gmail.com",
-  "password": "Password123",
-  "rememberMe": false
-}
-
-### Get User Profile (requires authentication)
-GET {{baseUrl}}/auth/profile
-Authorization: Bearer {{token}}
-
-### Test Course Filtering by Real Categories from Seed
-
-### Get Development Courses
-GET {{baseUrl}}/courses?category=development
-Accept: application/json
-
-### Get Design Courses
-GET {{baseUrl}}/courses?category=design
-Accept: application/json
-
-### Get Business Courses
-GET {{baseUrl}}/courses?category=business
-Accept: application/json
-
-### Get Data Science Courses
-GET {{baseUrl}}/courses?category=data-science
-Accept: application/json
-
-### Get Marketing Courses
-GET {{baseUrl}}/courses?category=marketing
-Accept: application/json
-
-### Test Course Levels from Seed
-
-### Get Beginner Courses
-GET {{baseUrl}}/courses?level=beginner
-Accept: application/json
-
-### Get Intermediate Courses
-GET {{baseUrl}}/courses?level=intermediate
-Accept: application/json
-
-### Get Advanced Courses
-GET {{baseUrl}}/courses?level=advanced
-Accept: application/json
-
-### Instructions for Usage:
-
-# 1. First, run the seed command to populate your database:
-#    npx prisma db seed
-
-# 2. Start your backend server:
-#    npm run start:dev
-
-# 3. Use one of the login endpoints above to get a JWT token
-
-# 4. Copy the token from the login response and replace "YOUR_JWT_TOKEN_HERE" 
-#    with the actual token at the top of this file
-
-# 5. Replace placeholders like "COURSE_ID_HERE" and "CATEGORY_ID_HERE" with 
-#    actual IDs from your database
-
-# 6. Now you can test all the endpoints!
-
-### Example: How to get actual IDs after seeding
-
-### First, get categories to find category IDs
-GET {{baseUrl}}/courses/categories
-Accept: application/json
-
-### Then get courses to find course IDs
-GET {{baseUrl}}/courses?limit=5
-Accept: application/json
-
-### Real user credentials from seed.ts:
-# Student: jkkimunyi@gmail.com / Password123
-# Instructor: kimunyijimmy@gmail.com / Password123  
-# Student: jimmykimunyi@gmail.com / Password123
+### Instructions:
+# 1. First, run the "Get categories" endpoint above
+# 2. Copy the category IDs from the response
+# 3. Replace the placeholder text in each course creation request:
+#    - "USE_DEVELOPMENT_CATEGORY_ID_FROM_ABOVE" with the actual Development category ID
+#    - "USE_DATA_SCIENCE_CATEGORY_ID_FROM_ABOVE" with the actual Data Science category ID
+#    - "USE_DESIGN_CATEGORY_ID_FROM_ABOVE" with the actual Design category ID
+#    - "USE_MARKETING_CATEGORY_ID_FROM_ABOVE" with the actual Marketing category ID
+# 4. Then run the course creation endpoints
+# 5. Finally, check if courses were created successfully

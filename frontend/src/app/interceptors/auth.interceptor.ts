@@ -1,6 +1,8 @@
-import { HttpInterceptorFn } from '@angular/common/http';
+import { HttpInterceptorFn, HttpErrorResponse } from '@angular/common/http';
 import { inject } from '@angular/core';
 import { Router } from '@angular/router';
+import { catchError } from 'rxjs/operators';
+import { throwError } from 'rxjs';
 import { Auth } from '../services/auth';
 
 export const authInterceptor: HttpInterceptorFn = (req, next) => {
@@ -18,7 +20,16 @@ export const authInterceptor: HttpInterceptorFn = (req, next) => {
       }
     });
     
-    return next(authReq);
+    return next(authReq).pipe(
+      catchError((error: HttpErrorResponse) => {
+        if (error.status === 401) {
+          // Token might be expired, logout user
+          authService.logout();
+          return throwError(() => error);
+        }
+        return throwError(() => error);
+      })
+    );
   }
   
   // If no token, continue with the original request

@@ -30,7 +30,8 @@ export class InstructorDetail implements OnInit {
   async loadInstructor(id: string) {
     this.loading = true;
     try {
-      this.instructor = await this.instructorService.getInstructor(id).toPromise() || null;
+      const response = await this.instructorService.getInstructor(id).toPromise();
+      this.instructor = response?.data || null;
     } catch (error) {
       console.error('Error loading instructor:', error);
       this.instructor = null;

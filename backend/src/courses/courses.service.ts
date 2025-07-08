@@ -20,7 +20,8 @@ export class CoursesService {
           { title: { contains: search, mode: 'insensitive' } },
           { description: { contains: search, mode: 'insensitive' } },
           { instructor: { firstName: { contains: search, mode: 'insensitive' } } },
-          { instructor: { lastName: { contains: search, mode: 'insensitive' } } }
+          { instructor: { lastName: { contains: search, mode: 'insensitive' } } },
+          { category: { name: { contains: search, mode: 'insensitive' } } }
         ]
       }),
       ...(category && { category: { slug: category } }),
@@ -32,7 +33,10 @@ export class CoursesService {
 
     // Handle price range filter when both min and max are provided
     if (priceMin !== undefined && priceMax !== undefined) {
-      where.price = { gte: Number(priceMin), lte: Number(priceMax) };
+      where.price = {
+        gte: Number(priceMin),
+        lte: Number(priceMax)
+      };
     }
 
     const [courses, total] = await Promise.all([
@@ -48,21 +52,47 @@ export class CoursesService {
               firstName: true,
               lastName: true,
               profilePicture: true,
-              rating: true
+              rating: true,
+              bio: true,
+              title: true,
+              experience: true
             }
           },
           category: {
             select: {
+              id: true,
               name: true,
               slug: true,
               icon: true,
               color: true
             }
           },
+          lessons: {
+            select: {
+              id: true,
+              title: true,
+              duration: true,
+              order: true,
+              type: true,
+              isPreview: true
+            },
+            orderBy: { order: 'asc' }
+          },
+          quizzes: {
+            select: {
+              id: true,
+              title: true,
+              duration: true,
+              order: true
+            },
+            orderBy: { order: 'asc' }
+          },
           _count: {
             select: {
               enrollments: true,
-              reviews: true
+              reviews: true,
+              lessons: true,
+              quizzes: true
             }
           },
           reviews: {
@@ -81,6 +111,8 @@ export class CoursesService {
       title: course.title,
       description: course.description,
       image: course.thumbnail || '/assets/images/default-course.png',
+      thumbnail: course.thumbnail,
+      heroImage: course.heroImage,
       price: course.price,
       originalPrice: course.originalPrice,
       discount: course.discount,
@@ -90,10 +122,31 @@ export class CoursesService {
       modules: course.modules || 0,
       level: course.level,
       instructor: `${course.instructor.firstName} ${course.instructor.lastName}`,
+      instructorId: course.instructor.id,
       instructorAvatar: course.instructor.profilePicture || '/assets/images/default-avatar.png',
+      instructorBio: course.instructor.bio,
+      instructorTitle: course.instructor.title,
+      instructorExperience: course.instructor.experience,
       category: course.category?.name || 'General',
+      categoryId: course.category?.id,
+      categorySlug: course.category?.slug,
+      categoryIcon: course.category?.icon,
+      categoryColor: course.category?.color,
       enrollments: course._count.enrollments,
-      createdAt: course.createdAt
+      totalLessons: course._count.lessons,
+      totalQuizzes: course._count.quizzes,
+      totalSections: course.totalSections || Math.ceil(course._count.lessons / 5),
+      features: course.features || [],
+      learningOutcomes: course.learningOutcomes || [],
+      requirements: course.requirements || [],
+      whatYouLearn: course.whatYouLearn || course.learningOutcomes || [],
+      courseContent: course.courseContent || [],
+      courseRequirements: course.courseRequirements || course.requirements || [],
+      targetAudience: course.targetAudience || [],
+      isPublished: course.isPublished,
+      curriculum: this.buildCurriculumStructure(course.lessons, course.quizzes, course.curriculum),
+      createdAt: course.createdAt,
+      updatedAt: course.updatedAt
     }));
 
     return new PaginatedResponse(transformedCourses, total, page, limit);
@@ -941,5 +994,38 @@ export class CoursesService {
     if (diffInSeconds < 2592000) return `${Math.floor(diffInSeconds / 86400)} days ago`;
     if (diffInSeconds < 31536000) return `${Math.floor(diffInSeconds / 2592000)} months ago`;
     return `${Math.floor(diffInSeconds / 31536000)} years ago`;
+  }
+
+  private buildCurriculumStructure(lessons: any[], quizzes: any[], existingCurriculum: any): any {
+    if (existingCurriculum) {
+      return existingCurriculum;
+    }
+
+    // Group lessons and quizzes into sections
+    const sections = [];
+    const itemsPerSection = 5;
+    const allItems = [...lessons, ...quizzes].sort((a, b) => a.order - b.order);
+    
+    for (let i = 0; i < allItems.length; i += itemsPerSection) {
+      const sectionItems = allItems.slice(i, i + itemsPerSection);
+      sections.push({
+        id: `section-${Math.floor(i / itemsPerSection) + 1}`,
+        title: `Section ${Math.floor(i / itemsPerSection) + 1}`,
+        lessons: sectionItems.filter(item => item.type !== undefined), // lessons have type
+        quizzes: sectionItems.filter(item => item.duration !== undefined && item.type === undefined), // quizzes have duration but no type
+        totalDuration: sectionItems.reduce((acc, item) => {
+          const duration = item.duration || '0';
+          const minutes = parseInt(duration.split(' ')[0]) || 0;
+          return acc + minutes;
+        }, 0)
+      });
+    }
+
+    return {
+      sections,
+      totalSections: sections.length,
+      totalLessons: lessons.length,
+      totalQuizzes: quizzes.length
+    };
   }
 }

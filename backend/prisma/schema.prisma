@@ -1,9 +1,6 @@
 // This is your Prisma schema file,
 // learn more about it in the docs: https://pris.ly/d/prisma-schema
 
-// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
-// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
-
 generator client {
   provider = "prisma-client-js"
 }
@@ -17,6 +14,13 @@ enum Role {
   ADMIN
   STUDENT
   INSTRUCTOR
+}
+
+enum PaymentStatus {
+  PENDING
+  COMPLETED
+  FAILED
+  CANCELLED
 }
 
 model User {
@@ -48,12 +52,13 @@ model User {
   updatedAt         DateTime     @updatedAt
 
   // Relations
-  enrollments       Enrollment[]  @relation("StudentEnrollments")
-  coursesCreated    Course[]     @relation("CourseInstructor")
+  enrollments       Enrollment[]   @relation("StudentEnrollments")
+  coursesCreated    Course[]      @relation("CourseInstructor")
   assignments       Assignment[]
   submissions       Submission[]
   reviews           Review[]
   payments          Payment[]
+  quizAttempts      QuizAttempt[] @relation("StudentQuizAttempts")
   
   @@map("users")
 }
@@ -89,12 +94,32 @@ model Course {
   features         String[]
   learningOutcomes String[]
   requirements     String[]
+  
+  // Enhanced curriculum structure
+  curriculum       Json?    // Store full curriculum as JSON with sections, lessons, and quizzes
+  totalSections    Int?     @default(0)
+  totalLectures    Int?     @default(0)
+  totalQuizzes     Int?     @default(0)
+  totalDuration    String?
+  
+  // Course content
+  whatYouLearn     String[] // Learning outcomes
+  courseContent    String[] // Detailed content breakdown
+  courseRequirements String[] // Prerequisites
+  targetAudience   String[] // Who this course is for
+  
+  // Instructor info
+  instructorBio    String?
+  instructorExperience String?
+  instructorRating Float?   @default(0)
+  
   isPublished      Boolean  @default(false)
   categoryId       String?
   category         Category? @relation(fields: [categoryId], references: [id])
   instructorId     String
   instructor       User     @relation("CourseInstructor", fields: [instructorId], references: [id])
   lessons          Lesson[]
+  quizzes          Quiz[]
   enrollments      Enrollment[]
   reviews          Review[]
   payments         Payment[]
@@ -132,7 +157,7 @@ model Lesson {
   isPreview   Boolean  @default(false)
   
   courseId    String
-  course      Course @relation(fields: [courseId], references: [id], onDelete: Cascade)
+  course      Course   @relation(fields: [courseId], references: [id])
   
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
@@ -147,8 +172,9 @@ model Assignment {
   dueDate     DateTime
   maxScore    Int      @default(100)
   
-  authorId    String
-  author      User     @relation(fields: [authorId], references: [id])
+  courseId    String
+  createdBy   String
+  creator     User     @relation(fields: [createdBy], references: [id])
   
   submissions Submission[]
   
@@ -161,56 +187,100 @@ model Assignment {
 model Submission {
   id           String   @id @default(cuid())
   content      String
-  submittedAt  DateTime @default(now())
   score        Int?
   feedback     String?
+  submittedAt  DateTime @default(now())
+  gradedAt     DateTime?
   
-  studentId    String
-  student      User     @relation(fields: [studentId], references: [id])
   assignmentId String
   assignment   Assignment @relation(fields: [assignmentId], references: [id])
+  studentId    String
+  student      User     @relation(fields: [studentId], references: [id])
   
   createdAt    DateTime @default(now())
   updatedAt    DateTime @updatedAt
 
-  @@unique([studentId, assignmentId])
   @@map("submissions")
 }
 
 model Review {
   id        String   @id @default(cuid())
-  userId    String
-  user      User     @relation(fields: [userId], references: [id])
+  rating    Int      // 1-5 stars
+  comment   String?
+  
   courseId  String
   course    Course   @relation(fields: [courseId], references: [id])
-  rating    Int      // Remove the @constraint since it's not supported
-  comment   String?
+  userId    String
+  user      User     @relation(fields: [userId], references: [id])
+  
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  @@unique([userId, courseId])
+  @@unique([courseId, userId])
   @@map("reviews")
 }
 
 model Payment {
-  id                   String    @id @default(cuid())
-  checkoutRequestId    String?   @unique
-  merchantRequestId    String?
-  phoneNumber          String
-  amount               Float
-  accountReference     String?
-  status               String    @default("PENDING") // PENDING, COMPLETED, FAILED, CANCELLED
-  mpesaReceiptNumber   String?
-  transactionDate      DateTime?
-  resultCode           String?   // Add this field
-  resultDescription    String?   // Add this field too for better error handling
-  courseId             String?
-  course               Course?   @relation(fields: [courseId], references: [id])
-  userId               String?
-  user                 User?     @relation(fields: [userId], references: [id])
-  createdAt            DateTime  @default(now())
-  updatedAt            DateTime  @updatedAt
+  id                    String        @id @default(cuid())
+  amount                Float
+  phoneNumber           String
+  merchantRequestId     String
+  checkoutRequestId     String        @unique
+  status                PaymentStatus @default(PENDING)
+  mpesaReceiptNumber    String?
+  transactionDate       DateTime?
+  resultDescription     String?
+  
+  // Relations
+  courseId             String
+  course               Course        @relation(fields: [courseId], references: [id])
+  userId               String
+  user                 User          @relation(fields: [userId], references: [id])
+  
+  createdAt             DateTime      @default(now())
+  updatedAt             DateTime      @updatedAt
 
   @@map("payments")
+}
+
+model Quiz {
+  id          String   @id @default(cuid())
+  title       String
+  description String?
+  duration    Int?     // in minutes
+  order       Int
+  isPublished Boolean  @default(false)
+  
+  courseId    String
+  course      Course   @relation(fields: [courseId], references: [id], onDelete: Cascade)
+  
+  // Store questions with correct answers - only instructor can see correct answers
+  questions   Json     // Store questions as JSON with correct answers
+  
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@map("quizzes")
+}
+
+model QuizAttempt {
+  id          String   @id @default(cuid())
+  studentId   String
+  student     User     @relation("StudentQuizAttempts", fields: [studentId], references: [id])
+  quizId      String
+  courseId    String
+  
+  answers     Json     // Store student's answers
+  score       Float    @default(0)
+  maxScore    Float    @default(0)
+  percentage  Float    @default(0)
+  timeSpent   Int?     // in seconds
+  isCompleted Boolean  @default(false)
+  
+  startedAt   DateTime @default(now())
+  completedAt DateTime?
+  
+  @@unique([studentId, quizId])
+  @@map("quiz_attempts")
 }
 

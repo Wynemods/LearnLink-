@@ -54,6 +54,45 @@ export interface TopStudent {
   progressChange: number;
 }
 
+export interface CourseFormData {
+  title: string;
+  description: string;
+  price: number;
+  originalPrice?: number;
+  discount?: number;
+  duration: string;
+  level: 'beginner' | 'intermediate' | 'advanced';
+  categoryId: string;
+  thumbnail?: string;
+  heroImage?: string;
+  features: string[];
+  learningOutcomes: string[];
+  requirements: string[];
+  whatYouLearn: string[];
+  courseContent: string[];
+  courseRequirements: string[];
+  targetAudience: string[];
+  instructorBio?: string;
+  instructorExperience?: string;
+  isPublished: boolean;
+  modules?: number;
+  curriculum?: {
+    sections: any[];
+  };
+  totalSections?: number;
+  totalLectures?: number;
+  totalDuration?: string;
+}
+
+export interface Category {
+  id: string;
+  name: string;
+  slug: string;
+  description?: string;
+  icon?: string;
+  color?: string;
+}
+
 @Component({
   selector: 'app-instructor-dashboard',
   standalone: true,
@@ -120,6 +159,38 @@ export class InstructorDashboard implements OnInit, OnDestroy {
     }
   ];
 
+  // Course creation form
+  showCourseForm = false;
+  categories: Category[] = [];
+  courseForm: CourseFormData = {
+    title: '',
+    description: '',
+    price: 0,
+    originalPrice: 0,
+    discount: 0,
+    duration: '',
+    level: 'beginner',
+    categoryId: '',
+    thumbnail: '',
+    heroImage: '',
+    features: [],
+    learningOutcomes: [],
+    requirements: [],
+    whatYouLearn: [],
+    courseContent: [],
+    courseRequirements: [],
+    targetAudience: [],
+    instructorBio: '',
+    instructorExperience: '',
+    isPublished: false
+  };
+  
+  // Form helpers
+  newFeature = '';
+  newLearningOutcome = '';
+  newRequirement = '';
+  newTargetAudience = '';
+  
   constructor(
     private router: Router,
     private messagingService: MessagingService,
@@ -130,6 +201,7 @@ export class InstructorDashboard implements OnInit, OnDestroy {
   ngOnInit(): void {
     this.initializeMessaging();
     this.loadInstructorData();
+    this.loadCategories();
   }
 
   ngOnDestroy(): void {
@@ -149,19 +221,19 @@ export class InstructorDashboard implements OnInit, OnDestroy {
     try {
       // Load instructor courses
       const coursesResponse = await this.courseService.getInstructorCourses().toPromise();
-      this.myCourses = coursesResponse || [];
+      this.myCourses = coursesResponse?.data || [];
 
       // Load instructor students
       const studentsResponse = await this.courseService.getInstructorStudents().toPromise();
-      this.myStudents = studentsResponse || [];
+      this.myStudents = studentsResponse?.data || [];
 
       // Load analytics
       const analyticsResponse = await this.courseService.getInstructorAnalytics().toPromise();
-      this.analytics = analyticsResponse || {};
+      this.analytics = analyticsResponse?.data || {};
 
       // Update overview stats with real data
       this.overviewStats = {
-        totalCourses: this.analytics.totalCourses || 0,
+        totalCourses: this.analytics.totalCourses || this.myCourses.length,
         totalStudents: this.analytics.totalStudents || 0,
         completedCourses: this.myCourses.filter(c => c.isPublished).length,
         averageRating: this.analytics.averageRating || 0
@@ -173,49 +245,180 @@ export class InstructorDashboard implements OnInit, OnDestroy {
     }
   }
 
+  async loadCategories() {
+    try {
+      const response = await this.courseService.getCategories().toPromise();
+      this.categories = response?.data || [];
+    } catch (error) {
+      console.error('Error loading categories:', error);
+    }
+  }
+
   createNewCourse() {
-    this.router.navigate(['/courses/create']);
+    this.showCourseForm = true;
+    this.resetCourseForm();
   }
 
-  editCourse(courseId: string) {
-    this.router.navigate(['/courses', courseId, 'edit']);
+  resetCourseForm() {
+    this.courseForm = {
+      title: '',
+      description: '',
+      price: 0,
+      originalPrice: 0,
+      discount: 0,
+      duration: '',
+      level: 'beginner',
+      categoryId: '',
+      thumbnail: '',
+      heroImage: '',
+      features: [],
+      learningOutcomes: [],
+      requirements: [],
+      whatYouLearn: [],
+      courseContent: [],
+      courseRequirements: [],
+      targetAudience: [],
+      instructorBio: '',
+      instructorExperience: '',
+      isPublished: false
+    };
+    this.newFeature = '';
+    this.newLearningOutcome = '';
+    this.newRequirement = '';
+    this.newTargetAudience = '';
   }
 
-  deleteCourse(courseId: string) {
-    if (confirm('Are you sure you want to delete this course?')) {
-      this.courseService.deleteCourse(courseId).subscribe({
-        next: () => {
-          this.loadInstructorData();
-        },
-        error: (error) => {
-          console.error('Error deleting course:', error);
-        }
-      });
+  closeCourseForm() {
+    this.showCourseForm = false;
+    this.resetCourseForm();
+  }
+
+  // Array management helpers
+  addFeature() {
+    if (this.newFeature.trim()) {
+      this.courseForm.features.push(this.newFeature.trim());
+      this.newFeature = '';
     }
   }
 
-  viewCourseDetails(courseId: string) {
-    this.router.navigate(['/courses', courseId]);
+  removeFeature(index: number) {
+    this.courseForm.features.splice(index, 1);
   }
 
-  viewStudentProfile(studentId: string) {
-    console.log('View student profile:', studentId);
-  }
-
-  toggleMobileMenu() {
-    this.isMobileMenuOpen = !this.isMobileMenuOpen;
-  }
-
-  setCurrentView(view: 'overview' | 'students' | 'courses' | 'messages' | 'live-sessions') {
-    this.currentView = view;
-    this.isMobileMenuOpen = false;
-  }
-
-  logout() {
-    if (confirm('Are you sure you want to logout?')) {
-      this.authService.logout();
-      this.router.navigate(['/auth/login']);
+  addLearningOutcome() {
+    if (this.newLearningOutcome.trim()) {
+      this.courseForm.learningOutcomes.push(this.newLearningOutcome.trim());
+      this.courseForm.whatYouLearn.push(this.newLearningOutcome.trim());
+      this.newLearningOutcome = '';
     }
+  }
+
+  removeLearningOutcome(index: number) {
+    this.courseForm.learningOutcomes.splice(index, 1);
+    this.courseForm.whatYouLearn.splice(index, 1);
+  }
+
+  addRequirement() {
+    if (this.newRequirement.trim()) {
+      this.courseForm.requirements.push(this.newRequirement.trim());
+      this.courseForm.courseRequirements.push(this.newRequirement.trim());
+      this.newRequirement = '';
+    }
+  }
+
+  removeRequirement(index: number) {
+    this.courseForm.requirements.splice(index, 1);
+    this.courseForm.courseRequirements.splice(index, 1);
+  }
+
+  addTargetAudience() {
+    if (this.newTargetAudience.trim()) {
+      this.courseForm.targetAudience.push(this.newTargetAudience.trim());
+      this.newTargetAudience = '';
+    }
+  }
+
+  removeTargetAudience(index: number) {
+    this.courseForm.targetAudience.splice(index, 1);
+  }
+
+  async submitCourse() {
+    if (!this.validateCourseForm()) {
+      console.log('Form validation failed');
+      return;
+    }
+
+    try {
+      const courseData = {
+        title: this.courseForm.title.trim(),
+        description: this.courseForm.description.trim(),
+        categoryId: this.courseForm.categoryId,
+        price: Number(this.courseForm.price),
+        originalPrice: Number(this.courseForm.originalPrice) || undefined,
+        discount: Number(this.courseForm.discount) || undefined,
+        duration: this.courseForm.duration.trim(),
+        level: this.courseForm.level,
+        modules: Number(this.courseForm.modules) || 1,
+        thumbnail: this.courseForm.thumbnail || '',
+        heroImage: this.courseForm.heroImage || '',
+        features: this.courseForm.features.filter((f: string) => f.trim() !== ''),
+        learningOutcomes: this.courseForm.learningOutcomes.filter((l: string) => l.trim() !== ''),
+        requirements: this.courseForm.requirements.filter((r: string) => r.trim() !== ''),
+        isPublished: this.courseForm.isPublished
+      };
+
+      console.log('Submitting course data:', courseData);
+
+      const response = await this.courseService.createCourse(courseData).toPromise();
+      console.log('Course created successfully:', response);
+
+      // Reset form and close modal
+      this.resetCourseForm();
+      this.closeCourseForm();
+      
+      // Reload instructor data
+      await this.loadInstructorData();
+      
+    } catch (error) {
+      console.error('Error creating course:', error);
+      // Handle error appropriately - show user message
+    }
+  }
+
+  validateCourseForm(): boolean {
+    const form = this.courseForm;
+    
+    if (!form.title || form.title.trim() === '') {
+      console.log('Title is required');
+      return false;
+    }
+    
+    if (!form.description || form.description.trim() === '') {
+      console.log('Description is required');
+      return false;
+    }
+    
+    if (!form.categoryId) {
+      console.log('Category is required');
+      return false;
+    }
+    
+    if (!form.price || form.price < 0) {
+      console.log('Valid price is required');
+      return false;
+    }
+    
+    if (!form.duration || form.duration.trim() === '') {
+      console.log('Duration is required');
+      return false;
+    }
+    
+    if (!form.level) {
+      console.log('Level is required');
+      return false;
+    }
+    
+    return true;
   }
 
   // Additional methods for messaging and file handling
@@ -260,5 +463,64 @@ export class InstructorDashboard implements OnInit, OnDestroy {
         p.name.toLowerCase().includes(this.searchTerm.toLowerCase())
       )
     );
+  }
+
+  toggleMobileMenu() {
+    this.isMobileMenuOpen = !this.isMobileMenuOpen;
+  }
+
+  setCurrentView(view: 'overview' | 'students' | 'courses' | 'messages' | 'live-sessions') {
+    this.currentView = view;
+    this.isMobileMenuOpen = false;
+  }
+
+  logout() {
+    if (confirm('Are you sure you want to logout?')) {
+      this.authService.logout();
+      this.router.navigate(['/auth/login']);
+    }
+  }
+
+  editCourse(courseId: string) {
+    this.router.navigate(['/courses/edit', courseId]);
+  }
+
+  viewCourseDetails(courseId: string) {
+    this.router.navigate(['/courses', courseId]);
+  }
+
+  async deleteCourse(courseId: string) {
+    if (confirm('Are you sure you want to delete this course? This action cannot be undone.')) {
+      try {
+        await this.courseService.deleteCourse(courseId).toPromise();
+        alert('Course deleted successfully!');
+        this.loadInstructorData(); // Refresh the course list
+      } catch (error) {
+        console.error('Error deleting course:', error);
+        alert('Error deleting course. Please try again.');
+      }
+    }
+  }
+
+  async publishCourse(courseId: string) {
+    try {
+      await this.courseService.publishCourse(courseId).toPromise();
+      alert('Course published successfully!');
+      this.loadInstructorData(); // Refresh the course list
+    } catch (error) {
+      console.error('Error publishing course:', error);
+      alert('Error publishing course. Please try again.');
+    }
+  }
+
+  async unpublishCourse(courseId: string) {
+    try {
+      await this.courseService.unpublishCourse(courseId).toPromise();
+      alert('Course unpublished successfully!');
+      this.loadInstructorData(); // Refresh the course list
+    } catch (error) {
+      console.error('Error unpublishing course:', error);
+      alert('Error unpublishing course. Please try again.');
+    }
   }
 }

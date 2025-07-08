@@ -3,12 +3,35 @@ import { ConfigService } from '@nestjs/config';
 import { PrismaService } from '../prisma/prisma.service';
 import axios from 'axios';
 import * as moment from 'moment';
-import * as fs from 'fs';
 
 interface STKPushResponse {
   success: boolean;
   message: string;
-  data?: any;
+  data?: {
+    requestId: string;
+    merchantRequestId: string;
+  };
+}
+
+interface STKPushRequest {
+  phoneNumber: string;
+  amount: number;
+  accountNumber: string;
+}
+
+interface CallbackMetadata {
+  Item: Array<{
+    Name: string;
+    Value: string | number;
+  }>;
+}
+
+interface STKCallback {
+  MerchantRequestID: string;
+  CheckoutRequestID: string;
+  ResultCode: number;
+  ResultDesc: string;
+  CallbackMetadata?: CallbackMetadata;
 }
 
 @Injectable()
@@ -18,6 +41,7 @@ export class MpesaService {
   private readonly BUSINESS_SHORT_CODE = '174379';
   private readonly PASSKEY = 'bfb279f9aa9bdbcf158e97dd71a467cd2e0c893059b10f78e6b72ada1ed2c919';
   private readonly CALLBACK_URL = 'https://daraja-node.vercel.app/api/callback';
+  private readonly BASE_URL = 'https://sandbox.safaricom.co.ke';
 
   constructor(
     private configService: ConfigService,
@@ -25,7 +49,7 @@ export class MpesaService {
   ) {}
 
   async getAccessToken(): Promise<string> {
-    const url = 'https://api.safaricom.co.ke/oauth/v1/generate?grant_type=client_credentials';
+    const url = `${this.BASE_URL}/oauth/v1/generate?grant_type=client_credentials`;
     const auth = 'Basic ' + Buffer.from(this.CONSUMER_KEY + ':' + this.CONSUMER_SECRET).toString('base64');
 
     try {
@@ -33,166 +57,275 @@ export class MpesaService {
         headers: {
           Authorization: auth,
         },
+        timeout: 10000,
       });
       return response.data.access_token;
     } catch (error) {
+      console.error('Access token error:', error.response?.data || error.message);
       throw new HttpException('Failed to get access token', HttpStatus.INTERNAL_SERVER_ERROR);
     }
   }
 
   async initiateSTKPush(phoneNumber: string, amount: number, accountNumber: string): Promise<STKPushResponse> {
-    // Validate phone number
-    if (!phoneNumber) {
-      throw new HttpException('Phone number is required', HttpStatus.BAD_REQUEST);
+    // Validate inputs
+    if (!phoneNumber || !amount || !accountNumber) {
+      throw new HttpException('Missing required parameters', HttpStatus.BAD_REQUEST);
     }
 
     // Format phone number
-    let formattedPhone = phoneNumber;
-    if (phoneNumber.startsWith('+254')) {
-      formattedPhone = phoneNumber.slice(1);
-    } else if (phoneNumber.startsWith('0')) {
-      formattedPhone = '254' + phoneNumber.slice(1);
-    } else if (!phoneNumber.startsWith('254')) {
-      formattedPhone = '254' + phoneNumber;
-    }
+    let formattedPhone = this.formatPhoneNumber(phoneNumber);
 
     // Validate formatted phone number
-    if (!/^254\d{9}$/.test(formattedPhone)) {
+    if (!this.isValidKenyanPhoneNumber(formattedPhone)) {
       throw new HttpException(
-        'Invalid phone number format. Must be Kenyan phone number',
+        'Invalid phone number format. Must be a valid Kenyan phone number',
         HttpStatus.BAD_REQUEST
       );
     }
 
     try {
       const accessToken = await this.getAccessToken();
-      const url = 'https://sandbox.safaricom.co.ke/mpesa/stkpush/v1/processrequest';
+      const url = `${this.BASE_URL}/mpesa/stkpush/v1/processrequest`;
       const timestamp = moment().format('YYYYMMDDHHmmss');
       const password = Buffer.from(
         this.BUSINESS_SHORT_CODE + this.PASSKEY + timestamp
       ).toString('base64');
 
-      const requestData = {
+      const requestBody = {
         BusinessShortCode: this.BUSINESS_SHORT_CODE,
         Password: password,
         Timestamp: timestamp,
         TransactionType: 'CustomerPayBillOnline',
-        Amount: 1, // Fixed amount as requested
+        Amount: amount,
         PartyA: formattedPhone,
         PartyB: this.BUSINESS_SHORT_CODE,
         PhoneNumber: formattedPhone,
         CallBackURL: this.CALLBACK_URL,
         AccountReference: accountNumber,
-        TransactionDesc: 'LearnLink Course Payment',
+        TransactionDesc: 'Course Payment',
       };
 
-      const response = await axios.post(url, requestData, {
+      const response = await axios.post(url, requestBody, {
         headers: {
           Authorization: `Bearer ${accessToken}`,
           'Content-Type': 'application/json',
         },
+        timeout: 30000,
       });
 
-      // Store payment request in database
-      await this.prisma.payment.create({
-        data: {
-          checkoutRequestId: response.data.CheckoutRequestID,
-          merchantRequestId: response.data.MerchantRequestID,
-          phoneNumber: formattedPhone,
-          amount: 1,
-          accountReference: accountNumber,
-          status: 'PENDING',
-        },
-      });
+      console.log('STK Push Response:', response.data);
 
-      return {
-        success: true,
-        message: 'Request successful. Please enter M-PESA PIN to complete transaction',
-        data: {
-          requestId: response.data.CheckoutRequestID,
-          merchantRequestId: response.data.MerchantRequestID,
-        },
-      };
+      if (response.data.ResponseCode === '0') {
+        // Create payment record
+        const payment = await this.prisma.payment.create({
+          data: {
+            amount: amount,
+            currency: 'KES',
+            status: 'PENDING',
+            paymentMethod: 'MPESA',
+            phoneNumber: formattedPhone,
+            merchantRequestId: response.data.MerchantRequestID,
+            checkoutRequestId: response.data.CheckoutRequestID,
+            accountReference: accountNumber,
+            description: 'Course Payment', // This should now work
+          },
+        });
+
+        return {
+          success: true,
+          message: 'STK push initiated successfully',
+          data: {
+            requestId: response.data.CheckoutRequestID,
+            merchantRequestId: response.data.MerchantRequestID,
+          },
+        };
+      } else {
+        throw new HttpException(
+          response.data.ResponseDescription || 'STK push failed',
+          HttpStatus.BAD_REQUEST
+        );
+      }
     } catch (error) {
       console.error('STK Push Error:', error.response?.data || error.message);
+      
+      if (error.response?.data?.ResponseDescription) {
+        throw new HttpException(
+          error.response.data.ResponseDescription,
+          HttpStatus.BAD_REQUEST
+        );
+      }
+      
       throw new HttpException(
-        'Payment initiation failed',
+        'Payment initiation failed. Please try again.',
         HttpStatus.INTERNAL_SERVER_ERROR
       );
     }
   }
 
   async handleCallback(callbackData: any): Promise<void> {
+    console.log('M-Pesa Callback Received:', JSON.stringify(callbackData, null, 2));
+
     try {
-      console.log('STK PUSH CALLBACK');
-      const stkCallback = callbackData.Body?.stkCallback;
-      
-      if (!stkCallback) {
-        console.error('Invalid callback data structure');
-        return;
-      }
+      const { Body } = callbackData;
+      const { stkCallback } = Body;
+      const { MerchantRequestID, CheckoutRequestID, ResultCode, ResultDesc, CallbackMetadata } = stkCallback;
 
-      const merchantRequestID = stkCallback.MerchantRequestID;
-      const checkoutRequestID = stkCallback.CheckoutRequestID;
-      const resultCode = stkCallback.ResultCode;
-      const resultDesc = stkCallback.ResultDesc;
+      if (ResultCode === 0) {
+        // Payment successful
+        let mpesaReceiptNumber = '';
+        let transactionId = '';
+        let phoneNumber = '';
 
-      console.log('MerchantRequestID:', merchantRequestID);
-      console.log('CheckoutRequestID:', checkoutRequestID);
-      console.log('ResultCode:', resultCode);
-      console.log('ResultDesc:', resultDesc);
+        if (CallbackMetadata && CallbackMetadata.Item) {
+          CallbackMetadata.Item.forEach((item: any) => {
+            switch (item.Name) {
+              case 'MpesaReceiptNumber':
+                mpesaReceiptNumber = item.Value;
+                break;
+              case 'TransactionId':
+                transactionId = item.Value;
+                break;
+              case 'PhoneNumber':
+                phoneNumber = item.Value;
+                break;
+            }
+          });
+        }
 
-      // Update payment status in database
-      const payment = await this.prisma.payment.findFirst({
-        where: { checkoutRequestId: checkoutRequestID },
-      });
+        // Find payment by checkoutRequestId first
+        const existingPayment = await this.prisma.payment.findUnique({
+          where: { checkoutRequestId: CheckoutRequestID }
+        });
 
-      if (payment) {
-        if (resultCode === 0) {
-          // Payment successful
-          const callbackMetadata = stkCallback.CallbackMetadata;
-          const amount = callbackMetadata.Item[0].Value;
-          const mpesaReceiptNumber = callbackMetadata.Item[1].Value;
-          const transactionDate = callbackMetadata.Item[3].Value;
-          const phoneNumber = callbackMetadata.Item[4].Value;
-
+        if (existingPayment) {
           await this.prisma.payment.update({
-            where: { id: payment.id },
+            where: { checkoutRequestId: CheckoutRequestID },
             data: {
               status: 'COMPLETED',
               mpesaReceiptNumber,
-              transactionDate: new Date(transactionDate),
-              resultCode,
-              resultDescription: resultDesc,
+              transactionId,
+              resultCode: ResultCode,
+              resultDescription: ResultDesc,
             },
           });
-
-          console.log('Payment completed successfully');
-          console.log('Amount:', amount);
-          console.log('MpesaReceiptNumber:', mpesaReceiptNumber);
-          console.log('TransactionDate:', transactionDate);
-          console.log('PhoneNumber:', phoneNumber);
         } else {
-          // Payment failed
+          console.warn(`Payment not found for checkoutRequestId: ${CheckoutRequestID}`);
+        }
+
+        console.log('Payment completed successfully');
+      } else {
+        // Payment failed
+        const existingPayment = await this.prisma.payment.findUnique({
+          where: { checkoutRequestId: CheckoutRequestID }
+        });
+
+        if (existingPayment) {
           await this.prisma.payment.update({
-            where: { id: payment.id },
+            where: { checkoutRequestId: CheckoutRequestID },
             data: {
               status: 'FAILED',
-              resultCode,
-              resultDescription: resultDesc,
+              resultCode: ResultCode,
+              resultDescription: ResultDesc,
             },
           });
-
-          console.log('Payment failed:', resultDesc);
+        } else {
+          console.warn(`Payment not found for checkoutRequestId: ${CheckoutRequestID}`);
         }
+
+        console.log('Payment failed:', ResultDesc);
+      }
+    } catch (error) {
+      console.error('Error processing M-Pesa callback:', error);
+    }
+  }
+
+  async getPaymentStatus(checkoutRequestId: string): Promise<any> {
+    try {
+      const payment = await this.prisma.payment.findUnique({
+        where: { checkoutRequestId },
+        include: {
+          user: {
+            select: {
+              id: true,
+              firstName: true,
+              lastName: true,
+              email: true
+            }
+          },
+          course: {
+            select: {
+              id: true,
+              title: true,
+              price: true,
+              thumbnail: true
+            }
+          }
+        }
+      });
+
+      if (!payment) {
+        throw new HttpException('Payment not found', HttpStatus.NOT_FOUND);
       }
 
-      // Store callback data for debugging
-      const callbackJson = JSON.stringify(callbackData, null, 2);
-      fs.writeFileSync('stkcallback.json', callbackJson);
-      console.log('STK PUSH CALLBACK STORED SUCCESSFULLY');
+      return {
+        data: payment,
+        success: true,
+        message: 'Payment status retrieved successfully'
+      };
     } catch (error) {
-      console.error('Error processing callback:', error);
+      console.error('Error getting payment status:', error);
+      throw new HttpException(
+        'Failed to get payment status',
+        HttpStatus.INTERNAL_SERVER_ERROR
+      );
+    }
+  }
+
+  private formatPhoneNumber(phoneNumber: string): string {
+    // Remove any non-digit characters
+    let cleaned = phoneNumber.replace(/\D/g, '');
+    
+    // Handle different formats
+    if (cleaned.startsWith('254')) {
+      return cleaned;
+    } else if (cleaned.startsWith('0')) {
+      return '254' + cleaned.slice(1);
+    } else if (cleaned.length === 9) {
+      return '254' + cleaned;
+    } else {
+      return cleaned;
+    }
+  }
+
+  private isValidKenyanPhoneNumber(phoneNumber: string): boolean {
+    return /^254[0-9]{9}$/.test(phoneNumber);
+  }
+
+  // Register URLs for C2B (Customer to Business) payments
+  async registerUrls(): Promise<any> {
+    try {
+      const accessToken = await this.getAccessToken();
+      const url = `${this.BASE_URL}/mpesa/c2b/v1/registerurl`;
+      
+      const requestBody = {
+        ShortCode: this.BUSINESS_SHORT_CODE,
+        ResponseType: 'Completed',
+        ConfirmationURL: 'https://daraja-node.vercel.app/api/confirmation',
+        ValidationURL: 'https://daraja-node.vercel.app/api/validation',
+      };
+
+      const response = await axios.post(url, requestBody, {
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+        },
+        timeout: 10000,
+      });
+
+      console.log('URL Registration Success:', response.data);
+      return response.data;
+    } catch (error) {
+      console.error('URL Registration Error:', error.response?.data || error.message);
+      throw new HttpException('Failed to register URLs', HttpStatus.INTERNAL_SERVER_ERROR);
     }
   }
 }
