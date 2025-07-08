@@ -38,7 +38,7 @@ Authorization: Bearer {{token}}
   "duration": "25 hours",
   "level": "intermediate",
   "modules": 8,
-  "thumbnail": "https://images.unsplash.com/photo-1633356122544-f134324a6cee?w=400&h=300&fit=crop",
+  "thumbnail": "  ",
   "heroImage": "https://images.unsplash.com/photo-1633356122544-f134324a6cee?w=800&h=600&fit=crop",
   "features": [
     "25+ hours of video content",
