@@ -12,7 +12,7 @@ Learnlink is a comprehensive English learning platform built with modern web tec
 
 ## 📁 Project Structure
 ```
-totc-english-platform/
+LearnLink-english-platform/
 │
 ├── frontend/         # Angular frontend application
 │   ├── src/
@@ -84,10 +84,10 @@ cd backend
 npm install
 
 # Build backend image
-docker build -t totc-backend .
+docker build -t LearnLink-backend .
 
 # Run backend container
-docker run -p 3000:3000 totc-backend
+docker run -p 3000:3000 LearnLink-backend
 ```
 API will be available at: [http://localhost:3000](http://localhost:3000)
 
@@ -100,17 +100,17 @@ cd frontend
 npm install
 
 # Build frontend image
-docker build -t totc-frontend .
+docker build -t LearnLink-frontend .
 
 # Run frontend container
-docker run -p 4200:4200 totc-frontend
+docker run -p 4200:4200 LearnLink-frontend
 ```
 Frontend will be available at: [http://localhost:4200](http://localhost:4200)
 
 ### 🧩 Run Full Stack with Docker Compose
 ```bash
 # Navigate to project root
-cd totc-english-platform
+cd LearnLink-english-platform
 
 # Start all services
 docker-compose up --build
@@ -134,7 +134,7 @@ docker-compose down
 ### 📌 1. Clone the Repository
 ```bash
 git clone <REPO_URL>
-cd totc-english-platform
+cd LearnLink-english-platform
 ```
 
 ### 📌 2. Checkout Your Branch
@@ -278,7 +278,7 @@ nest generate service courses
 ### Required Environment Variables
 ```bash
 # Backend (.env)
-DATABASE_URL=postgresql://user:password@localhost:5432/totc_db
+DATABASE_URL=postgresql://user:password@localhost:5432/LearnLink_db
 JWT_SECRET=your-super-secret-key
 EMAIL_HOST=smtp.gmail.com
 EMAIL_PORT=587

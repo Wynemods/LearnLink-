@@ -27,13 +27,13 @@ export interface PaymentResponse {
 export class PaymentService {
   private readonly API_URL = 'http://localhost:3000/api';
 
-  constructor(private http: HttpClient) {}
+  constructor(private http: HttpClient) { }
 
   initiateMpesaPayment(paymentData: MpesaPaymentRequest): Observable<PaymentResponse> {
     // Check if user is authenticated
     const token = localStorage.getItem('token');
     const isAuthenticated = localStorage.getItem('isAuthenticated') === 'true';
-    
+
     if (!token || !isAuthenticated) {
       return throwError(() => new Error('User must be logged in to make payments'));
     }
@@ -44,7 +44,7 @@ export class PaymentService {
     // For testing - simulate successful payment for logged-in users
     console.log('Processing test payment for course:', paymentData.courseId);
     console.log('User authenticated:', !!token);
-    
+
     return of({
       success: true,
       message: 'Payment initiated successfully. Please check your phone for M-Pesa prompt.',
@@ -60,7 +60,7 @@ export class PaymentService {
   checkPaymentStatus(checkoutRequestId: string): Observable<any> {
     const token = localStorage.getItem('token');
     const isAuthenticated = localStorage.getItem('isAuthenticated') === 'true';
-    
+
     if (!token || !isAuthenticated) {
       return throwError(() => new Error('User must be logged in'));
     }
@@ -72,7 +72,6 @@ export class PaymentService {
       data: {
         status: 'COMPLETED',
         amount: 0,
-        currency: 'KES',
         completedAt: new Date(),
         enrolled: true
       }
@@ -91,14 +90,14 @@ export class PaymentService {
   buyCourse(courseId: string, phoneNumber: string, amount: number): Observable<PaymentResponse> {
     const token = localStorage.getItem('token');
     const isAuthenticated = localStorage.getItem('isAuthenticated') === 'true';
-    
+
     if (!token || !isAuthenticated) {
       return throwError(() => new Error('Please log in to purchase courses'));
     }
 
     console.log('Processing payment for authenticated user');
     console.log('Course ID:', courseId, 'Amount:', amount);
-    
+
     const paymentData: MpesaPaymentRequest = {
       phoneNumber: phoneNumber,
       amount: amount,
@@ -125,7 +124,7 @@ export class PaymentService {
   // Format phone number for display
   formatPhoneNumber(phoneNumber: string): string {
     let cleaned = phoneNumber.replace(/\D/g, '');
-    
+
     if (cleaned.startsWith('254')) {
       return `+${cleaned}`;
     } else if (cleaned.startsWith('0')) {
@@ -133,7 +132,7 @@ export class PaymentService {
     } else if (cleaned.length === 9) {
       return `+254${cleaned}`;
     }
-    
+
     return phoneNumber;
   }
 }

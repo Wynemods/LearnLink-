@@ -10,7 +10,7 @@ export interface Question {
   correctAnswer: number;
   selectedAnswer?: number;
   isAnswered?: boolean;
-}
+} 
 
 export interface QuizResult {
   score: number;

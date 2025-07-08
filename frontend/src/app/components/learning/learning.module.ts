@@ -9,7 +9,7 @@ const routes: Routes = [
   { path: 'course/:courseId/quiz/:quizId', component: Quiz },
   { path: '', redirectTo: '/courses', pathMatch: 'full' }
 ];
-
+ 
 @NgModule({
   declarations: [],
   imports: [

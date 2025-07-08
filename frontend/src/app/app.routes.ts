@@ -9,7 +9,7 @@ export const routes: Routes = [
     path: 'auth',
     loadChildren: () =>
       import('./components/auth/auth.module').then((m) => m.AuthModule),
-  },
+  }, 
   {
     path: 'dashboard',
     loadChildren: () =>
@@ -37,7 +37,6 @@ export const routes: Routes = [
     path: 'checkout',
     loadChildren: () =>
       import('./components/checkout/checkout.module').then((m) => m.CheckoutModule),
-    canActivate: [authGuard],
   },
   {
     path: 'profile',

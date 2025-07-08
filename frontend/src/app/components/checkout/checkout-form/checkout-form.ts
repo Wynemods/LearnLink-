@@ -3,12 +3,12 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { PaymentService, PaymentResponse } from '../../../services/payment.service';
-import { AuthService } from '../../../services/auth.service';
+import { AuthService } from '../../../services/auth.service'; // Changed from Auth to AuthService
 
 export interface CartItem {
   id: string;
   title: string;
-  description: string;
+  description: string; 
   price: number;
   image: string;
 }
@@ -85,20 +85,11 @@ export class CheckoutForm implements OnInit {
     private route: ActivatedRoute,
     private router: Router,
     private paymentService: PaymentService,
-    private authService: AuthService // Make sure this is the correct Auth service
+    public authService: AuthService // Using AuthService instead of Auth
   ) {}
 
   ngOnInit() {
-    // Check if user is authenticated first
-    if (!this.authService.isAuthenticated()) {
-      console.log('User not authenticated, redirecting to login');
-      this.router.navigate(['/auth/login'], { 
-        queryParams: { returnUrl: this.router.url } 
-      });
-      return;
-    }
-
-    // Get course data from query params
+    // Get course data from query params first
     this.route.queryParams.subscribe(params => {
       if (params['courseId'] && params['title'] && params['price']) {
         const item: CartItem = {
@@ -114,11 +105,17 @@ export class CheckoutForm implements OnInit {
       }
     });
 
-    // Set default phone number if user is logged in
-    const user = this.authService.getCurrentUser();
-    if (user && user.email) {
-      // You might have phone number in user profile, for now we'll leave it empty
-      this.phoneNumber = '';
+    // Check authentication after setting up the course data
+    if (!this.authService.isAuthenticated()) {
+      console.log('User not authenticated, showing login prompt');
+    } else {
+      // Set default phone number if user is logged in
+      const user = this.authService.getCurrentUser();
+      if (user) {
+        console.log('User is authenticated:', user);
+        // You can pre-populate phone number if it exists in user profile
+        this.phoneNumber = user.phoneNumber || '';
+      }
     }
   }
 
@@ -174,59 +171,71 @@ export class CheckoutForm implements OnInit {
     this.phoneNumber = value;
   }
 
-  onSubmit(): void {
-    if (!this.validateForm()) {
-      return;
-    }
-
-    // For logged-in users, always proceed with payment
-    if (this.authService.currentUser) {
-      if (this.selectedPaymentMethod === 'visa') {
-        this.processVisaPayment();
-      } else {
-        this.processMpesaPayment();
-      }
-    } else {
-      alert('Please log in to complete your purchase');
-      this.router.navigate(['/auth/login']);
-    }
-  }
-
   private validateForm(): boolean {
+    // Check authentication first
+    if (!this.authService.isAuthenticated()) {
+      this.paymentMessage = 'Please log in to complete your purchase';
+      this.paymentStatus = 'failed';
+      return false;
+    }
+
+    const currentUser = this.authService.getCurrentUser();
+    if (!currentUser) {
+      this.paymentMessage = 'Please log in to complete your purchase';
+      this.paymentStatus = 'failed';
+      return false;
+    }
+
     if (this.selectedPaymentMethod === 'visa') {
       if (!this.cardName || !this.cardNumber || !this.expiryDate || !this.cvc) {
         this.paymentMessage = 'Please fill in all card details';
+        this.paymentStatus = 'failed';
         return false;
       }
       
       if (this.cardNumber.replace(/\s/g, '').length < 16) {
         this.paymentMessage = 'Please enter a valid card number';
+        this.paymentStatus = 'failed';
         return false;
       }
     } else if (this.selectedPaymentMethod === 'mpesa') {
       if (!this.phoneNumber) {
         this.paymentMessage = 'Please enter your M-Pesa phone number';
+        this.paymentStatus = 'failed';
         return false;
       }
       
       if (!this.paymentService.validatePhoneNumber(this.phoneNumber)) {
         this.paymentMessage = 'Please enter a valid Kenyan phone number';
+        this.paymentStatus = 'failed';
         return false;
       }
     }
 
-    // Check authentication
-    if (!this.authService.isAuthenticated()) {
-      this.paymentMessage = 'Please log in to complete your purchase';
-      setTimeout(() => {
-        this.router.navigate(['/auth/login'], { 
-          queryParams: { returnUrl: this.router.url } 
-        });
-      }, 2000);
-      return false;
+    this.paymentStatus = 'idle';
+    this.paymentMessage = '';
+    return true;
+  }
+
+  onSubmit(): void {
+    if (!this.validateForm()) {
+      // If validation fails due to authentication, redirect to login
+      if (!this.authService.isAuthenticated()) {
+        setTimeout(() => {
+          this.router.navigate(['/auth/login'], { 
+            queryParams: { returnUrl: this.router.url } 
+          });
+        }, 2000);
+      }
+      return;
     }
 
-    return true;
+    // Proceed with payment for authenticated users
+    if (this.selectedPaymentMethod === 'visa') {
+      this.processVisaPayment();
+    } else {
+      this.processMpesaPayment();
+    }
   }
 
   private processVisaPayment(): void {
@@ -260,15 +269,23 @@ export class CheckoutForm implements OnInit {
       return;
     }
 
-    // Check authentication one more time
-    if (!this.authService.isAuthenticated()) {
+    // Double-check authentication
+    const currentUser = this.authService.getCurrentUser();
+    if (!this.authService.isAuthenticated() || !currentUser) {
       this.paymentStatus = 'failed';
       this.paymentMessage = 'Please log in to complete your purchase';
       setTimeout(() => {
-        this.router.navigate(['/auth/login']);
+        this.router.navigate(['/auth/login'], {
+          queryParams: { returnUrl: this.router.url }
+        });
       }, 2000);
       return;
     }
+
+    console.log('Processing payment for user:', currentUser);
+    console.log('Course ID:', courseId);
+    console.log('Amount:', amount);
+    console.log('Phone:', this.phoneNumber);
 
     this.paymentStatus = 'processing';
     this.paymentMessage = 'Initiating M-Pesa payment...';
@@ -293,15 +310,7 @@ export class CheckoutForm implements OnInit {
       error: (error) => {
         console.error('Payment error:', error);
         this.paymentStatus = 'failed';
-        
-        if (error.message.includes('log in') || error.message.includes('authenticated')) {
-          this.paymentMessage = 'Please log in to complete your purchase';
-          setTimeout(() => {
-            this.router.navigate(['/auth/login']);
-          }, 2000);
-        } else {
-          this.paymentMessage = error.message || 'Payment failed. Please try again.';
-        }
+        this.paymentMessage = error.message || 'Payment failed. Please try again.';
       }
     });
   }

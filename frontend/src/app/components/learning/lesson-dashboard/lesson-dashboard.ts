@@ -13,7 +13,7 @@ export interface Lesson {
   type: 'lesson' | 'quiz';
   completed: boolean;
 }
-
+ 
 export interface Resource {
   id: string;
   title: string;

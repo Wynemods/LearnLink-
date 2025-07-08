@@ -13,7 +13,7 @@ export class InstructorGuard implements CanActivate {
 
   canActivate(): boolean {
     const user = this.authService.currentUser;
-    
+     
     if (user && user.role === 'INSTRUCTOR') {
       return true;
     }

@@ -46,7 +46,7 @@ export class MpesaService {
   constructor(
     private configService: ConfigService,
     private prisma: PrismaService,
-  ) {}
+  ) { }
 
   async getAccessToken(): Promise<string> {
     const url = `${this.BASE_URL}/oauth/v1/generate?grant_type=client_credentials`;
@@ -102,7 +102,6 @@ export class MpesaService {
         PhoneNumber: formattedPhone,
         CallBackURL: this.CALLBACK_URL,
         AccountReference: accountNumber,
-        TransactionDesc: 'Course Payment',
       };
 
       const response = await axios.post(url, requestBody, {
@@ -120,14 +119,16 @@ export class MpesaService {
         const payment = await this.prisma.payment.create({
           data: {
             amount: amount,
-            currency: 'KES',
             status: 'PENDING',
-            paymentMethod: 'MPESA',
             phoneNumber: formattedPhone,
             merchantRequestId: response.data.MerchantRequestID,
             checkoutRequestId: response.data.CheckoutRequestID,
-            accountReference: accountNumber,
-            description: 'Course Payment', // This should now work
+            course: {
+              connect: { id: accountNumber }
+            },
+            user: {
+              connect: { id: 'user-id-placeholder' } // You'll need to pass userId to this method
+            }
           },
         });
 
@@ -147,14 +148,14 @@ export class MpesaService {
       }
     } catch (error) {
       console.error('STK Push Error:', error.response?.data || error.message);
-      
+
       if (error.response?.data?.ResponseDescription) {
         throw new HttpException(
           error.response.data.ResponseDescription,
           HttpStatus.BAD_REQUEST
         );
       }
-      
+
       throw new HttpException(
         'Payment initiation failed. Please try again.',
         HttpStatus.INTERNAL_SERVER_ERROR
@@ -173,7 +174,6 @@ export class MpesaService {
       if (ResultCode === 0) {
         // Payment successful
         let mpesaReceiptNumber = '';
-        let transactionId = '';
         let phoneNumber = '';
 
         if (CallbackMetadata && CallbackMetadata.Item) {
@@ -181,9 +181,6 @@ export class MpesaService {
             switch (item.Name) {
               case 'MpesaReceiptNumber':
                 mpesaReceiptNumber = item.Value;
-                break;
-              case 'TransactionId':
-                transactionId = item.Value;
                 break;
               case 'PhoneNumber':
                 phoneNumber = item.Value;
@@ -203,9 +200,6 @@ export class MpesaService {
             data: {
               status: 'COMPLETED',
               mpesaReceiptNumber,
-              transactionId,
-              resultCode: ResultCode,
-              resultDescription: ResultDesc,
             },
           });
         } else {
@@ -224,8 +218,6 @@ export class MpesaService {
             where: { checkoutRequestId: CheckoutRequestID },
             data: {
               status: 'FAILED',
-              resultCode: ResultCode,
-              resultDescription: ResultDesc,
             },
           });
         } else {
@@ -284,7 +276,7 @@ export class MpesaService {
   private formatPhoneNumber(phoneNumber: string): string {
     // Remove any non-digit characters
     let cleaned = phoneNumber.replace(/\D/g, '');
-    
+
     // Handle different formats
     if (cleaned.startsWith('254')) {
       return cleaned;
@@ -306,7 +298,7 @@ export class MpesaService {
     try {
       const accessToken = await this.getAccessToken();
       const url = `${this.BASE_URL}/mpesa/c2b/v1/registerurl`;
-      
+
       const requestBody = {
         ShortCode: this.BUSINESS_SHORT_CODE,
         ResponseType: 'Completed',

@@ -10,3 +10,4 @@ import { CoursesModule } from '../courses/courses.module';
   exports: [PaymentsService],
 })
 export class PaymentsModule {}
+ 

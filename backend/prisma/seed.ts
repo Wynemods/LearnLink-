@@ -9,7 +9,7 @@ async function main() {
 
   // 100% DATABASE RESET - Delete all data in correct order
   console.log('🗑️  Resetting database...');
-  
+
   // Delete in reverse dependency order
   await prisma.submission.deleteMany({});
   await prisma.assignment.deleteMany({});
@@ -20,7 +20,7 @@ async function main() {
   await prisma.course.deleteMany({});
   await prisma.category.deleteMany({});
   await prisma.user.deleteMany({});
-  
+
   console.log('✅ Database reset completed');
 
   // Create categories
@@ -136,7 +136,7 @@ async function main() {
         password: hashedPassword
       }
     });
-    
+
     if (userData.role === Role.INSTRUCTOR) {
       instructors.push(user);
       console.log(`Created test instructor: ${user.firstName} ${user.lastName} (${user.email})`);
@@ -351,11 +351,11 @@ async function main() {
   // Create courses
   console.log('Creating courses...');
   const createdCourses = [];
-  
+
   for (const courseTemplate of courseTemplates) {
     const instructor = faker.helpers.arrayElement(instructors);
     const category = faker.helpers.arrayElement(createdCategories);
-    
+
     const course = await prisma.course.create({
       data: {
         title: courseTemplate.title,
@@ -389,7 +389,7 @@ async function main() {
         categoryId: category.id,
       }
     });
-    
+
     createdCourses.push(course);
     console.log(`Created course: ${course.title} by ${instructor.firstName} ${instructor.lastName}`);
   }
@@ -420,7 +420,7 @@ async function main() {
 
   for (const course of createdCourses) {
     const courseQuizzes = [];
-    
+
     // Create 2 quizzes per course
     for (let i = 0; i < 2; i++) {
       const quiz = await prisma.quiz.create({
@@ -478,7 +478,7 @@ async function main() {
       });
       courseQuizzes.push(quiz);
     }
-    
+
     quizzes.push(...courseQuizzes);
   }
 
@@ -491,9 +491,9 @@ async function main() {
       where: { courseId: course.id },
       orderBy: { order: 'asc' }
     });
-    
+
     const courseQuizzes = quizzes.filter(q => q.courseId === course.id);
-    
+
     // Build curriculum structure
     const curriculum = {
       sections: [
@@ -516,7 +516,7 @@ async function main() {
       totalLessons: courseLessons.length,
       totalQuizzes: courseQuizzes.length
     };
-    
+
     await prisma.course.update({
       where: { id: course.id },
       data: {
@@ -532,12 +532,12 @@ async function main() {
   console.log('Creating enrollments...');
   const enrollments = [];
   const enrollmentPairs = new Set();
-  
+
   for (let i = 0; i < 80; i++) {
     const student = faker.helpers.arrayElement(students);
     const course = faker.helpers.arrayElement(createdCourses);
     const pairKey = `${student.id}-${course.id}`;
-    
+
     if (!enrollmentPairs.has(pairKey)) {
       const enrollment = await prisma.enrollment.create({
         data: {
@@ -552,7 +552,7 @@ async function main() {
       enrollmentPairs.add(pairKey);
     }
   }
-  
+
   console.log(`Created ${enrollments.length} enrollments`);
 
   // Create reviews (ensure unique student-course combinations)
@@ -564,7 +564,7 @@ async function main() {
     const student = faker.helpers.arrayElement(students);
     const course = faker.helpers.arrayElement(createdCourses);
     const pairKey = `${student.id}-${course.id}`;
-    
+
     if (!reviewPairs.has(pairKey)) {
       const review = await prisma.review.create({
         data: {
@@ -574,22 +574,22 @@ async function main() {
           courseId: course.id
         }
       });
-      
+
       reviews.push(review);
       reviewPairs.add(pairKey);
     }
   }
-  
+
   console.log(`Created ${reviews.length} reviews`);
 
   // Create assignments
   console.log('Creating assignments...');
   const assignments = [];
-  
+
   for (let i = 0; i < 15; i++) {
     const course = faker.helpers.arrayElement(createdCourses);
     const instructor = instructors.find(inst => inst.id === course.instructorId);
-    
+
     const assignment = await prisma.assignment.create({
       data: {
         title: faker.lorem.words(4),
@@ -602,17 +602,17 @@ async function main() {
     });
     assignments.push(assignment);
   }
-  
+
   console.log(`Created ${assignments.length} assignments`);
 
   // Create submissions
   console.log('Creating submissions...');
   const submissions = [];
-  
+
   for (let i = 0; i < 30; i++) {
     const assignment = faker.helpers.arrayElement(assignments);
     const student = faker.helpers.arrayElement(students);
-    
+
     const submission = await prisma.submission.create({
       data: {
         content: faker.lorem.paragraphs(2),
@@ -626,39 +626,32 @@ async function main() {
     });
     submissions.push(submission);
   }
-  
+
   console.log(`Created ${submissions.length} submissions`);
 
   // Create payments
   console.log('Creating payments...');
   const payments = [];
-  
+
   for (let i = 0; i < 40; i++) {
     const student = faker.helpers.arrayElement(students);
     const course = faker.helpers.arrayElement(createdCourses);
-    
+
     const payment = await prisma.payment.create({
       data: {
         userId: student.id,
         courseId: course.id,
         amount: course.price,
-        currency: 'KES',
         status: faker.helpers.arrayElement(['COMPLETED', 'PENDING', 'FAILED']),
-        paymentMethod: 'MPESA',
         phoneNumber: faker.phone.number(),
         mpesaReceiptNumber: faker.string.alphanumeric(10),
-        transactionId: faker.string.uuid(),
         merchantRequestId: faker.string.uuid(),
         checkoutRequestId: faker.string.uuid(),
-        accountReference: faker.string.alphanumeric(8),
-        description: `Payment for ${course.title}`,
-        resultCode: 0,
-        resultDescription: 'Success'
       }
     });
     payments.push(payment);
   }
-  
+
   console.log(`Created ${payments.length} payments`);
 
   // Update course ratings based on reviews

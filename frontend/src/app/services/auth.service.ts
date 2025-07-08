@@ -15,7 +15,7 @@ export interface User {
   providedIn: 'root'
 })
 export class AuthService {
-  private currentUserSubject = new BehaviorSubject<User | null>(null);
+  private currentUserSubject = new BehaviorSubject<any>(null);
   public currentUser$ = this.currentUserSubject.asObservable();
 
   constructor() {
@@ -26,12 +26,12 @@ export class AuthService {
     }
   }
 
-  get currentUser(): User | null {
+  get currentUser() {
     return this.currentUserSubject.value;
   }
 
   // Add this method to match the usage in checkout-form
-  getCurrentUser(): User | null {
+  getCurrentUser(): any {
     return this.currentUser;
   }
 
@@ -46,7 +46,25 @@ export class AuthService {
   }
 
   isAuthenticated(): boolean {
-    return this.currentUser !== null;
+    const token = this.getToken();
+    if (!token) {
+      console.log('No token found');
+      return false;
+    }
+    
+    try {
+      const payload = JSON.parse(atob(token.split('.')[1]));
+      const isValid = payload.exp > Date.now() / 1000;
+      console.log('Token valid:', isValid);
+      return isValid;
+    } catch (error) {
+      console.log('Token validation error:', error);
+      return false;
+    }
+  }
+
+  private getToken(): string | null {
+    return localStorage.getItem('token') || localStorage.getItem('authToken');
   }
 
   hasRole(role: string): boolean {
