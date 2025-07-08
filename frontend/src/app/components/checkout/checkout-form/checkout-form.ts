@@ -54,7 +54,7 @@ export class CheckoutForm implements OnInit {
   // Payment status
   paymentStatus: 'idle' | 'processing' | 'success' | 'failed' = 'idle';
   paymentMessage: string = '';
-  checkoutRequestId: string = '';
+  id: string = '';
 
   // Featured courses
   featuredCourses = [
@@ -290,12 +290,11 @@ export class CheckoutForm implements OnInit {
       courseId: courseId
     };
 
-    this.paymentService.initiateMpesaPayment(paymentData).subscribe({
-      next: (response) => {
+    this.paymentService.initiatePayment(paymentData).subscribe({
+      next: (response: PaymentResponse) => {
         if (response.success || response.status === 'success') {
           this.paymentStatus = 'success';
           this.paymentMessage = response.message;
-          this.checkoutRequestId = response.data?.checkoutRequestId || '';
           // Optionally display merchantRequestId and mpesaReceiptNumber
           // e.g., this.merchantRequestId = response.data?.merchantRequestId;
           // this.mpesaReceiptNumber = response.data?.mpesaReceiptNumber;
@@ -307,7 +306,7 @@ export class CheckoutForm implements OnInit {
           this.paymentMessage = response.message || 'Payment failed';
         }
       },
-      error: (error) => {
+      error: (error: any) => {
         this.paymentStatus = 'failed';
         this.paymentMessage = error.message || 'Payment failed. Please try again.';
       }

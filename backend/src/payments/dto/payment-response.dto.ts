@@ -3,9 +3,6 @@ export class PaymentResponseDto {
   message: string;
   data?: {
     paymentId: string;
-    merchantRequestId: string;
-    checkoutRequestId: string;
-    mpesaReceiptNumber: string;
     enrolled: boolean;
   };
 }

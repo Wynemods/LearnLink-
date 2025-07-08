@@ -4,7 +4,7 @@ import { CoursesService } from '../courses/courses.service';
 import { randomUUID } from 'crypto';
 import { PaymentResponseDto } from './dto/payment-response.dto';
 
-export interface MpesaPaymentRequest {
+export interface PaymentRequest {
   phoneNumber: string;
   amount: number;
   courseId: string;
@@ -52,10 +52,10 @@ export class PaymentsService {
     }
   }
 
-  async checkPaymentStatus(checkoutRequestId: string): Promise<any> {
+  async checkPaymentStatus(id: string): Promise<any> {
     try {
       const payment = await this.prisma.payment.findFirst({
-        where: { checkoutRequestId },
+        where: { id },
         include: {
           course: {
             select: {
@@ -103,24 +103,19 @@ export class PaymentsService {
     }
   }
 
-  async initiateMpesaPayment(
+  async initiatePayment(
     userId: string,
-    paymentData: MpesaPaymentRequest
+    paymentData: PaymentRequest
   ): Promise<PaymentResponseDto> {
-    const mpesaReceiptNumber = randomUUID().slice(0, 10).toUpperCase();
-    const merchantRequestId = randomUUID();
-    const checkoutRequestId = randomUUID();
+    const ReceiptNumber = randomUUID().slice(0, 10).toUpperCase();
 
     const payment = await this.prisma.payment.create({
       data: {
-        userId,
-        courseId: paymentData.courseId,
+        userId: String(userId),
+        courseId: String(paymentData.courseId),
         amount: paymentData.amount,
         status: 'COMPLETED',
         phoneNumber: paymentData.phoneNumber,
-        mpesaReceiptNumber,
-        merchantRequestId,
-        checkoutRequestId,
       }
     });
 
@@ -131,9 +126,6 @@ export class PaymentsService {
       message: 'Payment completed and user enrolled successfully',
       data: {
         paymentId: payment.id,
-        merchantRequestId,
-        checkoutRequestId,
-        mpesaReceiptNumber,
         enrolled: true
       }
     };

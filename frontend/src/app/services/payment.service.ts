@@ -2,12 +2,12 @@ import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable, of, throwError } from 'rxjs';
 import { map, delay } from 'rxjs/operators';
+import { AuthService } from './auth.service'; // adjust path as needed
 
-export interface MpesaPaymentRequest {
+export interface PaymentRequest {
   phoneNumber: string;
   amount: number;
   courseId: string;
-  accountReference?: string;
 }
 
 export interface PaymentResponse {
@@ -16,10 +16,7 @@ export interface PaymentResponse {
   message: string;
   data?: {
     paymentId: string,
-        merchantRequestId : string,
-        checkoutRequestId : string,
-        mpesaReceiptNumber : string,
-        enrolled: boolean
+        
   };
 }
 
@@ -29,51 +26,9 @@ export interface PaymentResponse {
 export class PaymentService {
   private readonly API_URL = 'http://localhost:3000/api';
 
-  constructor(private http: HttpClient) { }
+  constructor(private http: HttpClient, private authService: AuthService) { }
 
-  initiateMpesaPayment(paymentData: MpesaPaymentRequest): Observable<PaymentResponse> {
-    const token = localStorage.getItem('token');
-    const isAuthenticated = localStorage.getItem('isAuthenticated') === 'true';
-
-    if (!token || !isAuthenticated) {
-      return throwError(() => new Error('User must be logged in to make payments'));
-    }
-
-    // Use real API
-    return this.http.post<PaymentResponse>(
-      `${this.API_URL}/payments/`,
-      paymentData,
-      { headers: { Authorization: `Bearer ${token}` } }
-    );
-  }
-
-  checkPaymentStatus(checkoutRequestId: string): Observable<any> {
-    const token = localStorage.getItem('token');
-    const isAuthenticated = localStorage.getItem('isAuthenticated') === 'true';
-
-    if (!token || !isAuthenticated) {
-      return throwError(() => new Error('User must be logged in'));
-    }
-
-    // For testing - always return successful status for authenticated users
-    return of({
-      success: true,
-      message: 'Payment completed successfully',
-      data: {
-        status: 'COMPLETED',
-        amount: 0,
-        completedAt: new Date(),
-        enrolled: true
-      }
-    }).pipe(delay(1000));
-
-    
-  }
-
-  getPaymentHistory(): Observable<any[]> {
-    return this.http.get<any>(`${this.API_URL}/payments/history`)
-      .pipe(map(response => response.data || []));
-  }
+ 
 
   // Process course purchase - check authentication first
   buyCourse(courseId: string, phoneNumber: string, amount: number): Observable<PaymentResponse> {
@@ -87,18 +42,19 @@ export class PaymentService {
     console.log('Processing payment for authenticated user');
     console.log('Course ID:', courseId, 'Amount:', amount);
 
-    const paymentData: MpesaPaymentRequest = {
+    const paymentData: PaymentRequest = {
       phoneNumber: phoneNumber,
       amount: amount,
       courseId: courseId,
-      accountReference: courseId
+      
     };
 
-    return this.initiateMpesaPayment(paymentData);
+    return this.initiatePayment(paymentData);
   }
 
   // Check if user is authenticated
   isUserAuthenticated(): boolean {
+    // Use the same logic as AuthService
     const token = localStorage.getItem('token');
     const isAuthenticated = localStorage.getItem('isAuthenticated') === 'true';
     return !!(token && isAuthenticated);
@@ -123,5 +79,19 @@ export class PaymentService {
     }
 
     return phoneNumber;
+  }
+
+  // Initiate payment (Mpesa or card)
+  initiatePayment(paymentData: PaymentRequest): Observable<PaymentResponse> {
+    const token = this.authService.getToken();
+    console.log('initiatePayment: token from AuthService:', token);
+    if (!token) {
+      return throwError(() => new Error('Please log in to complete your purchase'));
+    }
+    return this.http.post<PaymentResponse>(
+      `${this.API_URL}/payments/initiate`,
+      paymentData,
+      { headers: { Authorization: `Bearer ${token}` } }
+    );
   }
 }

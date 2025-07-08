@@ -639,14 +639,11 @@ async function main() {
 
     const payment = await prisma.payment.create({
       data: {
-        userId: student.id,
-        courseId: course.id,
+        userId: String(student.id), // ensure string
+        courseId: String(course.id), // ensure string
         amount: course.price,
         status: faker.helpers.arrayElement(['COMPLETED', 'PENDING', 'FAILED']),
         phoneNumber: faker.phone.number(),
-        mpesaReceiptNumber: faker.string.alphanumeric(10),
-        merchantRequestId: faker.string.uuid(),
-        checkoutRequestId: faker.string.uuid(),
       }
     });
     payments.push(payment);

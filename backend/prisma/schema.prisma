@@ -226,10 +226,8 @@ model Payment {
   id                    String        @id @default(cuid())
   amount                Float
   phoneNumber           String
-  merchantRequestId     String
-  checkoutRequestId     String        @unique
   status                PaymentStatus @default(PENDING)
-  mpesaReceiptNumber    String?
+  
   resultDescription     String?
   
   // Relations

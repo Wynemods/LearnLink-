@@ -1,0 +1,829 @@
+<div class="flex h-screen bg-gray-100">
+  <!-- Desktop Sidebar -->
+  <aside class="hidden lg:block w-64 bg-gray-800 text-white p-6">
+    <div class="flex items-center mb-8">
+      <h2 class="text-xl font-semibold">Instructor Dashboard</h2>
+    </div>
+    <nav class="flex-1">
+      <ul class="space-y-2">
+        <li>
+          <button 
+            (click)="setCurrentView('overview')"
+            class="w-full text-left px-4 py-2 rounded-lg hover:bg-gray-700 transition-colors"
+            [class.bg-teal-600]="currentView === 'overview'"
+          >
+            <span class="material-icons mr-3">dashboard</span>
+            Overview
+          </button>
+        </li>
+        <li>
+          <button 
+            (click)="setCurrentView('courses')"
+            class="w-full text-left px-4 py-2 rounded-lg hover:bg-gray-700 transition-colors"
+            [class.bg-teal-600]="currentView === 'courses'"
+          >
+            <span class="material-icons mr-3">school</span>
+            My Courses
+          </button>
+        </li>
+        <li>
+          <button 
+            (click)="setCurrentView('students')"
+            class="w-full text-left px-4 py-2 rounded-lg hover:bg-gray-700 transition-colors"
+            [class.bg-teal-600]="currentView === 'students'"
+          >
+            <span class="material-icons mr-3">people</span>
+            Students
+          </button>
+        </li>
+        <li>
+          <button 
+            (click)="setCurrentView('messages')"
+            class="w-full text-left px-4 py-2 rounded-lg hover:bg-gray-700 transition-colors"
+            [class.bg-teal-600]="currentView === 'messages'"
+          >
+            <span class="material-icons mr-3">message</span>
+            Messages
+          </button>
+        </li>
+      </ul>
+    </nav>
+    
+    <!-- Logout Button -->
+    <div class="mt-auto pt-6">
+      <button 
+        (click)="logout()"
+        class="w-full text-left px-4 py-2 rounded-lg hover:bg-red-600 transition-colors text-red-300 hover:text-white flex items-center"
+      >
+        <span class="material-icons mr-3">logout</span>
+        Logout
+      </button>
+    </div>
+  </aside>
+
+  <!-- Mobile Menu Overlay -->
+  <div 
+    *ngIf="isMobileMenuOpen" 
+    class="lg:hidden fixed inset-0 bg-black bg-opacity-50 z-40"
+    (click)="toggleMobileMenu()"
+  ></div>
+
+  <!-- Mobile Sidebar -->
+  <aside 
+    class="lg:hidden fixed left-0 top-0 w-64 h-full bg-gray-800 text-white p-6 z-50 transform transition-transform duration-300 flex flex-col"
+    [class.translate-x-0]="isMobileMenuOpen"
+    [class.-translate-x-full]="!isMobileMenuOpen"
+  >
+    <div class="flex items-center justify-between mb-8">
+      <h2 class="text-xl font-semibold">Dashboard</h2>
+      <button 
+        (click)="toggleMobileMenu()"
+        class="text-gray-300 hover:text-white"
+      >
+        <span class="material-icons">close</span>
+      </button>
+    </div>
+    
+    <nav class="flex-1">
+      <ul class="space-y-2">
+        <li>
+          <button 
+            (click)="setCurrentView('overview')"
+            class="w-full text-left px-4 py-2 rounded-lg hover:bg-gray-700 transition-colors"
+            [class.bg-teal-600]="currentView === 'overview'"
+          >
+            <span class="material-icons mr-3">dashboard</span>
+            Overview
+          </button>
+        </li>
+        <li>
+          <button 
+            (click)="setCurrentView('courses')"
+            class="w-full text-left px-4 py-2 rounded-lg hover:bg-gray-700 transition-colors"
+            [class.bg-teal-600]="currentView === 'courses'"
+          >
+            <span class="material-icons mr-3">school</span>
+            My Courses
+          </button>
+        </li>
+        <li>
+          <button 
+            (click)="setCurrentView('students')"
+            class="w-full text-left px-4 py-2 rounded-lg hover:bg-gray-700 transition-colors"
+            [class.bg-teal-600]="currentView === 'students'"
+          >
+            <span class="material-icons mr-3">people</span>
+            Students
+          </button>
+        </li>
+        <li>
+          <button 
+            (click)="setCurrentView('messages')"
+            class="w-full text-left px-4 py-2 rounded-lg hover:bg-gray-700 transition-colors"
+            [class.bg-teal-600]="currentView === 'messages'"
+          >
+            <span class="material-icons mr-3">message</span>
+            Messages
+          </button>
+        </li>
+      </ul>
+    </nav>
+    
+    <!-- Logout Button -->
+    <div class="mt-auto pt-6">
+      <button 
+        (click)="logout()"
+        class="w-full text-left px-4 py-2 rounded-lg hover:bg-red-600 transition-colors text-red-300 hover:text-white flex items-center"
+      >
+        <span class="material-icons mr-3">logout</span>
+        Logout
+      </button>
+    </div>
+  </aside>
+
+  <!-- Main Content -->
+  <main class="flex-1 p-4 lg:p-8 overflow-y-auto">
+    <!-- Overview Section -->
+    <div *ngIf="currentView === 'overview'">
+      <div class="flex flex-col lg:flex-row lg:justify-between lg:items-center mb-6">
+        <div class="flex items-center justify-between mb-4 lg:mb-0">
+          <h1 class="text-2xl font-bold text-gray-800">Instructor Dashboard</h1>
+          <button 
+            class="lg:hidden text-gray-600 hover:text-gray-900"
+            (click)="toggleMobileMenu()"
+          >
+            <span class="material-icons">menu</span>
+          </button>
+        </div>
+        
+        <button 
+          (click)="createNewCourse()"
+          class="bg-teal-500 text-white font-bold py-2 px-6 rounded-lg hover:bg-teal-600 transition duration-300"
+        >
+          <span class="material-icons mr-2">add</span>
+          Create New Course
+        </button>
+      </div>
+
+      <!-- Stats Cards -->
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-6">
+        <div class="bg-white p-6 rounded-xl shadow-lg flex items-center">
+          <div class="p-3 bg-blue-100 rounded-full mr-4">
+            <span class="material-icons text-blue-600">school</span>
+          </div>
+          <div>
+            <p class="text-gray-600 text-sm">Total Courses</p>
+            <p class="text-2xl font-bold text-gray-800">{{ overviewStats.totalCourses }}</p>
+          </div>
+        </div>
+        
+        <div class="bg-white p-6 rounded-xl shadow-lg flex items-center">
+          <div class="p-3 bg-green-100 rounded-full mr-4">
+            <span class="material-icons text-green-600">people</span>
+          </div>
+          <div>
+            <p class="text-gray-600 text-sm">Total Students</p>
+            <p class="text-2xl font-bold text-gray-800">{{ overviewStats.totalStudents }}</p>
+          </div>
+        </div>
+        
+        <div class="bg-white p-6 rounded-xl shadow-lg flex items-center">
+          <div class="p-3 bg-purple-100 rounded-full mr-4">
+            <span class="material-icons text-purple-600">check_circle</span>
+          </div>
+          <div>
+            <p class="text-gray-600 text-sm">Published Courses</p>
+            <p class="text-2xl font-bold text-gray-800">{{ overviewStats.completedCourses }}</p>
+          </div>
+        </div>
+        
+        <div class="bg-white p-6 rounded-xl shadow-lg flex items-center">
+          <div class="p-3 bg-yellow-100 rounded-full mr-4">
+            <span class="material-icons text-yellow-600">star</span>
+          </div>
+          <div>
+            <p class="text-gray-600 text-sm">Average Rating</p>
+            <p class="text-2xl font-bold text-gray-800">{{ overviewStats.averageRating }}/5</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Course Progress and Top Students -->
+      <div class="grid grid-cols-1 xl:grid-cols-3 gap-6">
+        <!-- Course Progress -->
+        <div class="xl:col-span-2 bg-white rounded-xl shadow-lg p-6">
+          <h2 class="text-lg font-semibold text-gray-800 mb-4">My Courses</h2>
+          <div class="space-y-4">
+            <div *ngFor="let course of courseProgress" class="flex items-center justify-between p-4 bg-gray-50 rounded-lg">
+              <div class="flex-1">
+                <h3 class="font-medium text-gray-800">{{ course.title }}</h3>
+                <div class="w-full bg-gray-200 rounded-full h-2 mt-2">
+                  <div 
+                    class="bg-teal-500 h-2 rounded-full transition-all duration-300"
+                    [style.width.%]="course.progress"
+                  ></div>
+                </div>
+              </div>
+              <div class="ml-4 flex gap-2">
+                <button 
+                  (click)="editCourse(course.id)"
+                  class="text-blue-600 hover:text-blue-800"
+                >
+                  <span class="material-icons">edit</span>
+                </button>
+                <button 
+                  (click)="viewCourseDetails(course.id)"
+                  class="text-green-600 hover:text-green-800"
+                >
+                  <span class="material-icons">visibility</span>
+                </button>
+                <button 
+                  (click)="deleteCourse(course.id)"
+                  class="text-red-600 hover:text-red-800"
+                >
+                  <span class="material-icons">delete</span>
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Top Students -->
+        <div class="bg-white rounded-xl shadow-lg p-6">
+          <h2 class="text-lg font-semibold text-gray-800 mb-4">Top Students</h2>
+          <div class="space-y-4">
+            <div *ngFor="let student of topStudents" class="flex items-center justify-between">
+              <div class="flex items-center">
+                <img 
+                  [src]="student.avatar" 
+                  [alt]="student.name"
+                  class="w-10 h-10 rounded-full object-cover mr-3"
+                />
+                <div>
+                  <p class="font-medium text-gray-800">{{ student.name }}</p>
+                  <p class="text-sm text-gray-600">{{ student.coursesCount }} courses</p>
+                </div>
+              </div>
+              <div class="flex items-center">
+                <span 
+                  class="text-sm font-medium"
+                  [class.text-green-600]="student.progressChange > 0"
+                  [class.text-red-600]="student.progressChange < 0"
+                  [class.text-gray-600]="student.progressChange === 0"
+                >
+                  {{ student.progressChange > 0 ? '+' : '' }}{{ student.progressChange }}%
+                </span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Courses View -->
+    <div *ngIf="currentView === 'courses'">
+      <div class="flex flex-col lg:flex-row lg:justify-between lg:items-center mb-8">
+        <div class="flex items-center justify-between mb-4 lg:mb-0">
+          <h1 class="text-2xl font-bold text-gray-800">My Courses</h1>
+          <button 
+            class="lg:hidden text-gray-600 hover:text-gray-900"
+            (click)="toggleMobileMenu()"
+          >
+            <span class="material-icons">menu</span>
+          </button>
+        </div>
+        
+        <button 
+          (click)="createNewCourse()"
+          class="bg-teal-500 text-white font-bold py-2 px-6 rounded-lg hover:bg-teal-600 transition duration-300"
+        >
+          <span class="material-icons mr-2">add</span>
+          Create New Course
+        </button>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        <div *ngFor="let course of myCourses" class="bg-white rounded-xl shadow-lg overflow-hidden">
+          <img 
+            [src]="course.thumbnail || '/assets/images/default-course.png'" 
+            [alt]="course.title"
+            class="w-full h-48 object-cover"
+          />
+          <div class="p-6">
+            <h3 class="font-semibold text-gray-800 mb-2">{{ course.title }}</h3>
+            <p class="text-gray-600 text-sm mb-4">{{ course.description | slice:0:100 }}...</p>
+            
+            <div class="flex justify-between items-center mb-4">
+              <span class="text-sm text-gray-500">{{ course.totalStudents }} students</span>
+              <span class="px-2 py-1 text-xs rounded-full" 
+                    [class.bg-green-100]="course.isPublished"
+                    [class.text-green-800]="course.isPublished"
+                    [class.bg-yellow-100]="!course.isPublished"
+                    [class.text-yellow-800]="!course.isPublished">
+                {{ course.isPublished ? 'Published' : 'Draft' }}
+              </span>
+            </div>
+            
+            <div class="flex gap-2">
+              <button 
+                (click)="editCourse(course.id)"
+                class="px-3 py-1 bg-blue-500 text-white text-sm rounded hover:bg-blue-600 transition-colors"
+              >
+                Edit
+              </button>
+              <button 
+                (click)="viewCourseDetails(course.id)"
+                class="px-3 py-1 bg-green-500 text-white text-sm rounded hover:bg-green-600 transition-colors"
+              >
+                View
+              </button>
+              <button 
+                (click)="deleteCourse(course.id)"
+                class="px-3 py-1 bg-red-500 text-white text-sm rounded hover:bg-red-600 transition-colors"
+              >
+                Delete
+              </button>
+              <button 
+                *ngIf="!course.isPublished"
+                (click)="publishCourse(course.id)"
+                class="px-3 py-1 bg-teal-500 text-white text-sm rounded hover:bg-teal-600 transition-colors"
+              >
+                Publish
+              </button>
+              <button 
+                *ngIf="course.isPublished"
+                (click)="unpublishCourse(course.id)"
+                class="px-3 py-1 bg-gray-500 text-white text-sm rounded hover:bg-gray-600 transition-colors"
+              >
+                Unpublish
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Students View -->
+    <div *ngIf="currentView === 'students'">
+      <div class="flex flex-col lg:flex-row lg:justify-between lg:items-center mb-8">
+        <div class="flex items-center justify-between mb-4 lg:mb-0">
+          <h1 class="text-2xl font-bold text-gray-800">My Students</h1>
+          <button 
+            class="lg:hidden text-gray-600 hover:text-gray-900"
+            (click)="toggleMobileMenu()"
+          >
+            <span class="material-icons">menu</span>
+          </button>
+        </div>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        <div *ngFor="let student of myStudents" class="bg-white p-6 rounded-xl shadow-lg">
+          <div class="flex items-center mb-4">
+            <img 
+              [src]="student.avatar || '/assets/images/default-avatar.png'" 
+              [alt]="student.name"
+              class="w-12 h-12 rounded-full object-cover mr-4"
+            />
+            <div>
+              <h3 class="font-semibold text-gray-800">{{ student.name }}</h3>
+              <p class="text-gray-600 text-sm">{{ student.email }}</p>
+            </div>
+          </div>
+          
+          <div class="mb-4">
+            <div class="flex justify-between items-center mb-2">
+              <span class="text-sm text-gray-600">Progress</span>
+              <span class="text-sm font-medium">{{ student.progress }}%</span>
+            </div>
+            <div class="w-full bg-gray-200 rounded-full h-2">
+              <div 
+                class="bg-teal-500 h-2 rounded-full transition-all duration-300"
+                [style.width.%]="student.progress"
+              ></div>
+            </div>
+          </div>
+          
+          <div class="text-sm text-gray-600">
+            <p>Course: {{ student.courseTitle }}</p>
+            <p>Enrolled: {{ student.enrolledDate | date:'short' }}</p>
+            <p>Last Active: {{ student.lastActive | date:'short' }}</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Messages View -->
+    <div *ngIf="currentView === 'messages'" class="h-full">
+      <div class="flex justify-between items-center mb-6">
+        <h1 class="text-2xl font-bold text-gray-800">Messages</h1>
+        <button 
+          class="lg:hidden text-gray-600 hover:text-gray-900"
+          (click)="toggleMobileMenu()"
+        >
+          <span class="material-icons">menu</span>
+        </button>
+      </div>
+      
+      <div class="bg-white rounded-xl shadow-lg h-[calc(100vh-200px)] flex">
+        <!-- Conversations List -->
+        <div class="w-1/3 border-r border-gray-200 p-4">
+          <input
+            type="text"
+            [(ngModel)]="searchTerm"
+            placeholder="Search conversations..."
+            class="w-full p-2 border border-gray-300 rounded-lg mb-4"
+          />
+          
+          <div class="space-y-2">
+            <div 
+              *ngFor="let conversation of filteredConversations"
+              (click)="selectConversation(conversation)"
+              class="p-3 rounded-lg cursor-pointer hover:bg-gray-100"
+              [class.bg-teal-50]="activeConversation?.id === conversation.id"
+            >
+              <div class="flex items-center">
+                <img 
+                  [src]="conversation.participants[0].avatar" 
+                  [alt]="conversation.participants[0].name"
+                  class="w-8 h-8 rounded-full object-cover mr-3"
+                />
+                <div class="flex-1">
+                  <h4 class="font-medium text-gray-800">{{ conversation.participants[0].name }}</h4>
+                  <p class="text-sm text-gray-600 truncate">{{ conversation.lastMessage?.content }}</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        
+        <!-- Message Area -->
+        <div class="flex-1 flex flex-col">
+          <div *ngIf="activeConversation" class="flex-1 flex flex-col">
+            <!-- Message Header -->
+            <div class="p-4 border-b border-gray-200">
+              <h3 class="font-semibold text-gray-800">{{ activeConversation.participants[0].name }}</h3>
+            </div>
+            
+            <!-- Messages -->
+            <div class="flex-1 p-4 overflow-y-auto">
+              <div *ngFor="let message of activeConversation.messages" 
+                   class="mb-4"
+                   [class.text-right]="message.senderId === 'current-user'">
+                <div class="inline-block max-w-xs lg:max-w-md"
+                     [class.bg-teal-500]="message.senderId === 'current-user'"
+                     [class.text-white]="message.senderId === 'current-user'"
+                     [class.bg-gray-200]="message.senderId !== 'current-user'"
+                     [class.text-gray-800]="message.senderId !== 'current-user'"
+                     class="p-3 rounded-lg">
+                  <p>{{ message.content }}</p>
+                  <p class="text-xs mt-1 opacity-75">{{ message.timestamp | date:'short' }}</p>
+                </div>
+              </div>
+            </div>
+            
+            <!-- Message Input -->
+            <div class="p-4 border-t border-gray-200">
+              <div class="flex space-x-2">
+                <input
+                  type="text"
+                  [(ngModel)]="newMessage"
+                  (keyup.enter)="sendMessage()"
+                  placeholder="Type your message..."
+                  class="flex-1 p-2 border border-gray-300 rounded-lg"
+                />
+                <button 
+                  (click)="sendMessage()"
+                  class="bg-teal-500 text-white px-4 py-2 rounded-lg hover:bg-teal-600 transition-colors"
+                >
+                  <span class="material-icons">send</span>
+                </button>
+              </div>
+            </div>
+          </div>
+          
+          <div *ngIf="!activeConversation" class="flex-1 flex items-center justify-center">
+            <p class="text-gray-500">Select a conversation to start messaging</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Course Creation Modal -->
+    <div *ngIf="showCourseForm" class="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4">
+      <div class="bg-white rounded-xl shadow-xl max-w-4xl w-full max-h-[90vh] overflow-y-auto">
+        <div class="p-6 border-b border-gray-200">
+          <div class="flex justify-between items-center">
+            <h2 class="text-2xl font-bold text-gray-800">Create New Course</h2>
+            <button (click)="closeCourseForm()" class="text-gray-500 hover:text-gray-700">
+              <span class="material-icons">close</span>
+            </button>
+          </div>
+        </div>
+        
+        <form (ngSubmit)="submitCourse()" class="p-6 space-y-6">
+          <!-- Basic Information -->
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div>
+              <label class="block text-sm font-medium text-gray-700 mb-2">Course Title *</label>
+              <input
+                type="text"
+                [(ngModel)]="courseForm.title"
+                name="title"
+                required
+                class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-teal-500"
+                placeholder="Enter course title"
+              />
+            </div>
+            
+            <div>
+              <label class="block text-sm font-medium text-gray-700 mb-2">Category *</label>
+              <select
+                [(ngModel)]="courseForm.categoryId"
+                name="categoryId"
+                required
+                class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-teal-500"
+              >
+                <option value="">Select a category</option>
+                <option *ngFor="let category of categories" [value]="category.id">
+                  {{ category.name }}
+                </option>
+              </select>
+            </div>
+          </div>
+
+          <!-- Description -->
+          <div>
+            <label class="block text-sm font-medium text-gray-700 mb-2">Description *</label>
+            <textarea
+              [(ngModel)]="courseForm.description"
+              name="description"
+              required
+              rows="4"
+              class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-teal-500"
+              placeholder="Describe your course"
+            ></textarea>
+          </div>
+
+          <!-- Pricing and Details -->
+          <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+            <div>
+              <label class="block text-sm font-medium text-gray-700 mb-2">Price *</label>
+              <input
+                type="number"
+                [(ngModel)]="courseForm.price"
+                name="price"
+                required
+                min="0"
+                step="0.01"
+                class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-teal-500"
+                placeholder="0.00"
+              />
+            </div>
+            
+            <div>
+              <label class="block text-sm font-medium text-gray-700 mb-2">Original Price</label>
+              <input
+                type="number"
+                [(ngModel)]="courseForm.originalPrice"
+                name="originalPrice"
+                min="0"
+                step="0.01"
+                class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-teal-500"
+                placeholder="0.00"
+              />
+            </div>
+            
+            <div>
+              <label class="block text-sm font-medium text-gray-700 mb-2">Duration</label>
+              <input
+                type="text"
+                [(ngModel)]="courseForm.duration"
+                name="duration"
+                class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-teal-500"
+                placeholder="e.g., 40 hours"
+              />
+            </div>
+            
+            <div>
+              <label class="block text-sm font-medium text-gray-700 mb-2">Level</label>
+              <select
+                [(ngModel)]="courseForm.level"
+                name="level"
+                class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-teal-500"
+              >
+                <option value="beginner">Beginner</option>
+                <option value="intermediate">Intermediate</option>
+                <option value="advanced">Advanced</option>
+              </select>
+            </div>
+          </div>
+
+          <!-- Images -->
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div>
+              <label class="block text-sm font-medium text-gray-700 mb-2">Thumbnail URL</label>
+              <input
+                type="url"
+                [(ngModel)]="courseForm.thumbnail"
+                name="thumbnail"
+                class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-teal-500"
+                placeholder="https://example.com/thumbnail.jpg"
+              />
+            </div>
+            
+            <div>
+              <label class="block text-sm font-medium text-gray-700 mb-2">Hero Image URL</label>
+              <input
+                type="url"
+                [(ngModel)]="courseForm.heroImage"
+                name="heroImage"
+                class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-teal-500"
+                placeholder="https://example.com/hero.jpg"
+              />
+            </div>
+          </div>
+
+          <!-- Course Features -->
+          <div>
+            <label class="block text-sm font-medium text-gray-700 mb-2">Course Features</label>
+            <div class="flex gap-2 mb-2">
+              <input
+                type="text"
+                [(ngModel)]="newFeature"
+                name="newFeature"
+                class="flex-1 px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-teal-500"
+                placeholder="Add a feature"
+                (keyup.enter)="addFeature()"
+              />
+              <button
+                type="button"
+                (click)="addFeature()"
+                class="px-4 py-2 bg-teal-500 text-white rounded-md hover:bg-teal-600"
+              >
+                Add
+              </button>
+            </div>
+            <div class="flex flex-wrap gap-2">
+              <span
+                *ngFor="let feature of courseForm.features; let i = index"
+                class="inline-flex items-center px-3 py-1 bg-gray-100 text-sm rounded-full"
+              >
+                {{ feature }}
+                <button
+                  type="button"
+                  (click)="removeFeature(i)"
+                  class="ml-2 text-red-500 hover:text-red-700"
+                >
+                  ×
+                </button>
+              </span>
+            </div>
+          </div>
+
+          <!-- Learning Outcomes -->
+          <div>
+            <label class="block text-sm font-medium text-gray-700 mb-2">What You'll Learn *</label>
+            <div class="flex gap-2 mb-2">
+              <input
+                type="text"
+                [(ngModel)]="newLearningOutcome"
+                name="newLearningOutcome"
+                class="flex-1 px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-teal-500"
+                placeholder="Add a learning outcome"
+                (keyup.enter)="addLearningOutcome()"
+              />
+              <button
+                type="button"
+                (click)="addLearningOutcome()"
+                class="px-4 py-2 bg-teal-500 text-white rounded-md hover:bg-teal-600"
+              >
+                Add
+              </button>
+            </div>
+            <div class="space-y-2">
+              <div
+                *ngFor="let outcome of courseForm.learningOutcomes; let i = index"
+                class="flex items-center justify-between p-3 bg-gray-50 rounded-md"
+              >
+                <span>{{ outcome }}</span>
+                <button
+                  type="button"
+                  (click)="removeLearningOutcome(i)"
+                  class="text-red-500 hover:text-red-700"
+                >
+                  Remove
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Requirements -->
+          <div>
+            <label class="block text-sm font-medium text-gray-700 mb-2">Requirements</label>
+            <div class="flex gap-2 mb-2">
+              <input
+                type="text"
+                [(ngModel)]="newRequirement"
+                name="newRequirement"
+                class="flex-1 px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-teal-500"
+                placeholder="Add a requirement"
+                (keyup.enter)="addRequirement()"
+              />
+              <button
+                type="button"
+                (click)="addRequirement()"
+                class="px-4 py-2 bg-teal-500 text-white rounded-md hover:bg-teal-600"
+              >
+                Add
+              </button>
+            </div>
+            <div class="flex flex-wrap gap-2">
+              <span
+                *ngFor="let requirement of courseForm.requirements; let i = index"
+                class="inline-flex items-center px-3 py-1 bg-gray-100 text-sm rounded-full"
+              >
+                {{ requirement }}
+                <button
+                  type="button"
+                  (click)="removeRequirement(i)"
+                  class="ml-2 text-red-500 hover:text-red-700"
+                >
+                  ×
+                </button>
+              </span>
+            </div>
+          </div>
+
+          <!-- Target Audience -->
+          <div>
+            <label class="block text-sm font-medium text-gray-700 mb-2">Target Audience</label>
+            <div class="flex gap-2 mb-2">
+              <input
+                type="text"
+                [(ngModel)]="newTargetAudience"
+                name="newTargetAudience"
+                class="flex-1 px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-teal-500"
+                placeholder="Add target audience"
+                (keyup.enter)="addTargetAudience()"
+              />
+              <button
+                type="button"
+                (click)="addTargetAudience()"
+                class="px-4 py-2 bg-teal-500 text-white rounded-md hover:bg-teal-600"
+              >
+                Add
+              </button>
+            </div>
+            <div class="flex flex-wrap gap-2">
+              <span
+                *ngFor="let audience of courseForm.targetAudience; let i = index"
+                class="inline-flex items-center px-3 py-1 bg-gray-100 text-sm rounded-full"
+              >
+                {{ audience }}
+                <button
+                  type="button"
+                  (click)="removeTargetAudience(i)"
+                  class="ml-2 text-red-500 hover:text-red-700"
+                >
+                  ×
+                </button>
+              </span>
+            </div>
+          </div>
+
+          <!-- Publish Option -->
+          <div class="flex items-center">
+            <input
+              type="checkbox"
+              [(ngModel)]="courseForm.isPublished"
+              name="isPublished"
+              id="isPublished"
+              class="mr-2"
+            />
+            <label for="isPublished" class="text-sm text-gray-700">
+              Publish course immediately
+            </label>
+          </div>
+
+          <!-- Form Actions -->
+          <div class="flex justify-end gap-4 pt-4 border-t border-gray-200">
+            <button
+              type="button"
+              (click)="closeCourseForm()"
+              class="px-6 py-2 text-gray-600 bg-gray-100 rounded-md hover:bg-gray-200 transition-colors"
+            >
+              Cancel
+            </button>
+            <button
+              type="submit"
+              class="px-6 py-2 bg-teal-500 text-white rounded-md hover:bg-teal-600 transition-colors"
+            >
+              Create Course
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </main>
+</div>

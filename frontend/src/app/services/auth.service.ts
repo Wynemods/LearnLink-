@@ -63,8 +63,8 @@ export class AuthService {
     }
   }
 
-  private getToken(): string | null {
-    return localStorage.getItem('token') || localStorage.getItem('authToken');
+  getToken(): string | null {
+    return localStorage.getItem('token');
   }
 
   hasRole(role: string): boolean {
