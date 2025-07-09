@@ -125,6 +125,7 @@ model Course {
   reviews          Review[]
   payments         Payment[]
   certificates     Certificate[]
+  quizAttempts     QuizAttempt[] // Add this relation
   createdAt        DateTime @default(now())
   updatedAt        DateTime @updatedAt
 
@@ -256,6 +257,9 @@ model Quiz {
   // Store questions with correct answers - only instructor can see correct answers
   questions   Json     // Store questions as JSON with correct answers
   
+  // Add relation to quiz attempts
+  attempts    QuizAttempt[]
+  
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
 
@@ -267,7 +271,9 @@ model QuizAttempt {
   studentId   String
   student     User     @relation("StudentQuizAttempts", fields: [studentId], references: [id])
   quizId      String
+  quiz        Quiz     @relation(fields: [quizId], references: [id])
   courseId    String
+  course      Course   @relation(fields: [courseId], references: [id]) // Add this missing relation
   
   answers     Json     // Store student's answers
   score       Float    @default(0)

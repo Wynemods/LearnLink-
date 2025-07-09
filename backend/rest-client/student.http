@@ -1,0 +1,52 @@
+### Enroll in a course
+POST http://localhost:3000/api/enrollments
+Content-Type: application/json
+Authorization: Bearer YOUR_JWT_TOKEN
+
+{
+  "courseId": "COURSE_ID_HERE"
+}
+
+### Get enrolled courses
+GET http://localhost:3000/api/enrollments/my-courses
+Authorization: Bearer YOUR_JWT_TOKEN
+
+### Get course progress
+GET http://localhost:3000/api/enrollments/COURSE_ID/progress
+Authorization: Bearer YOUR_JWT_TOKEN
+
+### Mark lesson as completed
+POST http://localhost:3000/api/enrollments/COURSE_ID/lessons/LESSON_ID/complete
+Authorization: Bearer YOUR_JWT_TOKEN
+
+### Take a quiz
+POST http://localhost:3000/api/quizzes/QUIZ_ID/attempt
+Content-Type: application/json
+Authorization: Bearer YOUR_JWT_TOKEN
+
+{
+  "answers": [
+    {
+      "questionId": "q1",
+      "answer": 1
+    },
+    {
+      "questionId": "q2",
+      "answer": 0
+    }
+  ]
+}
+
+### Get quiz results
+GET http://localhost:3000/api/quizzes/QUIZ_ID/results
+Authorization: Bearer YOUR_JWT_TOKEN
+
+### Submit course review
+POST http://localhost:3000/api/courses/COURSE_ID/reviews
+Content-Type: application/json
+Authorization: Bearer YOUR_JWT_TOKEN
+
+{
+  "rating": 5,
+  "comment": "Excellent course! Very well structured and informative."
+}

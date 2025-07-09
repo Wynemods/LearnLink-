@@ -1,0 +1,154 @@
+### Get categories to find valid categoryId
+GET http://localhost:3000/api/courses/categories
+
+### Create a new course with valid categoryId
+POST http://localhost:3000/api/courses
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJjbWN1eTI1dGYwMDA2aTFqNDVnMWc4bTJvIiwidXNlcm5hbWUiOiJqaW1teV9rIiwiZW1haWwiOiJqaW1teWtpbXVueWlAZ21haWwuY29tIiwicm9sZSI6IklOU1RSVUNUT1IiLCJpYXQiOjE3NTIwMDQzNTQsImV4cCI6MTc1NDU5NjM1NH0.ie5h_AvR0BuGoHK3zRE-v4XtZC6-p3IAQZAyoUHLfWg
+
+{
+  "title": "Advanced JavaScript Programming",
+  "description": "Master advanced JavaScript concepts and patterns",
+  "price": 99.99,
+  "originalPrice": 149.99,
+  "level": "advanced",
+  "duration": "12 weeks",
+  "thumbnail": "https://example.com/thumbnail.jpg",
+  "features": ["Live coding sessions", "Project-based learning", "Certificate"],
+  "learningOutcomes": ["Master ES6+", "Understand async programming", "Build modern web apps"],
+  "requirements": ["Basic JavaScript knowledge", "HTML/CSS understanding"]
+}
+
+### Create course with a specific category (replace with actual category ID)
+POST http://localhost:3000/api/courses
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJjbWN1dG95bWYwMDA2OXowNms2OXYzejYyIiwidXNlcm5hbWUiOiJqaW1teV9rIiwiZW1haWwiOiJqaW1teWtpbXVueWlAZ21haWwuY29tIiwicm9zZSI6IklOU1RSVUNUT1IiLCJpYXQiOjE3NTE5OTcyODAsImV4cCI6MTc1NDU4OTI4MH0.jYQc-74PV7j2cA86CkxW3vt5bPE3uYyXDiso8_5BFhM
+
+{
+  "title": "React Development Bootcamp",
+  "description": "Learn React from scratch to advanced concepts",
+  "price": 79.99,
+  "originalPrice": 129.99,
+  "level": "beginner",
+  "duration": "8 weeks",
+  "categoryId": "REPLACE_WITH_ACTUAL_CATEGORY_ID",
+  "thumbnail": "https://example.com/react-course.jpg",
+  "features": ["Hands-on projects", "Code reviews", "Lifetime access"],
+  "learningOutcomes": ["Build React apps", "Understand hooks", "State management"],
+  "requirements": ["Basic JavaScript", "HTML/CSS basics"]
+}
+
+### Create a lesson for a course
+POST http://localhost:3000/api/courses/cmcuy2qas0022i1j4kw5k1p4m/lessons
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJjbWN1eTI1dGYwMDA2aTFqNDVnMWc4bTJvIiwidXNlcm5hbWUiOiJqaW1teV9rIiwiZW1haWwiOiJqaW1teWtpbXVueWlAZ21haWwuY29tIiwicm9zZSI6IklOU1RSVUNUT1IiLCJpYXQiOjE3NTIwMDQ1MjAsImV4cCI6MTc1NDU5NjUyMH0.udBXSJzDW05CP9ay9RJ4-06sFJ48imD6hpi8Fr6kKbc
+
+{
+  "title": "Introduction to Async/Await",
+  "content": "Learn how to handle asynchronous operations in JavaScript",
+  "videoUrl": "https://example.com/video.mp4",
+  "duration": "15 minutes",
+  "order": 1,
+  "type": "video",
+  "isPreview": false
+}
+
+### Create a quiz for a course
+POST http://localhost:3000/api/courses/cmcuyxf3500019zhrnopwi8uh/quizzes
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJjbWN1eTI1dGYwMDA2aTFqNDVnMWc4bTJvIiwidXNlcm5hbWUiOiJqaW1teV9rIiwiZW1haWwiOiJqaW1teWtpbXVueWlAZ21haWwuY29tIiwicm9zZSI6IklOU1RSVUNUT1IiLCJpYXQiOjE3NTIwMDU2MDcsImV4cCI6MTc1NDU5NzYwN30.PesPljAogg2II8MjD-zOixkpbYaLlGjtV4nTwWWzkfo
+
+{
+  "title": "JavaScript Fundamentals Quiz",
+  "description": "Test your understanding of JavaScript basics",
+  "duration": 30,
+  "order": 1,
+  "questions": [
+    {
+      "id": "q1",
+      "question": "What is the difference between let and var?",
+      "type": "multiple-choice",
+      "options": [
+        "No difference",
+        "let has block scope, var has function scope",
+        "var is newer than let",
+        "let is faster than var"
+      ],
+      "correctAnswer": 1,
+      "explanation": "let has block scope while var has function scope"
+    }
+  ]
+}
+
+### Get instructor's courses
+GET http://localhost:3000/api/courses/instructor/my-courses
+Authorization: Bearer YOUR_JWT_TOKEN
+
+### Get instructor's courses list (for dropdown)
+GET http://localhost:3000/api/courses/instructor/courses-list
+Authorization: Bearer YOUR_JWT_TOKEN
+
+### Update a course
+PUT http://localhost:3000/api/courses/COURSE_ID
+Content-Type: application/json
+Authorization: Bearer YOUR_JWT_TOKEN
+
+{
+  "title": "Updated Course Title",
+  "description": "Updated description",
+  "price": 79.99,
+  "isPublished": true
+}
+
+### Get course analytics
+GET http://localhost:3000/api/courses/COURSE_ID/analytics
+Authorization: Bearer YOUR_JWT_TOKEN
+
+###
+GET http://localhost:3000/api/courses/cmcuy2qas0022i1j4kw5k1p4m
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJjbWN1eTI1dGYwMDA2aTFqNDVnMWc4bTJvIiwidXNlcm5hbWUiOiJqaW1teV9rIiwiZW1haWwiOiJqaW1teWtpbXVueWlAZ21haWwuY29tIiwicm9zZSI6IklOU1RSVUNUT1IiLCJpYXQiOjE3NTIwMDQ1MjAsImV4cCI6MTc1NDU5NjUyMH0.udBXSJzDW05CP9ay9RJ4-06sFJ48imD6hpi8Fr6kKbc
+
+### Create a quiz with course selection
+POST http://localhost:3000/api/courses/quizzes
+Content-Type: application/json
+Authorization: Bearer YOUR_JWT_TOKEN
+
+{
+  "title": "JavaScript Fundamentals Quiz",
+  "description": "Test your understanding of JavaScript basics",
+  "duration": 30,
+  "order": 1,
+  "courseId": "cmcuyxf3500019zhrnopwi8uh",
+  "questions": [
+    {
+      "id": "q1",
+      "question": "What is the difference between let and var?",
+      "type": "multiple-choice",
+      "options": [
+        "No difference",
+        "let has block scope, var has function scope",
+        "var is newer than let",
+        "let is faster than var"
+      ],
+      "correctAnswer": 1,
+      "explanation": "let has block scope while var has function scope"
+    }
+  ]
+}
+
+### Create a lesson with course selection
+POST http://localhost:3000/api/courses/lessons
+Content-Type: application/json
+Authorization: Bearer YOUR_JWT_TOKEN
+
+{
+  "title": "Introduction to Async/Await",
+  "content": "Learn how to handle asynchronous operations in JavaScript",
+  "videoUrl": "https://example.com/video.mp4",
+  "duration": "15 minutes",
+  "order": 1,
+  "courseId": "cmcuyxf3500019zhrnopwi8uh",
+  "type": "video",
+  "isPreview": false,
+  "isPublished": true
+}

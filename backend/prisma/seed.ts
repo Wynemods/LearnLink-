@@ -65,11 +65,11 @@ async function main() {
   console.log('Creating categories...');
   const createdCategories = [];
   for (const category of categories) {
-    const created = await prisma.category.create({
-      data: category,
+    const createdCategory = await prisma.category.create({
+      data: category
     });
-    createdCategories.push(created);
-    console.log(`Created category: ${created.name}`);
+    createdCategories.push(createdCategory);
+    console.log(`Created category: ${createdCategory.name}`);
   }
 
   // Create users with dummy data
@@ -82,18 +82,18 @@ async function main() {
       firstName: 'Jimmy',
       lastName: 'Kimunyi',
       email: 'jkkimunyi@gmail.com',
-      username: 'jimmy_kimunyi',
-      role: Role.INSTRUCTOR,
+      username: 'jimmy_kimunyi_admin',
+      role: Role.ADMIN, // Make this user an admin
       isActive: true,
       isVerified: true,
       profilePicture: 'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=400&h=400&fit=crop&crop=face',
-      bio: 'Experienced full-stack developer with 8+ years in web development. Passionate about teaching modern web technologies.',
-      title: 'Senior Full Stack Developer',
-      specialty: 'Web Development',
-      experience: '8+ years',
-      expertise: 'JavaScript, React, Node.js, TypeScript, Python',
-      rating: 4.8,
-      totalStudents: 1250
+      bio: 'System Administrator and Full-stack Developer with expertise in web development and system management.',
+      title: 'System Administrator',
+      specialty: 'System Administration',
+      experience: '10+ years',
+      expertise: 'JavaScript, React, Node.js, TypeScript, Python, System Administration',
+      rating: 5.0,
+      totalStudents: 0 // Admin doesn't teach
     },
     {
       firstName: 'Jimmy',
@@ -128,6 +128,7 @@ async function main() {
   // Create test users
   const instructors = [];
   const students = [];
+  const admins = [];
 
   for (const userData of testUsers) {
     const user = await prisma.user.create({
@@ -137,12 +138,15 @@ async function main() {
       }
     });
 
-    if (userData.role === Role.INSTRUCTOR) {
+    if (user.role === Role.ADMIN) {
+      admins.push(user);
+      console.log(`Created admin: ${user.email}`);
+    } else if (user.role === Role.INSTRUCTOR) {
       instructors.push(user);
-      console.log(`Created test instructor: ${user.firstName} ${user.lastName} (${user.email})`);
+      console.log(`Created instructor: ${user.email}`);
     } else {
       students.push(user);
-      console.log(`Created test student: ${user.firstName} ${user.lastName} (${user.email})`);
+      console.log(`Created student: ${user.email}`);
     }
   }
 
@@ -156,36 +160,19 @@ async function main() {
         username: faker.internet.userName(),
         password: hashedPassword,
         role: Role.INSTRUCTOR,
-        isActive: true,
-        isVerified: true,
+        isActive: faker.datatype.boolean({ probability: 0.9 }),
+        isVerified: faker.datatype.boolean({ probability: 0.8 }),
         profilePicture: faker.image.avatar(),
-        bio: faker.lorem.sentences(3),
-        title: faker.helpers.arrayElement([
-          'Senior Developer',
-          'Full Stack Engineer',
-          'Data Scientist',
-          'UX Designer',
-          'Marketing Specialist',
-          'Business Analyst'
-        ]),
-        specialty: faker.helpers.arrayElement([
-          'Web Development',
-          'Mobile Development',
-          'Data Science',
-          'UI/UX Design',
-          'Digital Marketing',
-          'Business Strategy'
-        ]),
+        bio: faker.lorem.paragraph(),
+        title: faker.helpers.arrayElement(['Senior Developer', 'Lead Engineer', 'Technical Architect', 'Principal Developer', 'Engineering Manager']),
+        specialty: faker.helpers.arrayElement(['Web Development', 'Mobile Development', 'DevOps', 'Data Science', 'AI/ML', 'Cybersecurity']),
         experience: faker.helpers.arrayElement(['2+ years', '3+ years', '5+ years', '7+ years', '10+ years']),
-        expertise: faker.helpers.arrayElements([
-          'JavaScript', 'Python', 'React', 'Node.js', 'TypeScript', 'Java'
-        ], { min: 3, max: 5 }).join(', '),
-        rating: parseFloat(faker.number.float({ min: 4.0, max: 5.0, fractionDigits: 1 }).toFixed(1)),
-        totalStudents: faker.number.int({ min: 100, max: 5000 })
+        expertise: faker.helpers.arrayElements(['JavaScript', 'Python', 'React', 'Node.js', 'TypeScript', 'Java', 'C++', 'AWS', 'Docker', 'Kubernetes'], 3).join(', '),
+        rating: faker.number.float({ min: 4.0, max: 5.0, fractionDigits: 1 }),
+        totalStudents: faker.number.int({ min: 50, max: 2000 })
       }
     });
     instructors.push(instructor);
-    console.log(`Created instructor: ${instructor.firstName} ${instructor.lastName}`);
   }
 
   // Create additional students with faker
@@ -198,8 +185,8 @@ async function main() {
         username: faker.internet.userName(),
         password: hashedPassword,
         role: Role.STUDENT,
-        isActive: true,
-        isVerified: faker.datatype.boolean(),
+        isActive: faker.datatype.boolean({ probability: 0.95 }),
+        isVerified: faker.datatype.boolean({ probability: 0.9 }),
         profilePicture: faker.image.avatar(),
         bio: faker.lorem.sentence()
       }
@@ -207,144 +194,232 @@ async function main() {
     students.push(student);
   }
 
-  console.log(`Created ${instructors.length} instructors and ${students.length} students`);
+  console.log(`Created ${admins.length} admins, ${instructors.length} instructors and ${students.length} students`);
 
   // Course templates with dummy data
   const courseTemplates = [
     {
-      title: 'Complete Web Development Bootcamp',
-      description: 'Master modern web development with HTML, CSS, JavaScript, React, Node.js, and more.',
-      price: 89.99,
-      originalPrice: 199.99,
-      discount: 55,
-      duration: '40 hours',
-      level: 'beginner',
-      modules: 12,
-      features: ['Lifetime access', 'Certificate of completion', 'Mobile access'],
-      learningOutcomes: ['Build responsive websites', 'Create React applications', 'Deploy to cloud'],
-      requirements: ['Basic computer skills', 'Internet connection'],
-      thumbnail: 'https://images.unsplash.com/photo-1498050108023-c5249f4df085?w=600&h=400&fit=crop',
-      heroImage: 'https://images.unsplash.com/photo-1498050108023-c5249f4df085?w=1200&h=600&fit=crop',
-      curriculum: {
-        sections: [
-          {
-            id: '1',
-            title: 'HTML & CSS Fundamentals',
-            lessons: [
-              { id: '1', title: 'Introduction to HTML', duration: '15 min', type: 'video' },
-              { id: '2', title: 'CSS Styling', duration: '20 min', type: 'video' }
-            ]
-          }
-        ]
-      }
+      title: 'Complete React Development Course',
+      description: 'Master React from basics to advanced concepts including hooks, context, routing, and state management. Build real-world projects and become a React expert.',
+      price: 199.99,
+      originalPrice: 299.99,
+      discount: 33,
+      duration: '25 hours',
+      level: 'intermediate',
+      modules: 8,
+      thumbnail: 'https://images.unsplash.com/photo-1633356122544-f134324a6cee?w=400&h=300&fit=crop',
+      heroImage: 'https://images.unsplash.com/photo-1633356122544-f134324a6cee?w=800&h=600&fit=crop',
+      features: [
+        'Source code included',
+        'Downloadable resources',
+        'Full lifetime access',
+        'Access on mobile and TV',
+        'Certificate of completion'
+      ],
+      learningOutcomes: [
+        'Build modern React applications',
+        'Understand React hooks and context',
+        'Implement routing with React Router',
+        'State management with Redux',
+        'Test React applications',
+        'Deploy to production',
+        'Optimize performance',
+        'Integrate with APIs and external services'
+      ],
+      requirements: [
+        'Basic understanding of JavaScript',
+        'HTML and CSS fundamentals',
+        'Code editor (VS Code recommended)',
+        'Node.js installed',
+        'Git version control basics'
+      ],
+      categoryName: 'Development'
     },
     {
-      title: 'Data Science with Python',
-      description: 'Learn data analysis and machine learning with Python.',
-      price: 79.99,
-      originalPrice: 159.99,
-      discount: 50,
-      duration: '35 hours',
-      level: 'intermediate',
+      title: 'Advanced Node.js and Express Development',
+      description: 'Master backend development with Node.js and Express. Learn to build scalable APIs, handle authentication, and deploy to production.',
+      price: 249.99,
+      originalPrice: 349.99,
+      discount: 28,
+      duration: '30 hours',
+      level: 'advanced',
       modules: 10,
-      features: ['Hands-on projects', 'Real datasets', 'Jupyter notebooks'],
-      learningOutcomes: ['Analyze data with pandas', 'Build ML models', 'Create visualizations'],
-      requirements: ['Basic Python knowledge', 'High school math'],
-      thumbnail: 'https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=600&h=400&fit=crop',
-      heroImage: 'https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=1200&h=600&fit=crop',
-      curriculum: {
-        sections: [
-          {
-            id: '1',
-            title: 'Python for Data Science',
-            lessons: [
-              { id: '1', title: 'NumPy Basics', duration: '20 min', type: 'video' },
-              { id: '2', title: 'Pandas DataFrames', duration: '25 min', type: 'video' }
-            ]
-          }
-        ]
-      }
+      thumbnail: 'https://images.unsplash.com/photo-1558494949-ef010cbdcc31?w=400&h=300&fit=crop',
+      heroImage: 'https://images.unsplash.com/photo-1558494949-ef010cbdcc31?w=800&h=600&fit=crop',
+      features: [
+        'RESTful API development',
+        'Authentication and authorization',
+        'Database integration',
+        'Testing strategies',
+        'Performance optimization',
+        'Deployment strategies'
+      ],
+      learningOutcomes: [
+        'Build scalable Node.js applications',
+        'Create secure authentication systems',
+        'Design and implement REST APIs',
+        'Work with databases (MongoDB, PostgreSQL)',
+        'Implement real-time features',
+        'Deploy to cloud platforms',
+        'Optimize application performance',
+        'Write comprehensive tests'
+      ],
+      requirements: [
+        'Solid JavaScript knowledge',
+        'Understanding of HTTP protocols',
+        'Basic database concepts',
+        'Git version control',
+        'Command line familiarity'
+      ],
+      categoryName: 'Development'
     },
     {
       title: 'UI/UX Design Masterclass',
-      description: 'Master user interface and user experience design principles.',
-      price: 69.99,
-      originalPrice: 129.99,
-      discount: 46,
-      duration: '25 hours',
-      level: 'beginner',
-      modules: 8,
-      features: ['Design projects', 'Figma templates', 'Portfolio building'],
-      learningOutcomes: ['Create user-centered designs', 'Build prototypes', 'Master Figma'],
-      requirements: ['No prior experience', 'Creative mindset'],
-      thumbnail: 'https://images.unsplash.com/photo-1561070791-2526d30994b5?w=600&h=400&fit=crop',
-      heroImage: 'https://images.unsplash.com/photo-1561070791-2526d30994b5?w=1200&h=600&fit=crop',
-      curriculum: {
-        sections: [
-          {
-            id: '1',
-            title: 'Design Fundamentals',
-            lessons: [
-              { id: '1', title: 'Design Principles', duration: '15 min', type: 'video' },
-              { id: '2', title: 'Color Theory', duration: '20 min', type: 'video' }
-            ]
-          }
-        ]
-      }
-    },
-    {
-      title: 'Digital Marketing Strategy',
-      description: 'Learn comprehensive digital marketing strategies and tactics.',
-      price: 59.99,
-      originalPrice: 119.99,
-      discount: 50,
+      description: 'Create stunning user interfaces and experiences. Learn design principles, user research, prototyping, and modern design tools.',
+      price: 179.99,
+      originalPrice: 249.99,
+      discount: 28,
       duration: '20 hours',
       level: 'beginner',
       modules: 6,
-      features: ['Marketing templates', 'Case studies', 'Analytics tools'],
-      learningOutcomes: ['Develop marketing strategies', 'Master SEO', 'Create campaigns'],
-      requirements: ['Basic computer skills', 'Interest in marketing'],
-      thumbnail: 'https://images.unsplash.com/photo-1460925895917-afdab827c52f?w=600&h=400&fit=crop',
-      heroImage: 'https://images.unsplash.com/photo-1460925895917-afdab827c52f?w=1200&h=600&fit=crop',
-      curriculum: {
-        sections: [
-          {
-            id: '1',
-            title: 'Marketing Fundamentals',
-            lessons: [
-              { id: '1', title: 'Digital Marketing Overview', duration: '15 min', type: 'video' },
-              { id: '2', title: 'Target Audience Research', duration: '20 min', type: 'video' }
-            ]
-          }
-        ]
-      }
+      thumbnail: 'https://images.unsplash.com/photo-1561070791-2526d30994b5?w=400&h=300&fit=crop',
+      heroImage: 'https://images.unsplash.com/photo-1561070791-2526d30994b5?w=800&h=600&fit=crop',
+      features: [
+        'Design thinking methodology',
+        'Figma and Adobe XD tutorials',
+        'User research techniques',
+        'Prototyping and wireframing',
+        'Design system creation',
+        'Portfolio development'
+      ],
+      learningOutcomes: [
+        'Master design principles',
+        'Conduct user research',
+        'Create wireframes and prototypes',
+        'Design responsive interfaces',
+        'Build design systems',
+        'Use professional design tools',
+        'Present design solutions',
+        'Collaborate with developers'
+      ],
+      requirements: [
+        'Creative mindset',
+        'Basic computer skills',
+        'Figma account (free)',
+        'No prior design experience needed'
+      ],
+      categoryName: 'Design'
     },
     {
-      title: 'Business Analytics & Intelligence',
-      description: 'Master business intelligence tools and make data-driven decisions.',
-      price: 74.99,
-      originalPrice: 149.99,
-      discount: 50,
-      duration: '30 hours',
+      title: 'Python for Data Science',
+      description: 'Learn Python programming for data analysis, visualization, and machine learning. Work with real datasets and build predictive models.',
+      price: 159.99,
+      originalPrice: 229.99,
+      discount: 30,
+      duration: '18 hours',
       level: 'intermediate',
-      modules: 9,
-      features: ['BI tools access', 'Real business cases', 'Dashboard templates'],
-      learningOutcomes: ['Create dashboards', 'Analyze metrics', 'Make decisions'],
-      requirements: ['Basic Excel knowledge', 'Business understanding'],
-      thumbnail: 'https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=600&h=400&fit=crop',
-      heroImage: 'https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=1200&h=600&fit=crop',
-      curriculum: {
-        sections: [
-          {
-            id: '1',
-            title: 'Business Intelligence Basics',
-            lessons: [
-              { id: '1', title: 'Introduction to BI', duration: '15 min', type: 'video' },
-              { id: '2', title: 'Data Collection', duration: '20 min', type: 'video' }
-            ]
-          }
-        ]
-      }
+      modules: 7,
+      thumbnail: 'https://images.unsplash.com/photo-1526379879527-8559ecfcaec0?w=400&h=300&fit=crop',
+      heroImage: 'https://images.unsplash.com/photo-1526379879527-8559ecfcaec0?w=800&h=600&fit=crop',
+      features: [
+        'Pandas and NumPy mastery',
+        'Data visualization with Matplotlib',
+        'Machine learning basics',
+        'Real-world projects',
+        'Jupyter notebooks included',
+        'Career guidance'
+      ],
+      learningOutcomes: [
+        'Master Python for data analysis',
+        'Work with Pandas and NumPy',
+        'Create data visualizations',
+        'Build machine learning models',
+        'Clean and preprocess data',
+        'Statistical analysis',
+        'Work with APIs and databases',
+        'Present findings effectively'
+      ],
+      requirements: [
+        'Basic Python knowledge',
+        'Statistics fundamentals',
+        'Jupyter Notebook setup',
+        'Mathematical thinking'
+      ],
+      categoryName: 'Data Science'
+    },
+    {
+      title: 'Digital Marketing Strategy',
+      description: 'Master digital marketing from strategy to execution. Learn SEO, social media, content marketing, and analytics.',
+      price: 129.99,
+      originalPrice: 189.99,
+      discount: 32,
+      duration: '15 hours',
+      level: 'beginner',
+      modules: 5,
+      thumbnail: 'https://images.unsplash.com/photo-1460925895917-afdab827c52f?w=400&h=300&fit=crop',
+      heroImage: 'https://images.unsplash.com/photo-1460925895917-afdab827c52f?w=800&h=600&fit=crop',
+      features: [
+        'SEO optimization',
+        'Social media marketing',
+        'Content strategy',
+        'Email marketing',
+        'Analytics and reporting',
+        'Campaign management'
+      ],
+      learningOutcomes: [
+        'Develop marketing strategies',
+        'Optimize for search engines',
+        'Create engaging content',
+        'Run social media campaigns',
+        'Analyze marketing metrics',
+        'Build email campaigns',
+        'Manage advertising budgets',
+        'Measure ROI effectively'
+      ],
+      requirements: [
+        'Basic computer skills',
+        'Social media familiarity',
+        'Business awareness',
+        'Google Analytics account'
+      ],
+      categoryName: 'Marketing'
+    },
+    {
+      title: 'Entrepreneurship and Business Development',
+      description: 'Learn how to start and grow a successful business. From idea validation to scaling, master the entrepreneurial journey.',
+      price: 199.99,
+      originalPrice: 299.99,
+      discount: 33,
+      duration: '22 hours',
+      level: 'intermediate',
+      modules: 8,
+      thumbnail: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=400&h=300&fit=crop',
+      heroImage: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=800&h=600&fit=crop',
+      features: [
+        'Business plan development',
+        'Market research methods',
+        'Funding strategies',
+        'Legal considerations',
+        'Marketing and sales',
+        'Financial management'
+      ],
+      learningOutcomes: [
+        'Validate business ideas',
+        'Create comprehensive business plans',
+        'Understand market dynamics',
+        'Secure funding and investment',
+        'Build and manage teams',
+        'Develop go-to-market strategies',
+        'Navigate legal requirements',
+        'Scale business operations'
+      ],
+      requirements: [
+        'Business idea or interest',
+        'Basic financial literacy',
+        'Willingness to research',
+        'Entrepreneurial mindset'
+      ],
+      categoryName: 'Business'
     }
   ];
 
@@ -353,9 +428,9 @@ async function main() {
   const createdCourses = [];
 
   for (const courseTemplate of courseTemplates) {
-    const instructor = faker.helpers.arrayElement(instructors);
-    const category = faker.helpers.arrayElement(createdCategories);
-
+    const category = createdCategories.find(cat => cat.name === courseTemplate.categoryName);
+    const instructor = instructors[Math.floor(Math.random() * instructors.length)];
+    
     const course = await prisma.course.create({
       data: {
         title: courseTemplate.title,
@@ -366,30 +441,38 @@ async function main() {
         duration: courseTemplate.duration,
         level: courseTemplate.level,
         modules: courseTemplate.modules,
-        rating: parseFloat(faker.number.float({ min: 4.0, max: 5.0, fractionDigits: 1 }).toFixed(1)),
-        totalReviews: faker.number.int({ min: 10, max: 500 }),
+        thumbnail: courseTemplate.thumbnail,
+        heroImage: courseTemplate.heroImage,
         features: courseTemplate.features,
         learningOutcomes: courseTemplate.learningOutcomes,
         requirements: courseTemplate.requirements,
         whatYouLearn: courseTemplate.learningOutcomes,
-        courseContent: courseTemplate.learningOutcomes,
+        courseContent: courseTemplate.features,
         courseRequirements: courseTemplate.requirements,
-        targetAudience: ['Beginners', 'Students', 'Professionals'],
-        curriculum: courseTemplate.curriculum,
-        totalSections: 1,
-        totalLectures: 2,
-        totalDuration: courseTemplate.duration,
-        thumbnail: courseTemplate.thumbnail,
-        heroImage: courseTemplate.heroImage,
-        instructorBio: instructor.bio,
-        instructorExperience: instructor.experience,
-        instructorRating: instructor.rating,
+        targetAudience: [
+          'Aspiring developers',
+          'Career changers',
+          'Students',
+          'Working professionals'
+        ],
         isPublished: true,
+        categoryId: category?.id,
         instructorId: instructor.id,
-        categoryId: category.id,
+        rating: faker.number.float({ min: 4.0, max: 5.0, fractionDigits: 1 }),
+        totalReviews: faker.number.int({ min: 10, max: 500 }),
+        totalSections: faker.number.int({ min: 5, max: 12 }),
+        totalLectures: faker.number.int({ min: 20, max: 100 }),
+        totalQuizzes: faker.number.int({ min: 3, max: 15 }),
+        totalDuration: courseTemplate.duration,
+        curriculum: {
+          sections: [], // Will be populated later
+          totalSections: 0,
+          totalLessons: 0,
+          totalQuizzes: 0
+        }
       }
     });
-
+    
     createdCourses.push(course);
     console.log(`Created course: ${course.title} by ${instructor.firstName} ${instructor.lastName}`);
   }
@@ -400,14 +483,14 @@ async function main() {
     for (let i = 0; i < 5; i++) {
       await prisma.lesson.create({
         data: {
-          title: faker.lorem.words(3),
-          content: faker.lorem.paragraph(),
-          videoUrl: faker.internet.url(),
-          duration: `${faker.number.int({ min: 10, max: 45 })} min`,
+          title: `Lesson ${i + 1}: ${faker.lorem.words(3)}`,
+          content: faker.lorem.paragraphs(2),
+          videoUrl: `https://example.com/video-${i + 1}.mp4`,
+          duration: `${faker.number.int({ min: 5, max: 20 })} minutes`,
           order: i + 1,
-          isPublished: true,
           type: faker.helpers.arrayElement(['video', 'text', 'quiz']),
-          isPreview: i === 0,
+          isPreview: i === 0, // First lesson is preview
+          isPublished: true,
           courseId: course.id
         }
       });
@@ -492,24 +575,49 @@ async function main() {
       orderBy: { order: 'asc' }
     });
 
-    const courseQuizzes = quizzes.filter(q => q.courseId === course.id);
+    const courseQuizzes = await prisma.quiz.findMany({
+      where: { courseId: course.id },
+      orderBy: { order: 'asc' }
+    });
 
-    // Build curriculum structure
+    // Update curriculum structure
     const curriculum = {
       sections: [
         {
           id: '1',
-          title: 'Introduction',
-          lessons: courseLessons.slice(0, 2),
-          quizzes: courseQuizzes.slice(0, 1),
-          totalDuration: 45
+          title: 'Getting Started',
+          lessons: courseLessons.slice(0, 2).map(lesson => ({
+            id: lesson.id,
+            title: lesson.title,
+            duration: lesson.duration,
+            type: lesson.type,
+            isPreview: lesson.isPreview
+          })),
+          quizzes: courseQuizzes.slice(0, 1).map(quiz => ({
+            id: quiz.id,
+            title: quiz.title,
+            duration: quiz.duration,
+            order: quiz.order
+          })),
+          totalDuration: courseLessons.slice(0, 2).length * 15
         },
         {
           id: '2',
           title: 'Advanced Topics',
-          lessons: courseLessons.slice(2),
-          quizzes: courseQuizzes.slice(1),
-          totalDuration: 60
+          lessons: courseLessons.slice(2).map(lesson => ({
+            id: lesson.id,
+            title: lesson.title,
+            duration: lesson.duration,
+            type: lesson.type,
+            isPreview: lesson.isPreview
+          })),
+          quizzes: courseQuizzes.slice(1).map(quiz => ({
+            id: quiz.id,
+            title: quiz.title,
+            duration: quiz.duration,
+            order: quiz.order
+          })),
+          totalDuration: courseLessons.slice(2).length * 15
         }
       ],
       totalSections: 2,
@@ -520,170 +628,84 @@ async function main() {
     await prisma.course.update({
       where: { id: course.id },
       data: {
-        curriculum,
-        totalSections: 2,
-        totalLectures: courseLessons.length,
-        totalQuizzes: courseQuizzes.length
+        curriculum: curriculum,
+        totalSections: curriculum.totalSections,
+        totalLectures: curriculum.totalLessons,
+        totalQuizzes: curriculum.totalQuizzes
       }
     });
   }
 
-  // Create enrollments (avoid duplicates)
+  // Create enrollments
   console.log('Creating enrollments...');
-  const enrollments = [];
-  const enrollmentPairs = new Set();
-
-  for (let i = 0; i < 80; i++) {
-    const student = faker.helpers.arrayElement(students);
-    const course = faker.helpers.arrayElement(createdCourses);
-    const pairKey = `${student.id}-${course.id}`;
-
-    if (!enrollmentPairs.has(pairKey)) {
-      const enrollment = await prisma.enrollment.create({
+  for (const student of students.slice(0, 20)) {
+    const randomCourses = faker.helpers.arrayElements(createdCourses, faker.number.int({ min: 1, max: 3 }));
+    
+    for (const course of randomCourses) {
+      await prisma.enrollment.create({
         data: {
           studentId: student.id,
           courseId: course.id,
           progress: faker.number.int({ min: 0, max: 100 }),
           currentLesson: faker.number.int({ min: 1, max: 5 }),
-          completedLessons: faker.helpers.arrayElements(['1', '2', '3', '4', '5'], { min: 0, max: 3 })
+          completedLessons: faker.helpers.arrayElements(['1', '2', '3', '4', '5'], faker.number.int({ min: 0, max: 3 }))
         }
       });
-      enrollments.push(enrollment);
-      enrollmentPairs.add(pairKey);
     }
   }
 
-  console.log(`Created ${enrollments.length} enrollments`);
-
-  // Create reviews (ensure unique student-course combinations)
+  // Create reviews
   console.log('Creating reviews...');
-  const reviews = [];
-  const reviewPairs = new Set();
-
-  for (let i = 0; i < 50; i++) {
-    const student = faker.helpers.arrayElement(students);
-    const course = faker.helpers.arrayElement(createdCourses);
-    const pairKey = `${student.id}-${course.id}`;
-
-    if (!reviewPairs.has(pairKey)) {
-      const review = await prisma.review.create({
+  for (const course of createdCourses) {
+    const reviewCount = faker.number.int({ min: 5, max: 20 });
+    const reviewers = faker.helpers.arrayElements(students, reviewCount);
+    
+    for (const reviewer of reviewers) {
+      await prisma.review.create({
         data: {
           rating: faker.number.int({ min: 3, max: 5 }),
-          comment: faker.lorem.sentences(2),
-          userId: student.id,
-          courseId: course.id
+          comment: faker.lorem.paragraph(),
+          courseId: course.id,
+          userId: reviewer.id
         }
       });
-
-      reviews.push(review);
-      reviewPairs.add(pairKey);
     }
   }
 
-  console.log(`Created ${reviews.length} reviews`);
-
-  // Create assignments
-  console.log('Creating assignments...');
-  const assignments = [];
-
-  for (let i = 0; i < 15; i++) {
-    const course = faker.helpers.arrayElement(createdCourses);
-    const instructor = instructors.find(inst => inst.id === course.instructorId);
-
-    const assignment = await prisma.assignment.create({
-      data: {
-        title: faker.lorem.words(4),
-        description: faker.lorem.paragraph(),
-        dueDate: faker.date.future(),
-        maxScore: faker.number.int({ min: 50, max: 100 }),
-        courseId: course.id,
-        createdBy: instructor.id
-      }
-    });
-    assignments.push(assignment);
-  }
-
-  console.log(`Created ${assignments.length} assignments`);
-
-  // Create submissions
-  console.log('Creating submissions...');
-  const submissions = [];
-
-  for (let i = 0; i < 30; i++) {
-    const assignment = faker.helpers.arrayElement(assignments);
-    const student = faker.helpers.arrayElement(students);
-
-    const submission = await prisma.submission.create({
-      data: {
-        content: faker.lorem.paragraphs(2),
-        score: faker.number.int({ min: 60, max: 100 }),
-        feedback: faker.lorem.sentence(),
-        submittedAt: faker.date.recent(),
-        gradedAt: faker.date.recent(),
-        assignmentId: assignment.id,
-        studentId: student.id
-      }
-    });
-    submissions.push(submission);
-  }
-
-  console.log(`Created ${submissions.length} submissions`);
-
-  // Create payments
+  // Create some payments
   console.log('Creating payments...');
-  const payments = [];
-
-  for (let i = 0; i < 40; i++) {
-    const student = faker.helpers.arrayElement(students);
-    const course = faker.helpers.arrayElement(createdCourses);
-
-    const payment = await prisma.payment.create({
+  for (const student of students.slice(0, 10)) {
+    const randomCourse = faker.helpers.arrayElement(createdCourses);
+    
+    await prisma.payment.create({
       data: {
-        userId: String(student.id), // ensure string
-        courseId: String(course.id), // ensure string
-        amount: course.price,
+        amount: randomCourse.price,
+        phoneNumber: '+254700000000',
         status: faker.helpers.arrayElement(['COMPLETED', 'PENDING', 'FAILED']),
-        phoneNumber: faker.phone.number(),
+        resultDescription: 'Payment successful',
+        courseId: randomCourse.id,
+        userId: student.id
       }
     });
-    payments.push(payment);
   }
 
-  console.log(`Created ${payments.length} payments`);
-
-  // Update course ratings based on reviews
-  console.log('Updating course ratings...');
-  for (const course of createdCourses) {
-    const courseReviews = reviews.filter(r => r.courseId === course.id);
-    if (courseReviews.length > 0) {
-      const avgRating = courseReviews.reduce((sum, review) => sum + review.rating, 0) / courseReviews.length;
-      await prisma.course.update({
-        where: { id: course.id },
-        data: {
-          rating: parseFloat(avgRating.toFixed(1)),
-          totalReviews: courseReviews.length
-        }
-      });
-    }
-  }
-
-  console.log('Database seeding completed successfully!');
-  console.log(`Summary:
-  - Categories: ${createdCategories.length}
-  - Instructors: ${instructors.length}
-  - Students: ${students.length}
-  - Courses: ${createdCourses.length}
-  - Lessons: ${createdCourses.length * 5}
-  - Enrollments: ${enrollments.length}
-  - Reviews: ${reviews.length}
-  - Assignments: ${assignments.length}
-  - Submissions: ${submissions.length}
-  - Payments: ${payments.length}`);
+  console.log('✅ Database seeding completed successfully!');
+  console.log(`📊 Summary:`);
+  console.log(`   - ${admins.length} admins created`);
+  console.log(`   - ${instructors.length} instructors created`);
+  console.log(`   - ${students.length} students created`);
+  console.log(`   - ${createdCategories.length} categories created`);
+  console.log(`   - ${createdCourses.length} courses created`);
+  console.log(`   - ${quizzes.length} quizzes created`);
+  console.log(`   - Enrollments, reviews, and payments created`);
+  console.log(`🔑 Admin Account: jkkimunyi@gmail.com / Password123`);
+  console.log(`🎓 Instructor Account: jimmykimunyi@gmail.com / Password123`);
+  console.log(`👨‍🎓 Student Account: kimunyi.jimmy@gmail.com / Password123`);
 }
 
 main()
   .catch((e) => {
-    console.error('Error during seeding:', e);
+    console.error(e);
     process.exit(1);
   })
   .finally(async () => {

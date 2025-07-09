@@ -1,0 +1,138 @@
+/* Custom styles for student dashboard */
+
+/* Sidebar transitions */
+.sidebar-transition {
+  transition: width 0.3s ease-in-out;
+}
+
+/* Progress bar animations */
+.progress-bar {
+  transition: width 0.5s ease-in-out;
+}
+
+/* Card hover effects */
+.card-hover {
+  transition: all 0.3s ease-in-out;
+}
+
+.card-hover:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+}
+
+/* Mobile responsive adjustments */
+@media (max-width: 768px) {
+  .grid-cols-3 {
+    grid-template-columns: repeat(1, minmax(0, 1fr));
+  }
+  
+  .coursesPerView {
+    grid-template-columns: repeat(1, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 1024px) {
+  .lg\:grid-cols-3 {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+/* Carousel button states */
+.carousel-button {
+  transition: all 0.2s ease-in-out;
+}
+
+.carousel-button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.carousel-button:hover:not(:disabled) {
+  background-color: #f3f4f6;
+}
+
+/* Achievement icons */
+.achievement-icon {
+  transition: transform 0.2s ease-in-out;
+}
+
+.achievement-icon:hover {
+  transform: scale(1.1);
+}
+
+/* Status badges */
+.status-badge {
+  transition: all 0.2s ease-in-out;
+}
+
+/* Sidebar button states */
+.sidebar-button {
+  transition: all 0.2s ease-in-out;
+}
+
+.sidebar-button:hover {
+  background-color: #f9fafb;
+}
+
+.sidebar-button.active {
+  background-color: #eff6ff;
+  color: #2563eb;
+}
+
+/* Table hover effects */
+.table-row {
+  transition: background-color 0.2s ease-in-out;
+}
+
+.table-row:hover {
+  background-color: #f9fafb;
+}
+
+/* Loading states */
+.loading-spinner {
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+/* Empty state illustrations */
+.empty-state {
+  opacity: 0.7;
+  transition: opacity 0.3s ease-in-out;
+}
+
+.empty-state:hover {
+  opacity: 1;
+}
+
+/* Certificate styling */
+.certificate-card {
+  background: linear-gradient(135deg, #fbbf24 0%, #f59e0b 100%);
+  border: 2px solid #f59e0b;
+}
+
+.certificate-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 10px 25px rgba(245, 158, 11, 0.3);
+}
+
+/* Custom scrollbar */
+::-webkit-scrollbar {
+  width: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: #f1f5f9;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #cbd5e1;
+  border-radius: 3px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #94a3b8;
+}

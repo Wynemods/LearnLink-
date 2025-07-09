@@ -320,3 +320,51 @@ Accept: application/json
 #    - "USE_MARKETING_CATEGORY_ID_FROM_ABOVE" with the actual Marketing category ID
 # 4. Then run the course creation endpoints
 # 5. Finally, check if courses were created successfully
+
+### Step 4: Add lessons to a course (replace YOUR_NEW_COURSE_ID with actual course id)
+POST {{baseUrl}}/courses/YOUR_NEW_COURSE_ID/lessons
+Content-Type: application/json
+Authorization: Bearer {{token}}
+
+{
+  "title": "Introduction to Async/Await",
+  "content": "Learn how to handle asynchronous operations in JavaScript",
+  "videoUrl": "https://example.com/video.mp4",
+  "duration": "15 minutes",
+  "order": 1,
+  "type": "video",
+  "isPreview": false
+}
+
+### Create your own course first
+POST http://localhost:3000/api/courses
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJjbWN1eTI1dGYwMDA2aTFqNDVnMWc4bTJvIiwidXNlcm5hbWUiOiJqaW1teV9rIiwiZW1haWwiOiJqaW1teWtpbXVueWlAZ21haWwuY29tIiwicm9sZSI6IklOU1RSVUNUT1IiLCJpYXQiOjE3NTIwMDU2MDcsImV4cCI6MTc1NDU5NzYwN30.PesPljAogg2II8MjD-zOixkpbYaLlGjtV4nTwWWzkfo
+
+{
+  "title": "My JavaScript Course",
+  "description": "Learn JavaScript fundamentals and advanced concepts",
+  "price": 99.99,
+  "originalPrice": 149.99,
+  "level": "beginner",
+  "duration": "20 hours",
+  "features": ["Hands-on projects", "Code reviews", "Lifetime access"],
+  "learningOutcomes": ["Master JavaScript", "Build projects", "Understand ES6+"],
+  "requirements": ["Basic computer skills", "Internet connection"],
+  "isPublished": true
+}
+
+### Create a lesson for YOUR course
+POST http://localhost:3000/api/courses/cmcuyxf3500019zhrnopwi8uh/lessons
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJjbWN1eTI1dGYwMDA2aTFqNDVnMWc4bTJvIiwidXNlcm5hbWUiOiJqaW1teV9rIiwiZW1haWwiOiJqaW1teWtpbXVueWlAZ21haWwuY29tIiwicm9sZSI6IklOU1RSVUNUT1IiLCJpYXQiOjE3NTIwMDU2MDcsImV4cCI6MTc1NDU5NzYwN30.PesPljAogg2II8MjD-zOixkpbYaLlGjtV4nTwWWzkfo
+
+{
+  "title": "Introduction to Async/Await",
+  "content": "Learn how to handle asynchronous operations in JavaScript",
+  "videoUrl": "https://example.com/video.mp4",
+  "duration": "15 minutes",
+  "order": 1,
+  "type": "video",
+  "isPreview": false
+}

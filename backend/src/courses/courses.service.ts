@@ -5,6 +5,7 @@ import { PaginationDto, PaginatedResponse } from '../common/dto/pagination.dto';
 import { User } from '@prisma/client';
 import { CreateQuizDto } from './dto/quiz.dto';
 import { CreateCertificateDto } from './dto/certificate.dto';
+import { CreateLessonDto, UpdateLessonDto } from './dto/lesson.dto';
 
 @Injectable()
 export class CoursesService {
@@ -274,11 +275,25 @@ export class CoursesService {
       throw new ForbiddenException('Only instructors can create courses');
     }
 
+    // Remove categoryId if it's invalid or doesn't exist
+    const createData: any = { ...createCourseDto };
+    
+    if (createData.categoryId) {
+      const categoryExists = await this.prisma.category.findUnique({
+        where: { id: createData.categoryId }
+      });
+      
+      if (!categoryExists) {
+        // Remove invalid categoryId
+        delete createData.categoryId;
+      }
+    }
+
     const course = await this.prisma.course.create({
       data: {
-        ...createCourseDto,
+        ...createData,
         instructorId: user.id,
-        isPublished: createCourseDto.isPublished || false,
+        isPublished: createData.isPublished || false,
       },
       include: {
         instructor: {
@@ -811,6 +826,43 @@ export class CoursesService {
     }));
   }
 
+  async getInstructorCoursesList(instructorId: string): Promise<any[]> {
+    const courses = await this.prisma.course.findMany({
+      where: {
+        instructorId,
+        isPublished: true // Only show published courses
+      },
+      select: {
+        id: true,
+        title: true,
+        description: true,
+        thumbnail: true,
+        level: true,
+        _count: {
+          select: {
+            lessons: true,
+            quizzes: true,
+            enrollments: true
+          }
+        }
+      },
+      orderBy: {
+        createdAt: 'desc'
+      }
+    });
+
+    return courses.map(course => ({
+      id: course.id,
+      title: course.title,
+      description: course.description,
+      thumbnail: course.thumbnail,
+      level: course.level,
+      totalLessons: course._count.lessons,
+      totalQuizzes: course._count.quizzes,
+      totalEnrollments: course._count.enrollments
+    }));
+  }
+
   async getInstructorStudents(instructorId: string): Promise<any[]> {
     const enrollments = await this.prisma.enrollment.findMany({
       where: {
@@ -950,75 +1002,198 @@ export class CoursesService {
     };
   }
 
-  // Quiz CRUD (Instructor only)
-  async createQuiz(courseId: string, dto: CreateQuizDto, user: any) {
-    // Only instructor of this course
-    const course = await this.prisma.course.findUnique({ where: { id: courseId } });
-    if (!course || course.instructorId !== user.id) throw new ForbiddenException('Not allowed');
-    return this.prisma.quiz.create({
-      data: {
-        ...dto,
-        courseId,
-        isPublished: true,
-        order: 1,
-        questions: dto.questions,
-      },
+  // Lesson CRUD (Instructor only)
+  async createLesson(dto: CreateLessonDto, user: any) {
+    // Verify the course exists and belongs to the instructor
+    const course = await this.prisma.course.findUnique({
+      where: { id: dto.courseId },
+      select: { instructorId: true, title: true }
     });
+
+    if (!course) {
+      throw new NotFoundException('Course not found');
+    }
+
+    if (course.instructorId !== user.id && user.role !== 'ADMIN') {
+      throw new ForbiddenException('You can only create lessons for your own courses');
+    }
+
+    const lesson = await this.prisma.lesson.create({
+      data: {
+        title: dto.title,
+        content: dto.content,
+        videoUrl: dto.videoUrl,
+        duration: dto.duration,
+        order: dto.order,
+        courseId: dto.courseId,
+        type: dto.type || 'video',
+        isPreview: dto.isPreview || false,
+        isPublished: dto.isPublished || false
+      },
+      include: {
+        course: {
+          select: {
+            id: true,
+            title: true
+          }
+        }
+      }
+    });
+
+    return lesson;
+  }
+
+  async updateLesson(lessonId: string, dto: UpdateLessonDto, user: any) {
+    const lesson = await this.prisma.lesson.findUnique({
+      where: { id: lessonId },
+      include: { course: { select: { instructorId: true } } }
+    });
+
+    if (!lesson) {
+      throw new NotFoundException('Lesson not found');
+    }
+
+    if (lesson.course.instructorId !== user.id && user.role !== 'ADMIN') {
+      throw new ForbiddenException('Only the course instructor can update lessons');
+    }
+
+    const updatedLesson = await this.prisma.lesson.update({
+      where: { id: lessonId },
+      data: dto
+    });
+
+    return updatedLesson;
+  }
+
+  async deleteLesson(lessonId: string, user: any) {
+    const lesson = await this.prisma.lesson.findUnique({
+      where: { id: lessonId },
+      include: { course: { select: { instructorId: true } } }
+    });
+
+    if (!lesson) {
+      throw new NotFoundException('Lesson not found');
+    }
+
+    if (lesson.course.instructorId !== user.id && user.role !== 'ADMIN') {
+      throw new ForbiddenException('Only the course instructor can delete lessons');
+    }
+
+    await this.prisma.lesson.delete({
+      where: { id: lessonId }
+    });
+
+    return { message: 'Lesson deleted successfully' };
+  }
+
+  async getCourseLessons(courseId: string) {
+    const lessons = await this.prisma.lesson.findMany({
+      where: { courseId },
+      orderBy: { order: 'asc' }
+    });
+
+    return lessons;
+  }
+
+  // Quiz CRUD (Instructor only)
+  async createQuiz(dto: CreateQuizDto, user: any) {
+    // Verify the course exists and belongs to the instructor
+    const course = await this.prisma.course.findUnique({
+      where: { id: dto.courseId },
+      select: { instructorId: true, title: true }
+    });
+
+    if (!course) {
+      throw new NotFoundException('Course not found');
+    }
+
+    if (course.instructorId !== user.id && user.role !== 'ADMIN') {
+      throw new ForbiddenException('You can only create quizzes for your own courses');
+    }
+
+    const quiz = await this.prisma.quiz.create({
+      data: {
+        title: dto.title,
+        description: dto.description,
+        duration: dto.duration,
+        order: dto.order || await this.getNextQuizOrder(dto.courseId),
+        courseId: dto.courseId,
+        questions: dto.questions,
+        isPublished: true
+      },
+      include: {
+        course: {
+          select: {
+            id: true,
+            title: true
+          }
+        }
+      }
+    });
+
+    return quiz;
   }
 
   async updateQuiz(quizId: string, dto: Partial<CreateQuizDto>, user: any) {
-    const quiz = await this.prisma.quiz.findUnique({ where: { id: quizId }, include: { course: true } });
-    if (!quiz || quiz.course.instructorId !== user.id) throw new ForbiddenException('Not allowed');
-    return this.prisma.quiz.update({ where: { id: quizId }, data: dto });
+    const quiz = await this.prisma.quiz.findUnique({
+      where: { id: quizId },
+      include: { course: { select: { instructorId: true } } }
+    });
+
+    if (!quiz) {
+      throw new NotFoundException('Quiz not found');
+    }
+
+    if (quiz.course.instructorId !== user.id && user.role !== 'ADMIN') {
+      throw new ForbiddenException('Only the course instructor can update quizzes');
+    }
+
+    const updatedQuiz = await this.prisma.quiz.update({
+      where: { id: quizId },
+      data: dto
+    });
+
+    return updatedQuiz;
   }
 
   async deleteQuiz(quizId: string, user: any) {
-    const quiz = await this.prisma.quiz.findUnique({ where: { id: quizId }, include: { course: true } });
-    if (!quiz || quiz.course.instructorId !== user.id) throw new ForbiddenException('Not allowed');
-    return this.prisma.quiz.delete({ where: { id: quizId } });
+    const quiz = await this.prisma.quiz.findUnique({
+      where: { id: quizId },
+      include: { course: { select: { instructorId: true } } }
+    });
+
+    if (!quiz) {
+      throw new NotFoundException('Quiz not found');
+    }
+
+    if (quiz.course.instructorId !== user.id && user.role !== 'ADMIN') {
+      throw new ForbiddenException('Only the course instructor can delete quizzes');
+    }
+
+    await this.prisma.quiz.delete({
+      where: { id: quizId }
+    });
+
+    return { message: 'Quiz deleted successfully' };
   }
 
   async getCourseQuizzes(courseId: string) {
-    return this.prisma.quiz.findMany({ where: { courseId } });
-  }
-
-  // Certificate CRUD (Instructor only for create, update, delete)
-  async createCertificate(dto: CreateCertificateDto, user: any) {
-    // Only instructor of this course
-    const course = await this.prisma.course.findUnique({ where: { id: dto.courseId } });
-    if (!course || course.instructorId !== user.id) throw new ForbiddenException('Not allowed');
-    return this.prisma.certificate.create({ data: dto });
-  }
-
-  async getCourseCertificates(courseId: string, user: any) {
-    // Instructor: all, Student: only their own
-    const course = await this.prisma.course.findUnique({ where: { id: courseId } });
-    if (user.role === 'INSTRUCTOR' && course.instructorId === user.id) {
-      return this.prisma.certificate.findMany({ where: { courseId } });
-    }
-    // Student: only their own
-    return this.prisma.certificate.findMany({ where: { courseId, studentId: user.id } });
-  }
-
-  async getMyCertificate(courseId: string, user: any) {
-    return this.prisma.certificate.findFirst({ where: { courseId, studentId: user.id } });
-  }
-
-  async deleteCertificate(certId: string, user: any) {
-    const cert = await this.prisma.certificate.findUnique({ where: { id: certId }, include: { course: true } });
-    if (!cert || cert.course.instructorId !== user.id) throw new ForbiddenException('Not allowed');
-    return this.prisma.certificate.delete({ where: { id: certId } });
-  }
-
-  // Issue certificate if score >= 80%
-  async issueCertificateIfEligible(courseId: string, userId: string, score: number) {
-    if (score < 80) throw new ForbiddenException('Score too low for certificate');
-    // Check if already issued
-    const exists = await this.prisma.certificate.findUnique({ where: { studentId_courseId: { studentId: userId, courseId } } });
-    if (exists) return exists;
-    return this.prisma.certificate.create({
-      data: { studentId: userId, courseId, score, url: '' }
+    const quizzes = await this.prisma.quiz.findMany({
+      where: { courseId },
+      orderBy: { order: 'asc' }
     });
+
+    return quizzes;
+  }
+
+  private async getNextQuizOrder(courseId: string): Promise<number> {
+    const lastQuiz = await this.prisma.quiz.findFirst({
+      where: { courseId },
+      orderBy: { order: 'desc' },
+      select: { order: true }
+    });
+
+    return lastQuiz ? lastQuiz.order + 1 : 1;
   }
 
   private async updateCourseRating(courseId: string): Promise<void> {
@@ -1100,5 +1275,302 @@ export class CoursesService {
       totalLessons: lessons.length,
       totalQuizzes: quizzes.length
     };
+  }
+
+  // Certificate CRUD methods
+  async createCertificate(dto: CreateCertificateDto, user: any): Promise<any> {
+    // Check if course exists
+    const course = await this.prisma.course.findUnique({
+      where: { id: dto.courseId },
+      include: { instructor: true }
+    });
+
+    if (!course) {
+      throw new NotFoundException('Course not found');
+    }
+
+    // Only instructor of the course or admin can manually create certificates
+    if (course.instructorId !== user.id && user.role !== 'ADMIN') {
+      throw new ForbiddenException('Only the course instructor or admin can create certificates');
+    }
+
+    // Check if student exists
+    const student = await this.prisma.user.findUnique({
+      where: { id: dto.studentId }
+    });
+
+    if (!student) {
+      throw new NotFoundException('Student not found');
+    }
+
+    // Check if student is enrolled in the course
+    const enrollment = await this.prisma.enrollment.findUnique({
+      where: {
+        studentId_courseId: {
+          studentId: dto.studentId,
+          courseId: dto.courseId
+        }
+      }
+    });
+
+    if (!enrollment) {
+      throw new ForbiddenException('Student must be enrolled in the course');
+    }
+
+    // Check if certificate already exists
+    const existingCertificate = await this.prisma.certificate.findUnique({
+      where: {
+        studentId_courseId: {
+          studentId: dto.studentId,
+          courseId: dto.courseId
+        }
+      }
+    });
+
+    if (existingCertificate) {
+      throw new ForbiddenException('Certificate already exists for this student and course');
+    }
+
+    // Create certificate
+    const certificate = await this.prisma.certificate.create({
+      data: {
+        studentId: dto.studentId,
+        courseId: dto.courseId,
+        score: dto.score,
+        url: dto.url || this.generateCertificateUrl(dto.studentId, dto.courseId)
+      },
+      include: {
+        student: {
+          select: {
+            id: true,
+            firstName: true,
+            lastName: true,
+            email: true
+          }
+        },
+        course: {
+          select: {
+            id: true,
+            title: true,
+            instructor: {
+              select: {
+                firstName: true,
+                lastName: true
+              }
+            }
+          }
+        }
+      }
+    });
+
+    return {
+      id: certificate.id,
+      studentName: `${certificate.student.firstName} ${certificate.student.lastName}`,
+      courseTitle: certificate.course.title,
+      instructorName: `${certificate.course.instructor.firstName} ${certificate.course.instructor.lastName}`,
+      score: certificate.score,
+      issuedAt: certificate.issuedAt,
+      url: certificate.url
+    };
+  }
+
+  async getCourseCertificates(courseId: string, user: any): Promise<any[]> {
+    // Check if course exists
+    const course = await this.prisma.course.findUnique({
+      where: { id: courseId },
+      select: { instructorId: true }
+    });
+
+    if (!course) {
+      throw new NotFoundException('Course not found');
+    }
+
+    // Only instructor of the course or admin can view all certificates
+    if (course.instructorId !== user.id && user.role !== 'ADMIN') {
+      throw new ForbiddenException('Only the course instructor or admin can view certificates');
+    }
+
+    const certificates = await this.prisma.certificate.findMany({
+      where: { courseId },
+      include: {
+        student: {
+          select: {
+            id: true,
+            firstName: true,
+            lastName: true,
+            email: true
+          }
+        },
+        course: {
+          select: {
+            id: true,
+            title: true
+          }
+        }
+      },
+      orderBy: { issuedAt: 'desc' }
+    });
+
+    return certificates.map(cert => ({
+      id: cert.id,
+      studentId: cert.studentId,
+      studentName: `${cert.student.firstName} ${cert.student.lastName}`,
+      studentEmail: cert.student.email,
+      courseTitle: cert.course.title,
+      score: cert.score,
+      issuedAt: cert.issuedAt,
+      url: cert.url
+    }));
+  }
+
+  async getMyCertificate(courseId: string, user: any): Promise<any> {
+    const certificate = await this.prisma.certificate.findUnique({
+      where: {
+        studentId_courseId: {
+          studentId: user.id,
+          courseId: courseId
+        }
+      },
+      include: {
+        course: {
+          select: {
+            id: true,
+            title: true,
+            instructor: {
+              select: {
+                firstName: true,
+                lastName: true
+              }
+            }
+          }
+        }
+      }
+    });
+
+    if (!certificate) {
+      throw new NotFoundException('Certificate not found');
+    }
+
+    return {
+      id: certificate.id,
+      studentName: `${user.firstName} ${user.lastName}`,
+      courseTitle: certificate.course.title,
+      instructorName: `${certificate.course.instructor.firstName} ${certificate.course.instructor.lastName}`,
+      score: certificate.score,
+      issuedAt: certificate.issuedAt,
+      url: certificate.url
+    };
+  }
+
+  async deleteCertificate(certId: string, user: any): Promise<any> {
+    const certificate = await this.prisma.certificate.findUnique({
+      where: { id: certId },
+      include: {
+        course: {
+          select: {
+            instructorId: true
+          }
+        }
+      }
+    });
+
+    if (!certificate) {
+      throw new NotFoundException('Certificate not found');
+    }
+
+    // Only instructor of the course or admin can delete certificates
+    if (certificate.course.instructorId !== user.id && user.role !== 'ADMIN') {
+      throw new ForbiddenException('Only the course instructor or admin can delete certificates');
+    }
+
+    await this.prisma.certificate.delete({
+      where: { id: certId }
+    });
+
+    return { message: 'Certificate deleted successfully' };
+  }
+
+  // Automatic certificate generation when user scores 80+%
+  async checkAndGenerateCertificate(userId: string, courseId: string, quizScore: number): Promise<void> {
+    // Check if score is 80% or higher
+    if (quizScore < 80) {
+      return;
+    }
+
+    // Check if certificate already exists
+    const existingCertificate = await this.prisma.certificate.findUnique({
+      where: {
+        studentId_courseId: {
+          studentId: userId,
+          courseId: courseId
+        }
+      }
+    });
+
+    if (existingCertificate) {
+      return; // Certificate already exists
+    }
+
+    // Check if student is enrolled
+    const enrollment = await this.prisma.enrollment.findUnique({
+      where: {
+        studentId_courseId: {
+          studentId: userId,
+          courseId: courseId
+        }
+      }
+    });
+
+    if (!enrollment) {
+      return; // Student not enrolled
+    }
+
+    // Create certificate automatically
+    await this.prisma.certificate.create({
+      data: {
+        studentId: userId,
+        courseId: courseId,
+        score: quizScore,
+        url: this.generateCertificateUrl(userId, courseId)
+      }
+    });
+  }
+
+  // Get user's certificates
+  async getUserCertificates(userId: string): Promise<any[]> {
+    const certificates = await this.prisma.certificate.findMany({
+      where: { studentId: userId },
+      include: {
+        course: {
+          select: {
+            id: true,
+            title: true,
+            instructor: {
+              select: {
+                firstName: true,
+                lastName: true
+              }
+            }
+          }
+        }
+      },
+      orderBy: { issuedAt: 'desc' }
+    });
+
+    return certificates.map(cert => ({
+      id: cert.id,
+      courseId: cert.courseId,
+      courseTitle: cert.course.title,
+      instructorName: `${cert.course.instructor.firstName} ${cert.course.instructor.lastName}`,
+      score: cert.score,
+      issuedAt: cert.issuedAt,
+      url: cert.url
+    }));
+  }
+
+  private generateCertificateUrl(studentId: string, courseId: string): string {
+    // Generate a unique certificate URL
+    const certificateId = `${studentId}-${courseId}-${Date.now()}`;
+    return `${process.env.FRONTEND_URL || 'http://localhost:4200'}/certificates/${certificateId}`;
   }
 }

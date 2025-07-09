@@ -12,6 +12,14 @@ export class CreateQuizDto {
   @Min(1)
   duration: number;
 
+  @IsNumber()
+  @Min(1)
+  @IsOptional()
+  order?: number;
+
+  @IsString()
+  courseId: string; // Add this field to specify which course the quiz belongs to
+
   @IsArray()
   questions: any[];
 }

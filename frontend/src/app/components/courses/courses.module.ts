@@ -16,10 +16,13 @@ const routes: Routes = [
 ];
 
 @NgModule({
-  declarations: [],
+  declarations: [
+    // Components should be declared here, not imported
+  ],
   imports: [
     CommonModule,
     RouterModule.forChild(routes),
+    // Standalone components should be imported here
     CourseList,
     CourseDetail,
     CourseForm,

@@ -29,7 +29,7 @@ Content-Type: {{contentType}}
 {
   "firstName": "Jimmy",
   "lastName": "Kimunyi",
-  "email": "kimunyijimmy@gmail.com",
+  "email": "kimunyi.jimmy@gmail.com",
   "password": "Password123",
   "confirmPassword": "Password123",
   "accountType": "instructor"
@@ -102,10 +102,24 @@ POST {{baseUrl}}/auth/login
 Content-Type: {{contentType}}
 
 {
-  "username": "jkkimunyi@gmail.com",
+  "username": "kimunyi.jimmy@gmail.com",
   "password": "Password123",
-  "rememberMe": false
+  "rememberMe": true
 }
+
+### 7. Login with unverified account
+POST {{baseUrl}}/auth/login
+Content-Type: {{contentType}}
+
+{
+  "username": "jimmykimunyi@gmail.com",
+  "password": "Password123",
+  "rememberMe": true
+}
+
+
+
+
 
 ###
 

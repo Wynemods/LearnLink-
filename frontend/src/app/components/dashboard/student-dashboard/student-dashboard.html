@@ -1,0 +1,709 @@
+<div class="flex h-screen bg-gray-100">
+  <!-- Sidebar -->
+  <aside [class.w-16]="isSidebarMinimized" [class.w-64]="!isSidebarMinimized" class="hidden lg:block bg-white shadow-lg transition-all duration-300">
+    <div class="p-4 border-b border-gray-200">
+      <div class="flex items-center justify-between">
+        <h2 *ngIf="!isSidebarMinimized" class="text-xl font-semibold text-gray-800">Student Dashboard</h2>
+        <button (click)="toggleSidebar()" class="p-2 rounded-lg hover:bg-gray-100 transition-colors">
+          <span class="material-icons">{{ isSidebarMinimized ? 'menu' : 'menu_open' }}</span>
+        </button>
+      </div>
+    </div>
+    
+    <nav class="p-4 flex-1">
+      <ul class="space-y-2">
+        <li>
+          <button 
+            (click)="setActiveSection('overview')"
+            [class.bg-blue-50]="activeSection === 'overview'"
+            [class.text-blue-600]="activeSection === 'overview'"
+            class="w-full flex items-center px-3 py-2 rounded-lg hover:bg-gray-50 transition-colors text-left"
+          >
+            <span class="material-icons mr-3">dashboard</span>
+            <span *ngIf="!isSidebarMinimized">Overview</span>
+          </button>
+        </li>
+        
+        <li>
+          <button 
+            (click)="setActiveSection('courses')"
+            [class.bg-blue-50]="activeSection === 'courses'"
+            [class.text-blue-600]="activeSection === 'courses'"
+            class="w-full flex items-center px-3 py-2 rounded-lg hover:bg-gray-50 transition-colors text-left"
+          >
+            <span class="material-icons mr-3">school</span>
+            <span *ngIf="!isSidebarMinimized">My Courses</span>
+          </button>
+        </li>
+        
+        <li>
+          <button 
+            (click)="setActiveSection('certificates')"
+            [class.bg-blue-50]="activeSection === 'certificates'"
+            [class.text-blue-600]="activeSection === 'certificates'"
+            class="w-full flex items-center px-3 py-2 rounded-lg hover:bg-gray-50 transition-colors text-left"
+          >
+            <span class="material-icons mr-3">emoji_events</span>
+            <span *ngIf="!isSidebarMinimized">Certificates</span>
+          </button>
+        </li>
+        
+        <li>
+          <button 
+            (click)="setActiveSection('payments')"
+            [class.bg-blue-50]="activeSection === 'payments'"
+            [class.text-blue-600]="activeSection === 'payments'"
+            class="w-full flex items-center px-3 py-2 rounded-lg hover:bg-gray-50 transition-colors text-left"
+          >
+            <span class="material-icons mr-3">payment</span>
+            <span *ngIf="!isSidebarMinimized">Purchase History</span>
+          </button>
+        </li>
+        
+        <li>
+          <button 
+            (click)="setActiveSection('achievements')"
+            [class.bg-blue-50]="activeSection === 'achievements'"
+            [class.text-blue-600]="activeSection === 'achievements'"
+            class="w-full flex items-center px-3 py-2 rounded-lg hover:bg-gray-50 transition-colors text-left"
+          >
+            <span class="material-icons mr-3">star</span>
+            <span *ngIf="!isSidebarMinimized">Achievements</span>
+          </button>
+        </li>
+
+        <!-- New Quizzes Section -->
+        <li>
+          <button 
+            (click)="setActiveSection('quizzes')"
+            [class.bg-blue-50]="activeSection === 'quizzes'"
+            [class.text-blue-600]="activeSection === 'quizzes'"
+            class="w-full flex items-center px-3 py-2 rounded-lg hover:bg-gray-50 transition-colors text-left"
+          >
+            <span class="material-icons mr-3">quiz</span>
+            <span *ngIf="!isSidebarMinimized">Quizzes</span>
+          </button>
+        </li>
+      </ul>
+    </nav>
+    
+    <!-- Profile Section -->
+    <div class="p-4 border-t border-gray-200">
+      <div class="space-y-2">
+        <button 
+          (click)="goToProfile()"
+          class="w-full flex items-center px-3 py-2 rounded-lg hover:bg-gray-50 transition-colors text-left"
+        >
+          <span class="material-icons mr-3">person</span>
+          <span *ngIf="!isSidebarMinimized">Profile</span>
+        </button>
+        
+        <button 
+          (click)="goToSettings()"
+          class="w-full flex items-center px-3 py-2 rounded-lg hover:bg-gray-50 transition-colors text-left"
+        >
+          <span class="material-icons mr-3">settings</span>
+          <span *ngIf="!isSidebarMinimized">Settings</span>
+        </button>
+        
+        <button 
+          (click)="logout()"
+          class="w-full flex items-center px-3 py-2 rounded-lg hover:bg-red-50 hover:text-red-600 transition-colors text-left"
+        >
+          <span class="material-icons mr-3">logout</span>
+          <span *ngIf="!isSidebarMinimized">Logout</span>
+        </button>
+      </div>
+    </div>
+  </aside>
+
+  <!-- Mobile Menu Overlay -->
+  <div *ngIf="isMobileMenuOpen" class="lg:hidden fixed inset-0 bg-black bg-opacity-50 z-40" (click)="toggleMobileMenu()"></div>
+
+  <!-- Mobile Sidebar -->
+  <aside 
+    class="lg:hidden fixed left-0 top-0 w-64 h-full bg-white shadow-lg z-50 transform transition-transform duration-300"
+    [class.translate-x-0]="isMobileMenuOpen"
+    [class.-translate-x-full]="!isMobileMenuOpen"
+  >
+    <div class="p-4 border-b border-gray-200">
+      <div class="flex items-center justify-between">
+        <h2 class="text-xl font-semibold text-gray-800">Student Dashboard</h2>
+        <button (click)="toggleMobileMenu()" class="p-2 rounded-lg hover:bg-gray-100">
+          <span class="material-icons">close</span>
+        </button>
+      </div>
+    </div>
+    
+    <nav class="p-4 flex-1">
+      <ul class="space-y-2">
+        <li>
+          <button 
+            (click)="setActiveSection('overview')"
+            [class.bg-blue-50]="activeSection === 'overview'"
+            [class.text-blue-600]="activeSection === 'overview'"
+            class="w-full flex items-center px-3 py-2 rounded-lg hover:bg-gray-50 transition-colors text-left"
+          >
+            <span class="material-icons mr-3">dashboard</span>
+            <span>Overview</span>
+          </button>
+        </li>
+        
+        <li>
+          <button 
+            (click)="setActiveSection('courses')"
+            [class.bg-blue-50]="activeSection === 'courses'"
+            [class.text-blue-600]="activeSection === 'courses'"
+            class="w-full flex items-center px-3 py-2 rounded-lg hover:bg-gray-50 transition-colors text-left"
+          >
+            <span class="material-icons mr-3">school</span>
+            <span>My Courses</span>
+          </button>
+        </li>
+        
+        <li>
+          <button 
+            (click)="setActiveSection('certificates')"
+            [class.bg-blue-50]="activeSection === 'certificates'"
+            [class.text-blue-600]="activeSection === 'certificates'"
+            class="w-full flex items-center px-3 py-2 rounded-lg hover:bg-gray-50 transition-colors text-left"
+          >
+            <span class="material-icons mr-3">emoji_events</span>
+            <span>Certificates</span>
+          </button>
+        </li>
+        
+        <li>
+          <button 
+            (click)="setActiveSection('payments')"
+            [class.bg-blue-50]="activeSection === 'payments'"
+            [class.text-blue-600]="activeSection === 'payments'"
+            class="w-full flex items-center px-3 py-2 rounded-lg hover:bg-gray-50 transition-colors text-left"
+          >
+            <span class="material-icons mr-3">payment</span>
+            <span>Purchase History</span>
+          </button>
+        </li>
+        
+        <li>
+          <button 
+            (click)="setActiveSection('achievements')"
+            [class.bg-blue-50]="activeSection === 'achievements'"
+            [class.text-blue-600]="activeSection === 'achievements'"
+            class="w-full flex items-center px-3 py-2 rounded-lg hover:bg-gray-50 transition-colors text-left"
+          >
+            <span class="material-icons mr-3">star</span>
+            <span>Achievements</span>
+          </button>
+        </li>
+
+        <!-- New Quizzes Section -->
+        <li>
+          <button 
+            (click)="setActiveSection('quizzes')"
+            [class.bg-blue-50]="activeSection === 'quizzes'"
+            [class.text-blue-600]="activeSection === 'quizzes'"
+            class="w-full flex items-center px-3 py-2 rounded-lg hover:bg-gray-50 transition-colors text-left"
+          >
+            <span class="material-icons mr-3">quiz</span>
+            <span>Quizzes</span>
+          </button>
+        </li>
+      </ul>
+    </nav>
+    
+    <!-- Profile Section -->
+    <div class="p-4 border-t border-gray-200">
+      <div class="space-y-2">
+        <button 
+          (click)="goToProfile()"
+          class="w-full flex items-center px-3 py-2 rounded-lg hover:bg-gray-50 transition-colors text-left"
+        >
+          <span class="material-icons mr-3">person</span>
+          <span>Profile</span>
+        </button>
+        
+        <button 
+          (click)="goToSettings()"
+          class="w-full flex items-center px-3 py-2 rounded-lg hover:bg-gray-50 transition-colors text-left"
+        >
+          <span class="material-icons mr-3">settings</span>
+          <span>Settings</span>
+        </button>
+        
+        <button 
+          (click)="logout()"
+          class="w-full flex items-center px-3 py-2 rounded-lg hover:bg-red-50 hover:text-red-600 transition-colors text-left"
+        >
+          <span class="material-icons mr-3">logout</span>
+          <span>Logout</span>
+        </button>
+      </div>
+    </div>
+  </aside>
+
+  <!-- Main Content -->
+  <main class="flex-1 overflow-y-auto">
+    <!-- Header -->
+    <header class="bg-white shadow-sm border-b border-gray-200 px-4 py-4">
+      <div class="flex items-center justify-between">
+        <div class="flex items-center">
+          <button (click)="toggleMobileMenu()" class="lg:hidden p-2 rounded-lg hover:bg-gray-100 mr-3">
+            <span class="material-icons">menu</span>
+          </button>
+          <h1 class="text-2xl font-bold text-gray-800">
+            {{ activeSection === 'overview' ? 'Dashboard Overview' : 
+               activeSection === 'courses' ? 'My Courses' : 
+               activeSection === 'certificates' ? 'My Certificates' : 
+               activeSection === 'payments' ? 'Purchase History' : 
+               activeSection === 'achievements' ? 'My Achievements' : 'Dashboard' }}
+          </h1>
+        </div>
+        
+        <div class="flex items-center space-x-4">
+          <div class="text-sm text-gray-600">
+            Welcome back, {{ authService.getCurrentUser()?.firstName || 'Student' }}!
+          </div>
+        </div>
+      </div>
+    </header>
+
+    <!-- Content -->
+    <div class="p-6">
+      <!-- Overview Section -->
+      <div *ngIf="activeSection === 'overview'">
+        <!-- Stats Cards -->
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+          <div class="bg-white rounded-xl shadow-sm p-6">
+            <div class="flex items-center">
+              <div class="p-3 bg-blue-100 rounded-full mr-4">
+                <span class="material-icons text-blue-600">school</span>
+              </div>
+              <div>
+                <p class="text-2xl font-bold text-gray-800">{{ totalCourses }}</p>
+                <p class="text-gray-600">Enrolled Courses</p>
+              </div>
+            </div>
+          </div>
+          
+          <div class="bg-white rounded-xl shadow-sm p-6">
+            <div class="flex items-center">
+              <div class="p-3 bg-green-100 rounded-full mr-4">
+                <span class="material-icons text-green-600">check_circle</span>
+              </div>
+              <div>
+                <p class="text-2xl font-bold text-gray-800">{{ completedCourses }}</p>
+                <p class="text-gray-600">Completed Courses</p>
+              </div>
+            </div>
+          </div>
+          
+          <div class="bg-white rounded-xl shadow-sm p-6">
+            <div class="flex items-center">
+              <div class="p-3 bg-yellow-100 rounded-full mr-4">
+                <span class="material-icons text-yellow-600">emoji_events</span>
+              </div>
+              <div>
+                <p class="text-2xl font-bold text-gray-800">{{ totalCertificates }}</p>
+                <p class="text-gray-600">Certificates</p>
+              </div>
+            </div>
+          </div>
+          
+          <div class="bg-white rounded-xl shadow-sm p-6">
+            <div class="flex items-center">
+              <div class="p-3 bg-purple-100 rounded-full mr-4">
+                <span class="material-icons text-purple-600">schedule</span>
+              </div>
+              <div>
+                <p class="text-2xl font-bold text-gray-800">{{ totalHoursLearned.toFixed(0) }}</p>
+                <p class="text-gray-600">Hours Learned</p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Quick Access Courses -->
+        <div class="bg-white rounded-xl shadow-sm p-6 mb-8">
+          <div class="flex items-center justify-between mb-6">
+            <h2 class="text-xl font-semibold text-gray-800">Continue Learning</h2>
+            <button (click)="setActiveSection('courses')" class="text-blue-600 hover:text-blue-700 font-medium">
+              View All Courses
+            </button>
+          </div>
+          
+          <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            <div *ngFor="let course of enrolledCourses.slice(0, 3)" class="border border-gray-200 rounded-lg p-4 hover:shadow-md transition-shadow">
+              <img [src]="course.thumbnail" [alt]="course.title" class="w-full h-32 object-cover rounded-lg mb-3">
+              <h3 class="font-semibold text-gray-800 mb-2">{{ course.title }}</h3>
+              <p class="text-sm text-gray-600 mb-3">{{ course.instructor }}</p>
+              <div class="mb-3">
+                <div class="flex justify-between text-sm text-gray-600 mb-1">
+                  <span>Progress</span>
+                  <span>{{ course.progress }}%</span>
+                </div>
+                <div class="w-full bg-gray-200 rounded-full h-2">
+                  <div [class]="getProgressColor(course.progress)" class="h-2 rounded-full transition-all duration-300" [style.width.%]="course.progress"></div>
+                </div>
+              </div>
+              <button (click)="continueCourse(course)" class="w-full bg-blue-600 text-white py-2 rounded-lg hover:bg-blue-700 transition-colors">
+                {{ course.progress > 0 ? 'Continue' : 'Start' }} Course
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Recent Achievements -->
+        <div class="bg-white rounded-xl shadow-sm p-6">
+          <h2 class="text-xl font-semibold text-gray-800 mb-6">Recent Achievements</h2>
+          <div class="space-y-4">
+            <div *ngFor="let achievement of achievements.slice(0, 3)" class="flex items-center p-3 bg-gray-50 rounded-lg">
+              <div [class]="achievement.color" class="mr-4">
+                <span class="material-icons text-2xl">{{ getAchievementIcon(achievement.type) }}</span>
+              </div>
+              <div class="flex-1">
+                <h3 class="font-semibold text-gray-800">{{ achievement.title }}</h3>
+                <p class="text-sm text-gray-600">{{ achievement.description }}</p>
+                <p class="text-xs text-gray-500 mt-1">{{ formatDate(achievement.earnedAt) }}</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- My Courses Section -->
+      <div *ngIf="activeSection === 'courses'">
+        <div class="bg-white rounded-xl shadow-sm p-6">
+          <div class="flex items-center justify-between mb-6">
+            <h2 class="text-xl font-semibold text-gray-800">My Courses ({{ enrolledCourses.length }})</h2>
+            
+            <!-- Carousel Controls -->
+            <div class="flex items-center space-x-2">
+              <button 
+                (click)="previousCourses()"
+                [disabled]="!canGoToPrevious()"
+                class="p-2 rounded-lg hover:bg-gray-100 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+              >
+                <span class="material-icons">chevron_left</span>
+              </button>
+              
+              <span class="text-sm text-gray-600">
+                {{ coursesCurrentIndex + 1 }} - {{ Math.min(coursesCurrentIndex + coursesPerView, enrolledCourses.length) }} of {{ enrolledCourses.length }}
+              </span>
+              
+              <button 
+                (click)="nextCourses()"
+                [disabled]="!canGoToNext()"
+                class="p-2 rounded-lg hover:bg-gray-100 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+              >
+                <span class="material-icons">chevron_right</span>
+              </button>
+            </div>
+          </div>
+          
+          <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            <div *ngFor="let course of getVisibleCourses()" class="border border-gray-200 rounded-lg overflow-hidden hover:shadow-md transition-shadow">
+              <img [src]="course.thumbnail" [alt]="course.title" class="w-full h-48 object-cover">
+              <div class="p-4">
+                <h3 class="font-semibold text-gray-800 mb-2">{{ course.title }}</h3>
+                <p class="text-sm text-gray-600 mb-2">{{ course.instructor }}</p>
+                <div class="flex items-center mb-3">
+                  <span class="material-icons text-yellow-500 text-sm mr-1">star</span>
+                  <span class="text-sm text-gray-600">{{ course.rating }} ({{ course.totalLessons }} lessons)</span>
+                </div>
+                <div class="mb-4">
+                  <div class="flex justify-between text-sm text-gray-600 mb-1">
+                    <span>Progress</span>
+                    <span>{{ course.progress }}%</span>
+                  </div>
+                  <div class="w-full bg-gray-200 rounded-full h-2">
+                    <div [class]="getProgressColor(course.progress)" class="h-2 rounded-full transition-all duration-300" [style.width.%]="course.progress"></div>
+                  </div>
+                </div>
+                <div class="flex space-x-2">
+                  <button (click)="continueCourse(course)" class="flex-1 bg-blue-600 text-white py-2 px-4 rounded-lg hover:bg-blue-700 transition-colors">
+                    {{ course.progress > 0 ? 'Continue' : 'Start' }}
+                  </button>
+                  <button (click)="viewCourse(course)" class="px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors">
+                    View
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Certificates Section -->
+      <div *ngIf="activeSection === 'certificates'">
+        <div class="bg-white rounded-xl shadow-sm p-6">
+          <h2 class="text-xl font-semibold text-gray-800 mb-6">My Certificates ({{ certificates.length }})</h2>
+          
+          <div *ngIf="certificates.length === 0" class="text-center py-12">
+            <div class="text-gray-400 mb-4">
+              <span class="material-icons text-6xl">emoji_events</span>
+            </div>
+            <h3 class="text-lg font-semibold text-gray-800 mb-2">No certificates yet</h3>
+            <p class="text-gray-600 mb-4">Complete courses with 80% or higher score to earn certificates</p>
+            <button (click)="setActiveSection('courses')" class="bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700 transition-colors">
+              View My Courses
+            </button>
+          </div>
+          
+          <div *ngIf="certificates.length > 0" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            <div *ngFor="let certificate of certificates" class="border border-gray-200 rounded-lg p-6 hover:shadow-md transition-shadow">
+              <div class="flex items-center mb-4">
+                <span class="material-icons text-yellow-500 text-3xl mr-3">emoji_events</span>
+                <div>
+                  <h3 class="font-semibold text-gray-800">{{ certificate.courseTitle }}</h3>
+                  <p class="text-sm text-gray-600">{{ certificate.instructorName }}</p>
+                </div>
+              </div>
+              <div class="mb-4">
+                <p class="text-sm text-gray-600 mb-1">Score: <span class="font-semibold">{{ certificate.score }}%</span></p>
+                <p class="text-sm text-gray-600">Issued: {{ formatDate(certificate.issuedAt) }}</p>
+              </div>
+              <div class="flex space-x-2">
+                <button (click)="viewCertificate(certificate)" class="flex-1 bg-blue-600 text-white py-2 px-4 rounded-lg hover:bg-blue-700 transition-colors">
+                  View
+                </button>
+                <button (click)="downloadCertificate(certificate)" class="px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors">
+                  <span class="material-icons">download</span>
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Purchase History Section -->
+      <div *ngIf="activeSection === 'payments'">
+        <div class="bg-white rounded-xl shadow-sm p-6">
+          <h2 class="text-xl font-semibold text-gray-800 mb-6">Purchase History</h2>
+          
+          <div *ngIf="paymentHistory.length === 0" class="text-center py-12">
+            <div class="text-gray-400 mb-4">
+              <span class="material-icons text-6xl">payment</span>
+            </div>
+            <h3 class="text-lg font-semibold text-gray-800 mb-2">No purchases yet</h3>
+            <p class="text-gray-600">Your purchase history will appear here</p>
+          </div>
+          
+          <div *ngIf="paymentHistory.length > 0" class="overflow-x-auto">
+            <table class="w-full">
+              <thead>
+                <tr class="border-b border-gray-200">
+                  <th class="text-left py-3 px-4 text-gray-600">Course</th>
+                  <th class="text-left py-3 px-4 text-gray-600">Amount</th>
+                  <th class="text-left py-3 px-4 text-gray-600">Date</th>
+                  <th class="text-left py-3 px-4 text-gray-600">Method</th>
+                  <th class="text-left py-3 px-4 text-gray-600">Status</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr *ngFor="let payment of paymentHistory" class="border-b border-gray-100 hover:bg-gray-50">
+                  <td class="py-3 px-4">
+                    <div class="font-medium text-gray-800">{{ payment.courseTitle }}</div>
+                  </td>
+                  <td class="py-3 px-4">
+                    <div class="font-medium text-gray-800">${{ payment.amount }}</div>
+                  </td>
+                  <td class="py-3 px-4">
+                    <div class="text-gray-600">{{ formatDate(payment.paymentDate) }}</div>
+                  </td>
+                  <td class="py-3 px-4">
+                    <div class="text-gray-600">{{ payment.method }}</div>
+                  </td>
+                  <td class="py-3 px-4">
+                    <span 
+                      class="px-2 py-1 text-xs rounded-full font-medium"
+                      [class.bg-green-100]="payment.status === 'COMPLETED'"
+                      [class.text-green-800]="payment.status === 'COMPLETED'"
+                      [class.bg-yellow-100]="payment.status === 'PENDING'"
+                      [class.text-yellow-800]="payment.status === 'PENDING'"
+                      [class.bg-red-100]="payment.status === 'FAILED'"
+                      [class.text-red-800]="payment.status === 'FAILED'"
+                    >
+                      {{ payment.status }}
+                    </span>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <!-- Achievements Section -->
+      <div *ngIf="activeSection === 'achievements'">
+        <div class="bg-white rounded-xl shadow-sm p-6">
+          <h2 class="text-xl font-semibold text-gray-800 mb-6">My Achievements ({{ achievements.length }})</h2>
+          
+          <div *ngIf="achievements.length === 0" class="text-center py-12">
+            <div class="text-gray-400 mb-4">
+              <span class="material-icons text-6xl">star</span>
+            </div>
+            <h3 class="text-lg font-semibold text-gray-800 mb-2">No achievements yet</h3>
+            <p class="text-gray-600">Complete courses and maintain learning streaks to earn achievements</p>
+          </div>
+          
+          <div *ngIf="achievements.length > 0" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            <div *ngFor="let achievement of achievements" class="border border-gray-200 rounded-lg p-6 hover:shadow-md transition-shadow">
+              <div class="flex items-center mb-4">
+                <div [class]="achievement.color" class="mr-4">
+                  <span class="material-icons text-3xl">{{ getAchievementIcon(achievement.type) }}</span>
+                </div>
+                <div>
+                  <h3 class="font-semibold text-gray-800">{{ achievement.title }}</h3>
+                  <p class="text-sm text-gray-600">{{ achievement.description }}</p>
+                  <p class="text-xs text-gray-500 mt-1">Earned {{ formatDate(achievement.earnedAt) }}</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Quizzes Section -->
+      <div *ngIf="activeSection === 'quizzes'">
+        <div class="bg-white rounded-xl shadow-sm p-6">
+          <h2 class="text-xl font-semibold text-gray-800 mb-6">Available Quizzes</h2>
+          
+          <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
+            <div *ngFor="let quiz of availableQuizzes" class="border border-gray-200 rounded-lg p-4 hover:shadow-md transition-shadow">
+              <h3 class="font-semibold text-gray-800 mb-2">{{ quiz.title }}</h3>
+              <p class="text-sm text-gray-600 mb-3">{{ quiz.description }}</p>
+              <div class="flex items-center justify-between text-sm text-gray-500 mb-4">
+                <span>{{ quiz.questions?.length || 0 }} Questions</span>
+                <span>{{ quiz.duration }} minutes</span>
+              </div>
+              <button 
+                (click)="takeQuiz(quiz)"
+                class="w-full bg-blue-600 text-white py-2 rounded-lg hover:bg-blue-700 transition-colors"
+              >
+                Take Quiz
+              </button>
+            </div>
+          </div>
+          
+          <h3 class="text-lg font-semibold text-gray-800 mb-4">Quiz History</h3>
+          <div class="overflow-x-auto">
+            <table class="w-full">
+              <thead>
+                <tr class="border-b border-gray-200">
+                  <th class="text-left py-3 px-4 font-medium text-gray-600">Quiz</th>
+                  <th class="text-left py-3 px-4 font-medium text-gray-600">Score</th>
+                  <th class="text-left py-3 px-4 font-medium text-gray-600">Status</th>
+                  <th class="text-left py-3 px-4 font-medium text-gray-600">Date</th>
+                  <th class="text-left py-3 px-4 font-medium text-gray-600">Actions</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr *ngFor="let attempt of quizAttempts" class="border-b border-gray-100 hover:bg-gray-50">
+                  <td class="py-3 px-4">{{ attempt.quizTitle }}</td>
+                  <td class="py-3 px-4">{{ attempt.score }}/{{ attempt.maxScore }}</td>
+                  <td class="py-3 px-4">
+                    <span [class]="getQuizStatusColor(attempt.percentage)">
+                      {{ getQuizStatusText(attempt.percentage) }}
+                    </span>
+                  </td>
+                  <td class="py-3 px-4">{{ formatDate(attempt.completedAt) }}</td>
+                  <td class="py-3 px-4">
+                    <button 
+                      (click)="viewQuizResults(attempt.quizId)"
+                      class="text-blue-600 hover:text-blue-700 mr-2"
+                    >
+                      View
+                    </button>
+                    <button 
+                      *ngIf="attempt.percentage < 80"
+                      (click)="retakeQuiz(attempt.quizId)"
+                      class="text-green-600 hover:text-green-700"
+                    >
+                      Retake
+                    </button>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <!-- Quiz Modal -->
+      <div *ngIf="showQuizModal" class="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4">
+        <div class="bg-white rounded-xl shadow-xl max-w-4xl w-full max-h-[90vh] overflow-y-auto">
+          <div class="p-6 border-b border-gray-200">
+            <div class="flex justify-between items-center">
+              <h2 class="text-xl font-semibold text-gray-800">{{ currentQuiz?.title }}</h2>
+              <button (click)="closeQuizModal()" class="text-gray-500 hover:text-gray-700">
+                <span class="material-icons">close</span>
+              </button>
+            </div>
+            <p class="text-gray-600 mt-2">{{ currentQuiz?.description }}</p>
+            <div class="text-sm text-gray-500 mt-2">
+              Time limit: {{ currentQuiz?.duration }} minutes
+            </div>
+          </div>
+          
+          <div class="p-6">
+            <div *ngFor="let question of currentQuiz?.questions; let i = index" class="mb-6">
+              <h3 class="font-semibold text-gray-800 mb-3">{{ i + 1 }}. {{ question.question }}</h3>
+              
+              <div *ngIf="question.type === 'multiple-choice'" class="space-y-2">
+                <div *ngFor="let option of question.options; let j = index" class="flex items-center">
+                  <input 
+                    type="radio" 
+                    [name]="'question_' + i" 
+                    [value]="j"
+                    (change)="currentQuizAnswers[i].answer = j"
+                    class="mr-2"
+                  />
+                  <label class="text-gray-700">{{ option }}</label>
+                </div>
+              </div>
+              
+              <div *ngIf="question.type === 'true-false'" class="space-y-2">
+                <div class="flex items-center">
+                  <input 
+                    type="radio" 
+                    [name]="'question_' + i" 
+                    [value]="1"
+                    (change)="currentQuizAnswers[i].answer = 1"
+                    class="mr-2"
+                  />
+                  <label class="text-gray-700">True</label>
+                </div>
+                <div class="flex items-center">
+                  <input 
+                    type="radio" 
+                    [name]="'question_' + i" 
+                    [value]="0"
+                    (change)="currentQuizAnswers[i].answer = 0"
+                    class="mr-2"
+                  />
+                  <label class="text-gray-700">False</label>
+                </div>
+              </div>
+            </div>
+          </div>
+          
+          <div class="p-6 border-t border-gray-200 flex justify-end gap-4">
+            <button 
+              (click)="closeQuizModal()"
+              class="px-6 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors"
+            >
+              Cancel
+            </button>
+            <button 
+              (click)="submitQuiz()"
+              class="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+            >
+              Submit Quiz
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
+</div>

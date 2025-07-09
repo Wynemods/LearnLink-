@@ -8,7 +8,6 @@ export interface PaymentRequest {
   phoneNumber: string;
   amount: number;
   courseId: string;
-  accountReference?: string;
 }
 
 @Injectable()
@@ -16,118 +15,138 @@ export class PaymentsService {
   constructor(
     private prisma: PrismaService,
     private coursesService: CoursesService
-  ) { }
+  ) {}
 
-  private async enrollUserInCourse(userId: string, courseId: string): Promise<void> {
+  async initiatePayment(userId: string, paymentData: PaymentRequest): Promise<PaymentResponseDto> {
     try {
-      // Check if already enrolled first
-      const existing = await this.prisma.enrollment.findUnique({
+      // Validate phone number
+      if (!this.validatePhoneNumber(paymentData.phoneNumber)) {
+        throw new BadRequestException('Invalid phone number format');
+      }
+
+      // Check if course exists
+      const course = await this.prisma.course.findUnique({
+        where: { id: paymentData.courseId }
+      });
+
+      if (!course) {
+        throw new BadRequestException('Course not found');
+      }
+
+      // Check if user is already enrolled
+      const existingEnrollment = await this.prisma.enrollment.findUnique({
         where: {
           studentId_courseId: {
             studentId: userId,
-            courseId: courseId
+            courseId: paymentData.courseId
           }
         }
       });
 
-      if (existing) {
-        console.log('User already enrolled, skipping enrollment creation');
-        return;
-      }
-
-      await this.prisma.enrollment.create({
-        data: {
-          studentId: userId,
-          courseId: courseId,
-          progress: 0,
-          currentLesson: 1,
-          completedLessons: []
-        }
-      });
-
-      console.log('User enrolled successfully in course:', courseId);
-    } catch (error) {
-      console.error('Enrollment error:', error);
-      // Don't throw error in test mode
-    }
-  }
-
-  async checkPaymentStatus(id: string): Promise<any> {
-    try {
-      const payment = await this.prisma.payment.findFirst({
-        where: { id },
-        include: {
-          course: {
-            select: {
-              id: true,
-              title: true
-            }
-          }
-        }
-      });
-
-      if (payment) {
+      if (existingEnrollment) {
         return {
-          success: true,
-          message: 'Payment status retrieved successfully',
-          data: {
-            id: payment.id,
-            status: 'COMPLETED',
-            amount: payment.amount,
-            course: payment.course,
-            createdAt: payment.createdAt,
-            completedAt: payment.updatedAt,
-            enrolled: true
-          }
+          status: 'failed',
+          message: 'You are already enrolled in this course'
         };
       }
 
-      return {
-        success: true,
-        message: 'Payment completed successfully (test mode)',
+      // Create payment record
+      const payment = await this.prisma.payment.create({
         data: {
-          status: 'COMPLETED',
+          amount: paymentData.amount,
+          phoneNumber: paymentData.phoneNumber,
+          status: 'COMPLETED', // Auto-success as requested
+          courseId: paymentData.courseId,
+          userId: userId,
+          resultDescription: 'Payment successful via M-Pesa'
+        }
+      });
+
+      // Auto-enroll user in course
+      await this.prisma.enrollment.create({
+        data: {
+          studentId: userId,
+          courseId: paymentData.courseId,
+          progress: 0,
+          currentLesson: 1
+        }
+      });
+
+      return {
+        status: 'success',
+        message: 'Payment successful! You have been enrolled in the course.',
+        data: {
+          paymentId: payment.id,
           enrolled: true
         }
       };
+
     } catch (error) {
-      console.error('Payment status check error:', error);
+      console.error('Payment error:', error);
       return {
-        success: true,
-        message: 'Payment completed successfully (test mode)',
-        data: {
-          status: 'COMPLETED',
-          enrolled: true
-        }
+        status: 'failed',
+        message: error.message || 'Payment failed. Please try again.'
       };
     }
   }
 
-  async initiatePayment(
-    userId: string,
-    paymentData: PaymentRequest
-  ): Promise<PaymentResponseDto> {
-    const ReceiptNumber = randomUUID().slice(0, 10).toUpperCase();
-
-    const payment = await this.prisma.payment.create({
-      data: {
-        userId: String(userId),
-        courseId: String(paymentData.courseId),
-        amount: paymentData.amount,
-        status: 'COMPLETED',
-        phoneNumber: paymentData.phoneNumber,
+  async checkPaymentStatus(paymentId: string): Promise<any> {
+    const payment = await this.prisma.payment.findUnique({
+      where: { id: paymentId },
+      include: {
+        course: {
+          select: {
+            title: true
+          }
+        }
       }
     });
 
-    await this.enrollUserInCourse(userId, paymentData.courseId);
+    if (!payment) {
+      throw new BadRequestException('Payment not found');
+    }
 
     return {
-      status: 'success',
-      message: 'Payment completed and user enrolled successfully',
+      status: payment.status === 'COMPLETED' ? 'success' : 'failed',
+      message: payment.resultDescription || 'Payment processed',
       data: {
         paymentId: payment.id,
-        enrolled: true
+        amount: payment.amount,
+        courseTitle: payment.course.title,
+        enrolled: payment.status === 'COMPLETED'
       }
     };
+  }
+
+  async getUserPayments(userId: string): Promise<any[]> {
+    const payments = await this.prisma.payment.findMany({
+      where: { userId },
+      include: {
+        course: {
+          select: {
+            title: true,
+            thumbnail: true
+          }
+        }
+      },
+      orderBy: {
+        createdAt: 'desc'
+      }
+    });
+
+    return payments.map(payment => ({
+      id: payment.id,
+      courseTitle: payment.course.title,
+      amount: payment.amount,
+      status: payment.status,
+      paymentDate: payment.createdAt,
+      method: 'M-Pesa' // Default payment method
+    }));
+  }
+
+  private validatePhoneNumber(phoneNumber: string): boolean {
+    // Kenyan phone number validation
+    const kenyaPhoneRegex = /^(\+254|254|0)[17]\d{8}$/;
+    return kenyaPhoneRegex.test(phoneNumber.replace(/\s/g, ''));
   }
 }

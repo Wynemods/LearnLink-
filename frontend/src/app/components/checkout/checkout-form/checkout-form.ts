@@ -3,7 +3,7 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { PaymentService, PaymentResponse } from '../../../services/payment.service';
-import { AuthService } from '../../../services/auth.service'; // Changed from Auth to AuthService
+import { AuthService } from '../../../services/auth.service';
 
 export interface CartItem {
   id: string;
@@ -19,6 +19,14 @@ export interface OrderSummary {
   discount: number;
   tax: number;
   total: number;
+}
+
+export interface FeaturedCourse {
+  id: string;
+  title: string;
+  description: string;
+  image: string;
+  discount: string;
 }
 
 @Component({
@@ -51,41 +59,41 @@ export class CheckoutForm implements OnInit {
     total: 0
   };
 
+  // Featured courses data
+  featuredCourses: FeaturedCourse[] = [
+    {
+      id: '1',
+      title: 'Complete React Development Course',
+      description: 'Master React from basics to advanced concepts',
+      image: 'https://images.unsplash.com/photo-1633356122544-f134324a6cee?w=400&h=300&fit=crop',
+      discount: '50'
+    },
+    {
+      id: '2',
+      title: 'Python for Data Science',
+      description: 'Learn data analysis and machine learning with Python',
+      image: 'https://images.unsplash.com/photo-1526379879527-8559ecfcaec0?w=400&h=300&fit=crop',
+      discount: '40'
+    },
+    {
+      id: '3',
+      title: 'UI/UX Design Masterclass',
+      description: 'Create stunning user interfaces and experiences',
+      image: 'https://images.unsplash.com/photo-1561070791-2526d30994b5?w=400&h=300&fit=crop',
+      discount: '60'
+    }
+  ];
+
   // Payment status
   paymentStatus: 'idle' | 'processing' | 'success' | 'failed' = 'idle';
   paymentMessage: string = '';
   id: string = '';
 
-  // Featured courses
-  featuredCourses = [
-    {
-      id: '1',
-      title: 'Full Stack Development',
-      description: 'Learn complete web development from frontend to backend',
-      discount: 50,
-      image: 'https://images.unsplash.com/photo-1498050108023-c5249f4df085?w=600&h=400&fit=crop'
-    },
-    {
-      id: '2',
-      title: 'Data Science Fundamentals',
-      description: 'Master data analysis and machine learning basics',
-      discount: 10,
-      image: 'https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=600&h=400&fit=crop'
-    },
-    {
-      id: '3',
-      title: 'Mobile App Development',
-      description: 'Build native mobile applications for iOS and Android',
-      discount: 30,
-      image: 'https://images.unsplash.com/photo-1512941937669-90a1b58e7e9c?w=600&h=400&fit=crop'
-    }
-  ];
-
   constructor(
     private route: ActivatedRoute,
     private router: Router,
     private paymentService: PaymentService,
-    public authService: AuthService // Using AuthService instead of Auth
+    public authService: AuthService
   ) {}
 
   ngOnInit() {
@@ -113,7 +121,6 @@ export class CheckoutForm implements OnInit {
       const user = this.authService.getCurrentUser();
       if (user) {
         console.log('User is authenticated:', user);
-        // You can pre-populate phone number if it exists in user profile
         this.phoneNumber = user.phoneNumber || '';
       }
     }
@@ -121,7 +128,7 @@ export class CheckoutForm implements OnInit {
 
   private calculateTotals() {
     this.orderSummary.subtotal = this.orderSummary.items.reduce((sum, item) => sum + item.price, 0);
-    this.orderSummary.tax = this.orderSummary.subtotal * 0.05; // 5% tax
+    this.orderSummary.tax = this.orderSummary.subtotal * 0.05;
     this.orderSummary.total = this.orderSummary.subtotal + this.orderSummary.tax - this.orderSummary.discount;
   }
 
@@ -135,7 +142,7 @@ export class CheckoutForm implements OnInit {
     this.cardNumber = '';
     this.expiryDate = '';
     this.cvc = '';
-    if (!this.authService.currentUser) {
+    if (!this.authService.getCurrentUser()) {
       this.phoneNumber = '';
     }
     this.paymentStatus = 'idle';
@@ -159,7 +166,6 @@ export class CheckoutForm implements OnInit {
   formatPhoneNumber(event: any): void {
     let value = event.target.value.replace(/\D/g, '');
     
-    // Format as +254 XXX XXX XXX
     if (value.startsWith('254')) {
       value = '+' + value;
     } else if (value.startsWith('0')) {
@@ -172,7 +178,6 @@ export class CheckoutForm implements OnInit {
   }
 
   private validateForm(): boolean {
-    // Check authentication first
     if (!this.authService.isAuthenticated()) {
       this.paymentMessage = 'Please log in to complete your purchase';
       this.paymentStatus = 'failed';
@@ -187,17 +192,9 @@ export class CheckoutForm implements OnInit {
     }
 
     if (this.selectedPaymentMethod === 'visa') {
-      if (!this.cardName || !this.cardNumber || !this.expiryDate || !this.cvc) {
-        this.paymentMessage = 'Please fill in all card details';
-        this.paymentStatus = 'failed';
-        return false;
-      }
-      
-      if (this.cardNumber.replace(/\s/g, '').length < 16) {
-        this.paymentMessage = 'Please enter a valid card number';
-        this.paymentStatus = 'failed';
-        return false;
-      }
+      this.paymentMessage = 'Visa payment is currently unavailable. Please use M-Pesa.';
+      this.paymentStatus = 'failed';
+      return false;
     } else if (this.selectedPaymentMethod === 'mpesa') {
       if (!this.phoneNumber) {
         this.paymentMessage = 'Please enter your M-Pesa phone number';
@@ -219,7 +216,6 @@ export class CheckoutForm implements OnInit {
 
   onSubmit(): void {
     if (!this.validateForm()) {
-      // If validation fails due to authentication, redirect to login
       if (!this.authService.isAuthenticated()) {
         setTimeout(() => {
           this.router.navigate(['/auth/login'], { 
@@ -230,33 +226,7 @@ export class CheckoutForm implements OnInit {
       return;
     }
 
-    // Proceed with payment for authenticated users
-    if (this.selectedPaymentMethod === 'visa') {
-      this.processVisaPayment();
-    } else {
-      this.processMpesaPayment();
-    }
-  }
-
-  private processVisaPayment(): void {
-    this.loading = true;
-    this.paymentStatus = 'processing';
-    this.paymentMessage = 'Processing card payment...';
-
-    // For testing - always succeed for logged-in users
-    setTimeout(() => {
-      this.loading = false;
-      this.paymentStatus = 'success';
-      this.paymentMessage = 'Payment completed successfully! You have been enrolled in the course.';
-      
-      // Automatically redirect to course after 3 seconds
-      setTimeout(() => {
-        const courseId = this.orderSummary.items[0]?.id;
-        if (courseId) {
-          this.router.navigate(['/courses', courseId]);
-        }
-      }, 3000);
-    }, 3000);
+    this.processMpesaPayment();
   }
 
   private processMpesaPayment(): void {
@@ -281,8 +251,9 @@ export class CheckoutForm implements OnInit {
       return;
     }
 
+    this.loading = true;
     this.paymentStatus = 'processing';
-    this.paymentMessage = 'Initiating M-Pesa payment...';
+    this.paymentMessage = 'Processing M-Pesa payment...';
 
     const paymentData = {
       phoneNumber: this.phoneNumber,
@@ -292,12 +263,11 @@ export class CheckoutForm implements OnInit {
 
     this.paymentService.initiatePayment(paymentData).subscribe({
       next: (response: PaymentResponse) => {
-        if (response.success || response.status === 'success') {
+        this.loading = false;
+        if (response.status === 'success') {
           this.paymentStatus = 'success';
           this.paymentMessage = response.message;
-          // Optionally display merchantRequestId and mpesaReceiptNumber
-          // e.g., this.merchantRequestId = response.data?.merchantRequestId;
-          // this.mpesaReceiptNumber = response.data?.mpesaReceiptNumber;
+
           setTimeout(() => {
             this.router.navigate(['/courses', courseId]);
           }, 3000);
@@ -307,19 +277,19 @@ export class CheckoutForm implements OnInit {
         }
       },
       error: (error: any) => {
+        this.loading = false;
         this.paymentStatus = 'failed';
-        this.paymentMessage = error.message || 'Payment failed. Please try again.';
+        this.paymentMessage = error.error?.message || 'Payment failed. Please try again.';
       }
     });
   }
 
-  // Retry payment
   retryPayment(): void {
     this.paymentStatus = 'idle';
     this.paymentMessage = '';
+    this.loading = false;
   }
 
-  // Go back to course
   goBackToCourse(): void {
     const courseId = this.orderSummary.items[0]?.id;
     if (courseId) {
