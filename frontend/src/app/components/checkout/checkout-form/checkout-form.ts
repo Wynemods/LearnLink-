@@ -4,11 +4,12 @@ import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { PaymentService, PaymentResponse } from '../../../services/payment.service';
 import { AuthService } from '../../../services/auth.service';
+import { CourseService } from '../../../services/course.service';
 
 export interface CartItem {
   id: string;
   title: string;
-  description: string; 
+  description: string;
   price: number;
   image: string;
 }
@@ -38,7 +39,7 @@ export interface FeaturedCourse {
 })
 export class CheckoutForm implements OnInit {
   selectedPaymentMethod: 'visa' | 'mpesa' = 'mpesa';
-  
+
   // Form data
   cardName: string = '';
   cardNumber: string = '';
@@ -46,10 +47,10 @@ export class CheckoutForm implements OnInit {
   cvc: string = '';
   phoneNumber: string = '';
   saveInfo: boolean = false;
-  
+
   // Loading states
   loading = false;
-  
+
   // Order summary data
   orderSummary: OrderSummary = {
     items: [],
@@ -93,8 +94,9 @@ export class CheckoutForm implements OnInit {
     private route: ActivatedRoute,
     private router: Router,
     private paymentService: PaymentService,
-    public authService: AuthService
-  ) {}
+    public authService: AuthService,
+    private courseService: CourseService
+  ) { }
 
   ngOnInit() {
     // Get course data from query params first
@@ -107,7 +109,7 @@ export class CheckoutForm implements OnInit {
           price: parseFloat(params['price']),
           image: params['image'] || 'https://images.unsplash.com/photo-1516321318423-f06f85e504b3?w=400&h=300&fit=crop'
         };
-        
+
         this.orderSummary.items = [item];
         this.calculateTotals();
       }
@@ -165,7 +167,7 @@ export class CheckoutForm implements OnInit {
 
   formatPhoneNumber(event: any): void {
     let value = event.target.value.replace(/\D/g, '');
-    
+
     if (value.startsWith('254')) {
       value = '+' + value;
     } else if (value.startsWith('0')) {
@@ -173,7 +175,7 @@ export class CheckoutForm implements OnInit {
     } else if (!value.startsWith('+254')) {
       value = '+254' + value;
     }
-    
+
     this.phoneNumber = value;
   }
 
@@ -201,7 +203,7 @@ export class CheckoutForm implements OnInit {
         this.paymentStatus = 'failed';
         return false;
       }
-      
+
       if (!this.paymentService.validatePhoneNumber(this.phoneNumber)) {
         this.paymentMessage = 'Please enter a valid Kenyan phone number';
         this.paymentStatus = 'failed';
@@ -214,35 +216,33 @@ export class CheckoutForm implements OnInit {
     return true;
   }
 
-  onSubmit(): void {
+  async onSubmit(): Promise<void> {
     if (!this.validateForm()) {
       if (!this.authService.isAuthenticated()) {
         setTimeout(() => {
-          this.router.navigate(['/auth/login'], { 
-            queryParams: { returnUrl: this.router.url } 
+          this.router.navigate(['/auth/login'], {
+            queryParams: { returnUrl: this.router.url }
           });
         }, 2000);
       }
       return;
     }
 
-    this.processMpesaPayment();
+    // Directly enroll in course (no payment)
+    await this.directEnroll();
   }
 
-  private processMpesaPayment(): void {
+  private async directEnroll(): Promise<void> {
     const courseId = this.orderSummary.items[0]?.id;
-    const amount = this.orderSummary.total;
-
     if (!courseId) {
       this.paymentStatus = 'failed';
       this.paymentMessage = 'Course information is missing';
       return;
     }
-
     const currentUser = this.authService.getCurrentUser();
     if (!this.authService.isAuthenticated() || !currentUser) {
       this.paymentStatus = 'failed';
-      this.paymentMessage = 'Please log in to complete your purchase';
+      this.paymentMessage = 'Please log in to enroll in this course';
       setTimeout(() => {
         this.router.navigate(['/auth/login'], {
           queryParams: { returnUrl: this.router.url }
@@ -250,38 +250,22 @@ export class CheckoutForm implements OnInit {
       }, 2000);
       return;
     }
-
     this.loading = true;
     this.paymentStatus = 'processing';
-    this.paymentMessage = 'Processing M-Pesa payment...';
-
-    const paymentData = {
-      phoneNumber: this.phoneNumber,
-      amount: amount,
-      courseId: courseId
-    };
-
-    this.paymentService.initiatePayment(paymentData).subscribe({
-      next: (response: PaymentResponse) => {
-        this.loading = false;
-        if (response.status === 'success') {
-          this.paymentStatus = 'success';
-          this.paymentMessage = response.message;
-
-          setTimeout(() => {
-            this.router.navigate(['/courses', courseId]);
-          }, 3000);
-        } else {
-          this.paymentStatus = 'failed';
-          this.paymentMessage = response.message || 'Payment failed';
-        }
-      },
-      error: (error: any) => {
-        this.loading = false;
-        this.paymentStatus = 'failed';
-        this.paymentMessage = error.error?.message || 'Payment failed. Please try again.';
-      }
-    });
+    this.paymentMessage = 'Enrolling you in the course...';
+    try {
+      await this.courseService.enrollInCourse(courseId).toPromise();
+      this.loading = false;
+      this.paymentStatus = 'success';
+      this.paymentMessage = 'You have been successfully enrolled in the course!';
+      setTimeout(() => {
+        this.goBackToCourse();
+      }, 2000);
+    } catch (err) {
+      this.loading = false;
+      this.paymentStatus = 'failed';
+      this.paymentMessage = 'Enrollment failed. Please try again.';
+    }
   }
 
   retryPayment(): void {
@@ -293,7 +277,7 @@ export class CheckoutForm implements OnInit {
   goBackToCourse(): void {
     const courseId = this.orderSummary.items[0]?.id;
     if (courseId) {
-      this.router.navigate(['/courses', courseId]);
+      this.router.navigate(['/learn/course', courseId, 'lesson', '1']);
     } else {
       this.router.navigate(['/courses']);
     }

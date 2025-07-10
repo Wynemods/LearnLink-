@@ -13,7 +13,7 @@ Content-Type: {{contentType}}
 }
 
 ### Step 2: Copy the token from login response and replace with actual token
-@token = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJjbWN1ZzVzbDEwMDA3aXRnbnhjbzZzNGwzIiwidXNlcm5hbWUiOiJraW11bnlpX2ppbW15IiwiZW1haWwiOiJraW11bnlpLmppbW15QGdtYWlsLmNvbSIsInJvbGUiOiJTVFVERU5UIiwiaWF0IjoxNzUxOTc1MjgyLCJleHAiOjE3NTI1ODAwODJ9.Ju_zscKrIQ5km1bacmZ9XM3sdbLZVlrVns9sPdPGw0A
+@token = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJjbWN2cnlwcXgwMDA2aTEwMGRjNm55b3NkIiwidXNlcm5hbWUiOiJqaW1teV9rIiwiZW1haWwiOiJqaW1teWtpbXVueWlAZ21haWwuY29tIiwicm9sZSI6IklOU1RSVUNUT1IiLCJpYXQiOjE3NTIwNTUwMTksImV4cCI6MTc1NDY0NzAxOX0.qbFgfGYi_dOtv9fVS1SAQiTnzMYCl1870V7D2qasRhk
 
 ### Debug: Check if courses exist
 GET {{baseUrl}}/courses
@@ -277,8 +277,25 @@ Authorization: Bearer {{token}}
   "isPublished": true
 }
 
-### Create a quiz for a course (INSTRUCTOR ONLY)
-POST {{baseUrl}}/courses/{{courseId}}/quiz
+@courseId = cmcvr8qe10001it3yl5orylj4
+### Create a lesson for a course (INSTRUCTOR ONLY, CORRECT ENDPOINT)
+POST {{baseUrl}}/courses/lessons
+Content-Type: {{contentType}}
+Authorization: Bearer {{token}}
+
+{
+  "title": "Introduction to Async/Await",
+  "content": "Learn how to handle asynchronous operations in JavaScript",
+  "videoUrl": "https://example.com/video.mp4",
+  "duration": "15 minutes",
+  "order": 1,
+  "type": "video",
+  "isPreview": false,
+  "courseId": "{{courseId}}"
+}
+
+### Create a quiz for a course (INSTRUCTOR ONLY, CORRECT ENDPOINT)
+POST {{baseUrl}}/courses/quizzes
 Content-Type: {{contentType}}
 Authorization: Bearer {{token}}
 
@@ -298,7 +315,8 @@ Authorization: Bearer {{token}}
       "points": 10,
       "explanation": "Basic math"
     }
-  ]
+  ],
+  "courseId": "{{courseId}}"
 }
 
 ### Get all certificates for a course (auto-issue if eligible, STUDENT or INSTRUCTOR)
@@ -322,7 +340,7 @@ Accept: application/json
 # 5. Finally, check if courses were created successfully
 
 ### Step 4: Add lessons to a course (replace YOUR_NEW_COURSE_ID with actual course id)
-POST {{baseUrl}}/courses/YOUR_NEW_COURSE_ID/lessons
+POST {{baseUrl}}/courses/cmcvp55070004i1jcknvdtfck/lessons
 Content-Type: application/json
 Authorization: Bearer {{token}}
 
@@ -357,7 +375,7 @@ Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJjbWN1eTI1d
 ### Create a lesson for YOUR course
 POST http://localhost:3000/api/courses/cmcuyxf3500019zhrnopwi8uh/lessons
 Content-Type: application/json
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJjbWN1eTI1dGYwMDA2aTFqNDVnMWc4bTJvIiwidXNlcm5hbWUiOiJqaW1teV9rIiwiZW1haWwiOiJqaW1teWtpbXVueWlAZ21haWwuY29tIiwicm9sZSI6IklOU1RSVUNUT1IiLCJpYXQiOjE3NTIwMDU2MDcsImV4cCI6MTc1NDU5NzYwN30.PesPljAogg2II8MjD-zOixkpbYaLlGjtV4nTwWWzkfo
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJjbWN2bjFvbTQwMDA2aTEzazgzbWp3bTFsIiwidXNlcm5hbWUiOiJqaW1teV9rIiwiZW1haWwiOiJqaW1teWtpbXVueWlAZ21haWwuY29tIiwicm9sZSI6IklOU1RSVUNUT1IiLCJpYXQiOjE3NTIwNTA4MDAsImV4cCI6MTc1NDY0MjgwMH0.ga2jYCWIs_YBEXmwqLy4Ij9k77zJdJq-wrVIDj16KVw
 
 {
   "title": "Introduction to Async/Await",

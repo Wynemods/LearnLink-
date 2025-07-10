@@ -59,32 +59,32 @@ export interface Achievement {
 })
 export class StudentDashboard implements OnInit, OnDestroy {
   private destroy$ = new Subject<void>();
-  
+
   // Make Math available in template
   Math = Math;
-  
+
   // UI State
   isSidebarMinimized = false;
   isMobileMenuOpen = false;
   activeSection = 'overview';
-  
+
   // Carousel states
   coursesCurrentIndex = 0;
   coursesPerView = 3;
-  
+
   // Data
   enrolledCourses: EnrolledCourse[] = [];
   certificates: Certificate[] = [];
   paymentHistory: PaymentHistory[] = [];
   achievements: Achievement[] = [];
-  
+
   // Stats
   totalCourses = 0;
   completedCourses = 0;
   totalCertificates = 0;
   totalHoursLearned = 0;
   currentStreak = 0;
-  
+
   // Loading states
   loading = true;
   coursesLoading = false;
@@ -104,7 +104,7 @@ export class StudentDashboard implements OnInit, OnDestroy {
     private courseService: CourseService,
     private certificateService: CertificateService,
     private paymentService: PaymentService
-  ) {}
+  ) { }
 
   ngOnInit() {
     this.loadDashboardData();
@@ -128,7 +128,7 @@ export class StudentDashboard implements OnInit, OnDestroy {
   setActiveSection(section: string) {
     this.activeSection = section;
     this.isMobileMenuOpen = false;
-    
+
     if (section === 'quizzes') {
       this.loadAvailableQuizzes();
     }
@@ -156,7 +156,7 @@ export class StudentDashboard implements OnInit, OnDestroy {
       this.coursesLoading = true;
       const response = await this.courseService.getMyCourses().toPromise();
       const courses = response?.data || [];
-      
+
       // Transform Course[] to EnrolledCourse[] - Fix the 'course' parameter type
       this.enrolledCourses = courses.map((course: any) => ({
         id: course.id,
@@ -223,10 +223,10 @@ export class StudentDashboard implements OnInit, OnDestroy {
   async loadAvailableQuizzes() {
     try {
       // Load quizzes from enrolled courses
-      const quizPromises = this.enrolledCourses.map(course => 
+      const quizPromises = this.enrolledCourses.map(course =>
         this.courseService.getCourseQuizzes(course.id).toPromise()
       );
-      
+
       const quizResults = await Promise.all(quizPromises);
       this.availableQuizzes = quizResults.flatMap(result => result?.data || []);
     } catch (error) {
@@ -242,18 +242,18 @@ export class StudentDashboard implements OnInit, OnDestroy {
 
   async submitQuiz() {
     if (!this.currentQuiz) return;
-    
+
     try {
       const response = await this.courseService.submitQuiz(
         this.currentQuiz.id,
         this.currentQuizAnswers
       ).toPromise();
-      
+
       if (response?.success) {
         alert(`Quiz submitted! Score: ${response.data.score}/${response.data.maxScore}`);
         this.closeQuizModal();
         await this.loadQuizAttempts();
-        
+
         // Check if certificate was earned
         if (response.data.certificateEarned) {
           alert('Congratulations! You earned a certificate for this course!');
@@ -265,7 +265,7 @@ export class StudentDashboard implements OnInit, OnDestroy {
       alert('Error submitting quiz. Please try again.');
     }
   }
-  
+
   closeQuizModal() {
     this.showQuizModal = false;
     this.currentQuiz = null;
@@ -307,8 +307,27 @@ export class StudentDashboard implements OnInit, OnDestroy {
   }
 
   // Course actions
-  continueCourse(course: EnrolledCourse) {
-    this.router.navigate(['/courses', course.id]);
+  async continueCourse(course: EnrolledCourse) {
+    try {
+      // Fetch lessons for the course
+      const response = await this.courseService.getCourseLessons(course.id).toPromise();
+      const lessons = response?.data || [];
+      if (!lessons.length) {
+        alert('No lessons found for this course.');
+        return;
+      }
+      // Find the lesson to continue: if progress is 0, use first lesson; else, use first incomplete or last accessed
+      let lessonId = lessons[0].id;
+      if (course.progress > 0) {
+        // Try to find first incomplete lesson
+        const incomplete = lessons.find((l: any) => !l.completed);
+        lessonId = incomplete ? incomplete.id : lessons[0].id;
+      }
+      this.router.navigate(['/learn/course', course.id, 'lesson', lessonId]);
+    } catch (error) {
+      console.error('Error loading lessons for course:', error);
+      alert('Could not load lessons for this course.');
+    }
   }
 
   viewCourse(course: EnrolledCourse) {
@@ -401,7 +420,7 @@ export class StudentDashboard implements OnInit, OnDestroy {
     if (percentage >= 60) return 'text-yellow-600';
     return 'text-red-600';
   }
-  
+
   getQuizStatusText(percentage: number): string {
     if (percentage >= 80) return 'Passed';
     if (percentage >= 60) return 'Needs Improvement';

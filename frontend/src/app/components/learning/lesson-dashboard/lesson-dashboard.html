@@ -6,26 +6,20 @@
         <img src="/assets/svg/arrow-back.svg" alt="Back" class="w-5 h-5 mr-2 filter brightness-0 invert">
         <span class="font-semibold">Back to Courses</span>
       </button>
-      
+
       <!-- Lessons Navigation -->
       <nav class="mb-8">
         <h3 class="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-4">Lessons</h3>
         <ul class="space-y-2">
           <li *ngFor="let lesson of lessons; let i = index" class="mb-2">
-             <button
-              (click)="selectLesson(lesson)"
+            <button (click)="selectLesson(lesson)"
               class="w-full flex items-center p-3 rounded-lg transition-all duration-200 hover:bg-gray-600"
-              [class.bg-teal-500]="i === currentLessonIndex"
-              [class.bg-gray-700]="i !== currentLessonIndex"
-              [class.text-white]="i === currentLessonIndex"
-              [class.text-gray-300]="i !== currentLessonIndex"
-            >
-              <img 
-                [src]="lesson.completed ? '/assets/svg/check-circle.svg' : '/assets/svg/book.svg'"
-                [alt]="lesson.completed ? 'Completed' : 'Lesson'"
-                class="w-5 h-5 mr-3 filter brightness-0 invert"
-                [class.opacity-80]="i !== currentLessonIndex"
-              >
+              [class.bg-teal-500]="i === currentLessonIndex" [class.bg-gray-700]="i !== currentLessonIndex"
+              [class.text-white]="i === currentLessonIndex" [class.text-gray-300]="i !== currentLessonIndex">
+              <span class="material-icons mr-3"
+                [ngClass]="{'text-green-400': lesson.completed, 'opacity-80': i !== currentLessonIndex}">
+                {{ lesson.completed ? 'check_circle' : 'menu_book' }}
+              </span>
               <div class="flex-1 text-left">
                 <span class="text-sm font-medium">Lesson {{ i + 1 }}: {{ lesson.title }}</span>
               </div>
@@ -40,15 +34,11 @@
         <h3 class="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-4">Practice Quiz</h3>
         <ul class="space-y-2">
           <li *ngFor="let quiz of quizzes; let i = index" class="mb-2">
-            <button
-              (click)="selectLesson(quiz)"
-              class="w-full flex items-center p-3 bg-gray-700 text-gray-300 hover:bg-gray-600 hover:text-white rounded-lg transition-all duration-200"
-            >
-              <img 
-                [src]="quiz.completed ? '/assets/svg/check-circle.svg' : '/assets/svg/quiz.svg'"
-                [alt]="quiz.completed ? 'Completed' : 'Quiz'"
-                class="w-5 h-5 mr-3 filter brightness-0 invert opacity-80"
-              >
+            <button (click)="selectLesson(quiz)"
+              class="w-full flex items-center p-3 bg-gray-700 text-gray-300 hover:bg-gray-600 hover:text-white rounded-lg transition-all duration-200">
+              <span class="material-icons mr-3" [ngClass]="{'text-green-400': quiz.completed, 'opacity-80': true}">
+                {{ quiz.completed ? 'check_circle' : 'quiz' }}
+              </span>
               <div class="flex-1 text-left">
                 <span class="text-sm font-medium">Quiz {{ i + 1 }}: {{ quiz.title }}</span>
               </div>
@@ -61,18 +51,13 @@
   </aside>
 
   <!-- Mobile Menu Overlay -->
-  <div
-    *ngIf="isMobileMenuOpen"
-    class="lg:hidden fixed inset-0 bg-black bg-opacity-50 z-40"
-    (click)="toggleMobileMenu()"
-  ></div>
+  <div *ngIf="isMobileMenuOpen" class="lg:hidden fixed inset-0 bg-black bg-opacity-50 z-40"
+    (click)="toggleMobileMenu()"></div>
 
   <!-- Mobile Sidebar -->
   <aside
     class="lg:hidden fixed left-0 top-0 w-80 h-full bg-gray-800 text-white shadow-lg p-6 overflow-y-auto z-50 transform transition-transform duration-300"
-    [class.translate-x-0]="isMobileMenuOpen"
-    [class.-translate-x-full]="!isMobileMenuOpen"
-  >
+    [class.translate-x-0]="isMobileMenuOpen" [class.-translate-x-full]="!isMobileMenuOpen">
     <div class="w-full">
       <div class="flex items-center justify-between mb-8">
         <button (click)="goBack()" class="flex items-center text-gray-300 hover:text-white transition-colors">
@@ -83,26 +68,19 @@
           <img src="/assets/svg/close.svg" alt="Close" class="w-6 h-6 filter brightness-0 invert">
         </button>
       </div>
-      
+
       <!-- Mobile Lessons Navigation -->
       <nav class="mb-8">
         <h3 class="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-4">Lessons</h3>
         <ul class="space-y-2">
           <li *ngFor="let lesson of lessons; let i = index" class="mb-2">
-            <button
-              (click)="selectLesson(lesson)"
+            <button (click)="selectLesson(lesson)"
               class="w-full flex items-center p-3 rounded-lg transition-all duration-200 hover:bg-gray-600"
-              [class.bg-teal-500]="i === currentLessonIndex"
-              [class.bg-gray-700]="i !== currentLessonIndex"
-              [class.text-white]="i === currentLessonIndex"
-              [class.text-gray-300]="i !== currentLessonIndex"
-            >
-              <img 
-                [src]="lesson.completed ? '/assets/svg/check-circle.svg' : '/assets/svg/book.svg'"
-                [alt]="lesson.completed ? 'Completed' : 'Lesson'"
-                class="w-5 h-5 mr-3 filter brightness-0 invert"
-                [class.opacity-80]="i !== currentLessonIndex"
-              >
+              [class.bg-teal-500]="i === currentLessonIndex" [class.bg-gray-700]="i !== currentLessonIndex"
+              [class.text-white]="i === currentLessonIndex" [class.text-gray-300]="i !== currentLessonIndex">
+              <img [src]="lesson.completed ? '/assets/svg/check-circle.svg' : '/assets/svg/book.svg'"
+                [alt]="lesson.completed ? 'Completed' : 'Lesson'" class="w-5 h-5 mr-3 filter brightness-0 invert"
+                [class.opacity-80]="i !== currentLessonIndex">
               <div class="flex-1 text-left">
                 <span class="text-sm font-medium">Lesson {{ i + 1 }}: {{ lesson.title }}</span>
               </div>
@@ -117,15 +95,11 @@
         <h3 class="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-4">Practice Quiz</h3>
         <ul class="space-y-2">
           <li *ngFor="let quiz of quizzes; let i = index" class="mb-2">
-            <button
-              (click)="selectLesson(quiz)"
-              class="w-full flex items-center p-3 bg-gray-700 text-gray-300 hover:bg-gray-600 hover:text-white rounded-lg transition-all duration-200"
-            >
-              <img 
-                [src]="quiz.completed ? '/assets/svg/check-circle.svg' : '/assets/svg/quiz.svg'"
+            <button (click)="selectLesson(quiz)"
+              class="w-full flex items-center p-3 bg-gray-700 text-gray-300 hover:bg-gray-600 hover:text-white rounded-lg transition-all duration-200">
+              <img [src]="quiz.completed ? '/assets/svg/check-circle.svg' : '/assets/svg/quiz.svg'"
                 [alt]="quiz.completed ? 'Completed' : 'Quiz'"
-                class="w-5 h-5 mr-3 filter brightness-0 invert opacity-80"
-              >
+                class="w-5 h-5 mr-3 filter brightness-0 invert opacity-80">
               <div class="flex-1 text-left">
                 <span class="text-sm font-medium">Quiz {{ i + 1 }}: {{ quiz.title }}</span>
               </div>
@@ -143,10 +117,8 @@
     <header class="bg-white text-gray-800 p-4 lg:p-8 border-b shadow-sm">
       <div class="flex items-center justify-between">
         <!-- Mobile Menu Button -->
-        <button
-          (click)="toggleMobileMenu()"
-          class="lg:hidden p-2 text-gray-600 hover:text-gray-800 focus:outline-none focus:ring-2 focus:ring-teal-500 rounded-md"
-        >
+        <button (click)="toggleMobileMenu()"
+          class="lg:hidden p-2 text-gray-600 hover:text-gray-800 focus:outline-none focus:ring-2 focus:ring-teal-500 rounded-md">
           <img src="/assets/svg/menu.svg" alt="Menu" class="w-6 h-6">
         </button>
 
@@ -162,18 +134,12 @@
 
         <!-- Navigation Buttons -->
         <div class="hidden lg:flex items-center space-x-4">
-          <button
-            (click)="previousLesson()"
-            [disabled]="currentLessonIndex === 0"
-            class="bg-gray-200 text-gray-600 font-semibold py-2 px-4 rounded-lg hover:bg-gray-300 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-          >
+          <button (click)="previousLesson()" [disabled]="currentLessonIndex === 0"
+            class="bg-gray-200 text-gray-600 font-semibold py-2 px-4 rounded-lg hover:bg-gray-300 transition-colors disabled:opacity-50 disabled:cursor-not-allowed">
             Previous Lesson
           </button>
-          <button
-            (click)="nextLesson()"
-            [disabled]="currentLessonIndex === lessons.length - 1"
-            class="bg-teal-500 text-white font-semibold py-2 px-4 rounded-lg hover:bg-teal-600 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-          >
+          <button (click)="nextLesson()" [disabled]="currentLessonIndex === lessons.length - 1"
+            class="bg-teal-500 text-white font-semibold py-2 px-4 rounded-lg hover:bg-teal-600 transition-colors disabled:opacity-50 disabled:cursor-not-allowed">
             Next Lesson
           </button>
         </div>
@@ -186,13 +152,8 @@
         <!-- Video Container -->
         <div class="relative w-full mb-6 lg:mb-8">
           <div class="aspect-w-16 aspect-h-9 bg-gray-100 rounded-lg overflow-hidden">
-            <iframe
-              [src]="currentLesson.videoUrl"
-              class="w-full h-full rounded-lg"
-              frameborder="0"
-              allowfullscreen
-              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-            ></iframe>
+            <iframe [src]="currentLesson.videoUrl" class="w-full h-full rounded-lg" frameborder="0" allowfullscreen
+              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"></iframe>
           </div>
         </div>
 
@@ -208,20 +169,12 @@
         <div *ngIf="currentLesson.resources.length > 0">
           <h2 class="text-xl lg:text-2xl font-bold text-gray-800 mb-4">Resources</h2>
           <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 lg:gap-6">
-            <a
-              *ngFor="let resource of currentLesson.resources"
-              [href]="resource.url"
-              class="block p-4 border border-gray-200 rounded-lg hover:shadow-md transition-shadow"
-            >
+            <a *ngFor="let resource of currentLesson.resources" [href]="resource.url"
+              class="block p-4 border border-gray-200 rounded-lg hover:shadow-md transition-shadow">
               <div class="flex items-center">
-                <img 
-                  [src]="getResourceIcon(resource.type)"
-                  [alt]="resource.type"
-                  class="w-6 h-6 mr-3"
-                  [class.text-red-500]="resource.type === 'pdf'"
-                  [class.text-blue-500]="resource.type === 'zip'"
-                  [class.text-green-500]="resource.type === 'link'"
-                >
+                <img [src]="getResourceIcon(resource.type)" [alt]="resource.type" class="w-6 h-6 mr-3"
+                  [class.text-red-500]="resource.type === 'pdf'" [class.text-blue-500]="resource.type === 'zip'"
+                  [class.text-green-500]="resource.type === 'link'">
                 <div>
                   <h3 class="font-semibold text-gray-800">{{ resource.title }}</h3>
                   <p class="text-sm text-gray-500">{{ resource.description }}</p>
@@ -233,19 +186,13 @@
 
         <!-- Mobile Navigation Buttons -->
         <div class="lg:hidden flex justify-between items-center mt-8 pt-6 border-t border-gray-200">
-          <button
-            (click)="previousLesson()"
-            [disabled]="currentLessonIndex === 0"
-            class="bg-gray-200 text-gray-600 font-semibold py-2 px-4 rounded-lg hover:bg-gray-300 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center"
-          >
+          <button (click)="previousLesson()" [disabled]="currentLessonIndex === 0"
+            class="bg-gray-200 text-gray-600 font-semibold py-2 px-4 rounded-lg hover:bg-gray-300 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center">
             <img src="/assets/svg/arrow-back.svg" alt="Previous" class="w-5 h-5 mr-2">
             Previous
           </button>
-          <button
-            (click)="nextLesson()"
-            [disabled]="currentLessonIndex === lessons.length - 1"
-            class="bg-teal-500 text-white font-semibold py-2 px-4 rounded-lg hover:bg-teal-600 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center"
-          >
+          <button (click)="nextLesson()" [disabled]="currentLessonIndex === lessons.length - 1"
+            class="bg-teal-500 text-white font-semibold py-2 px-4 rounded-lg hover:bg-teal-600 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center">
             Next
             <img src="/assets/svg/arrow-forward.svg" alt="Next" class="w-5 h-5 ml-2 filter brightness-0 invert">
           </button>

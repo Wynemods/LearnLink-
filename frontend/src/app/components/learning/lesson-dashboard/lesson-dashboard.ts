@@ -52,96 +52,9 @@ export class LessonDashboard implements OnInit {
     progress: 75
   };
   
-  lessons: Lesson[] = [
-    {
-      id: '1',
-      title: 'Introduction about XD',
-      duration: '30 mins',
-      videoUrl: 'https://www.youtube.com/embed/68w2V4z4vss',
-      description: 'In this introductory lesson, we will cover the fundamental concepts of Adobe XD. You will learn about the user interface, how to create and manage artboards, and the basic tools for designing and prototyping. This lesson is designed for beginners and will provide a solid foundation for your journey into UI/UX design with Adobe XD. By the end of this lesson, you will be able to navigate the software with confidence and create a simple mobile app screen.',
-      type: 'lesson',
-      completed: true,
-      resources: [
-        {
-          id: '1',
-          title: 'Lesson Slides (PDF)',
-          description: 'Download the presentation slides.',
-          type: 'pdf',
-          url: '#',
-          icon: 'picture_as_pdf'
-        },
-        {
-          id: '2',
-          title: 'Exercise Files (ZIP)',
-          description: 'Get the project files to follow along.',
-          type: 'zip',
-          url: '#',
-          icon: 'folder_zip'
-        },
-        {
-          id: '3',
-          title: 'Useful Links',
-          description: 'External resources and articles.',
-          type: 'link',
-          url: '#',
-          icon: 'link'
-        }
-      ]
-    },
-    {
-      id: '2',
-      title: 'Basic Tools in XD',
-      duration: '45 mins',
-      videoUrl: 'https://www.youtube.com/embed/68w2V4z4vss',
-      description: 'Learn about the essential tools in Adobe XD for creating stunning designs.',
-      type: 'lesson',
-      completed: false,
-      resources: []
-    },
-    {
-      id: '3',
-      title: 'Prototyping',
-      duration: '60 mins',
-      videoUrl: 'https://www.youtube.com/embed/68w2V4z4vss',
-      description: 'Master the art of prototyping with Adobe XD.',
-      type: 'lesson',
-      completed: false,
-      resources: []
-    }
-  ];
+  lessons: Lesson[] = [];
 
-  quizzes: Lesson[] = [
-    {
-      id: 'quiz1',
-      title: 'XD Basics',
-      duration: '15 mins',
-      videoUrl: '',
-      description: 'Test your knowledge of the fundamental concepts.',
-      type: 'quiz',
-      completed: false,
-      resources: []
-    },
-    {
-      id: 'quiz2',
-      title: 'Tools Mastery',
-      duration: '20 mins',
-      videoUrl: '',
-      description: 'Test your understanding of XD tools.',
-      type: 'quiz',
-      completed: false,
-      resources: []
-    },
-    {
-      id: 'quiz3',
-      title: 'Prototyping Challenge',
-      duration: '25 mins',
-      videoUrl: '',
-      description: 'Challenge yourself with advanced prototyping concepts.',
-      type: 'quiz',
-      completed: false,
-      resources: []
-    }
-  ];
+  quizzes: Lesson[] = [];
 
   constructor(
     private router: Router,

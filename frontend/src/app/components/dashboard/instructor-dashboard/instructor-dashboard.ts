@@ -63,20 +63,20 @@ export interface QuizQuestion {
 })
 export class InstructorDashboard implements OnInit, OnDestroy {
   private destroy$ = new Subject<void>();
-  
+
   // Make String available in template
   String = String;
-  
+
   // UI State
   isMobileMenuOpen = false;
   currentView: 'overview' | 'courses' | 'lessons' | 'quizzes' | 'students' | 'messages' = 'overview';
-  
+
   // Data
   myCourses: Course[] = [];
   myStudents: any[] = [];
   analytics: any = {};
   categories: any[] = [];
-  
+
   // Overview stats
   overviewStats = {
     totalCourses: 0,
@@ -84,28 +84,28 @@ export class InstructorDashboard implements OnInit, OnDestroy {
     completedCourses: 0,
     averageRating: 0
   };
-  
+
   // Course progress and top students for overview
   courseProgress: any[] = [];
   topStudents: any[] = [];
-  
+
   // Messages (for messages view)
   activeConversation: any = null;
   filteredConversations: any[] = [];
   searchTerm = '';
   newMessage = '';
-  
+
   // Course selection for lessons/quizzes
   selectedCourseId = '';
   selectedCourse: Course | null = null;
   courseLessons: Lesson[] = [];
   courseQuizzes: Quiz[] = [];
-  
+
   // Forms
   showCourseForm = false;
   showLessonForm = false;
   showQuizForm = false;
-  
+
   // Course form
   courseForm = {
     title: '',
@@ -121,10 +121,9 @@ export class InstructorDashboard implements OnInit, OnDestroy {
     features: [] as string[],
     learningOutcomes: [] as string[],
     requirements: [] as string[],
-    targetAudience: [] as string[],
     isPublished: false
   };
-  
+
   // Lesson form
   lessonForm = {
     title: '',
@@ -137,7 +136,7 @@ export class InstructorDashboard implements OnInit, OnDestroy {
     isPreview: false,
     isPublished: true
   };
-  
+
   // Quiz form
   quizForm = {
     title: '',
@@ -147,7 +146,7 @@ export class InstructorDashboard implements OnInit, OnDestroy {
     courseId: '',
     questions: [] as QuizQuestion[]
   };
-  
+
   currentQuestion: QuizQuestion = {
     id: '',
     question: '',
@@ -156,14 +155,13 @@ export class InstructorDashboard implements OnInit, OnDestroy {
     correctAnswer: 0,
     explanation: ''
   };
-  
+
   // Form helpers
   newFeature = '';
   newOutcome = '';
   newRequirement = '';
   newLearningOutcome = '';
-  newTargetAudience = '';
-  
+
   // Lesson form properties
   lessonTitle = '';
   lessonContent = '';
@@ -172,36 +170,36 @@ export class InstructorDashboard implements OnInit, OnDestroy {
   lessonOrder = 1;
   lessonType = 'video';
   lessonIsPreview = false;
-  
+
   // Quiz form properties
   quizTitle = '';
   quizDescription = '';
   quizDuration = 30;
   quizQuestions: QuizQuestion[] = [];
-  
+
   // Loading states
   loading = false;
   coursesLoading = false;
   lessonsLoading = false;
   quizzesLoading = false;
-  
+
   constructor(
     private router: Router,
     private courseService: CourseService,
     private authService: AuthService
-  ) {}
-  
+  ) { }
+
   ngOnInit() {
     this.loadInstructorData();
     this.loadCategories();
-    this.generateSampleData(); // Remove in production
+    // this.generateSampleData(); // Remove in production
   }
-  
+
   ngOnDestroy() {
     this.destroy$.next();
     this.destroy$.complete();
   }
-  
+
   // Generate sample data for development
   generateSampleData() {
     this.overviewStats = {
@@ -210,7 +208,7 @@ export class InstructorDashboard implements OnInit, OnDestroy {
       completedCourses: 8,
       averageRating: 4.7
     };
-    
+
     this.courseProgress = [
       {
         id: '1',
@@ -227,7 +225,7 @@ export class InstructorDashboard implements OnInit, OnDestroy {
         progress: 92
       }
     ];
-    
+
     this.topStudents = [
       {
         id: '1',
@@ -245,29 +243,29 @@ export class InstructorDashboard implements OnInit, OnDestroy {
       }
     ];
   }
-  
+
   async loadInstructorData() {
     this.loading = true;
     try {
       // Load instructor courses
       const coursesResponse = await this.courseService.getInstructorCourses().toPromise();
       this.myCourses = coursesResponse?.data || [];
-      
+
       // Load students
       const studentsResponse = await this.courseService.getInstructorStudents().toPromise();
       this.myStudents = studentsResponse?.data || [];
-      
+
       // Load analytics
       const analyticsResponse = await this.courseService.getInstructorAnalytics().toPromise();
       this.analytics = analyticsResponse?.data || {};
-      
+
     } catch (error) {
       console.error('Error loading instructor data:', error);
     } finally {
       this.loading = false;
     }
   }
-  
+
   async loadCategories() {
     try {
       const response = await this.courseService.getCategories().toPromise();
@@ -276,21 +274,21 @@ export class InstructorDashboard implements OnInit, OnDestroy {
       console.error('Error loading categories:', error);
     }
   }
-  
+
   // Course Management
   createNewCourse() {
     this.openCourseForm();
   }
-  
+
   openCourseForm() {
     this.showCourseForm = true;
     this.resetCourseForm();
   }
-  
+
   closeCourseForm() {
     this.showCourseForm = false;
   }
-  
+
   resetCourseForm() {
     this.courseForm = {
       title: '',
@@ -306,11 +304,10 @@ export class InstructorDashboard implements OnInit, OnDestroy {
       features: [],
       learningOutcomes: [],
       requirements: [],
-      targetAudience: [],
       isPublished: false
     };
   }
-  
+
   async submitCourse() {
     try {
       const response = await this.courseService.createCourse(this.courseForm).toPromise();
@@ -324,7 +321,7 @@ export class InstructorDashboard implements OnInit, OnDestroy {
       alert('Error creating course. Please try again.');
     }
   }
-  
+
   editCourse(courseId: string) {
     const course = this.myCourses.find(c => c.id === courseId);
     if (course) {
@@ -332,11 +329,11 @@ export class InstructorDashboard implements OnInit, OnDestroy {
       // Implement edit logic
     }
   }
-  
+
   viewCourseDetails(courseId: string) {
     this.router.navigate(['/courses', courseId]);
   }
-  
+
   async deleteCourse(courseId: string) {
     if (confirm('Are you sure you want to delete this course?')) {
       try {
@@ -347,7 +344,7 @@ export class InstructorDashboard implements OnInit, OnDestroy {
       }
     }
   }
-  
+
   // Lesson Management
   openLessonForm() {
     if (!this.selectedCourseId) {
@@ -357,11 +354,11 @@ export class InstructorDashboard implements OnInit, OnDestroy {
     this.showLessonForm = true;
     this.resetLessonForm();
   }
-  
+
   closeLessonForm() {
     this.showLessonForm = false;
   }
-  
+
   resetLessonForm() {
     this.lessonForm = {
       title: '',
@@ -374,7 +371,7 @@ export class InstructorDashboard implements OnInit, OnDestroy {
       isPreview: false,
       isPublished: true
     };
-    
+
     // Reset individual form properties
     this.lessonTitle = '';
     this.lessonContent = '';
@@ -384,7 +381,7 @@ export class InstructorDashboard implements OnInit, OnDestroy {
     this.lessonType = 'video';
     this.lessonIsPreview = false;
   }
-  
+
   async createLesson() {
     try {
       const lessonData = {
@@ -398,7 +395,7 @@ export class InstructorDashboard implements OnInit, OnDestroy {
         isPreview: this.lessonIsPreview,
         isPublished: true
       };
-      
+
       const response = await this.courseService.createLesson(lessonData).toPromise();
       if (response?.success) {
         alert('Lesson created successfully!');
@@ -410,7 +407,7 @@ export class InstructorDashboard implements OnInit, OnDestroy {
       alert('Error creating lesson. Please try again.');
     }
   }
-  
+
   async submitLesson() {
     try {
       const response = await this.courseService.createLesson(this.lessonForm).toPromise();
@@ -424,10 +421,10 @@ export class InstructorDashboard implements OnInit, OnDestroy {
       alert('Error creating lesson. Please try again.');
     }
   }
-  
+
   async loadCourseLessons() {
     if (!this.selectedCourseId) return;
-    
+
     this.lessonsLoading = true;
     try {
       const response = await this.courseService.getCourseLessons(this.selectedCourseId).toPromise();
@@ -438,7 +435,7 @@ export class InstructorDashboard implements OnInit, OnDestroy {
       this.lessonsLoading = false;
     }
   }
-  
+
   async deleteLesson(lessonId: string) {
     if (confirm('Are you sure you want to delete this lesson?')) {
       try {
@@ -449,7 +446,7 @@ export class InstructorDashboard implements OnInit, OnDestroy {
       }
     }
   }
-  
+
   editLesson(lesson: Lesson) {
     // Set form values for editing
     this.lessonTitle = lesson.title;
@@ -461,7 +458,7 @@ export class InstructorDashboard implements OnInit, OnDestroy {
     this.lessonIsPreview = lesson.isPreview;
     this.showLessonForm = true;
   }
-  
+
   // Quiz Management
   openQuizForm() {
     if (!this.selectedCourseId) {
@@ -471,11 +468,11 @@ export class InstructorDashboard implements OnInit, OnDestroy {
     this.showQuizForm = true;
     this.resetQuizForm();
   }
-  
+
   closeQuizForm() {
     this.showQuizForm = false;
   }
-  
+
   resetQuizForm() {
     this.quizForm = {
       title: '',
@@ -485,14 +482,14 @@ export class InstructorDashboard implements OnInit, OnDestroy {
       courseId: this.selectedCourseId,
       questions: []
     };
-    
+
     // Reset individual form properties
     this.quizTitle = '';
     this.quizDescription = '';
     this.quizDuration = 30;
     this.quizQuestions = [];
   }
-  
+
   resetCurrentQuestion() {
     this.currentQuestion = {
       id: Date.now().toString(),
@@ -503,51 +500,83 @@ export class InstructorDashboard implements OnInit, OnDestroy {
       explanation: ''
     };
   }
-  
+
   addQuestion() {
     if (!this.currentQuestion.question.trim()) {
       alert('Please enter a question');
       return;
     }
-    
-    this.quizForm.questions.push({ ...this.currentQuestion });
+    this.quizQuestions.push({ ...this.currentQuestion });
     this.resetCurrentQuestion();
   }
-  
+
   addQuestionToQuiz() {
     this.addQuestion();
   }
-  
+
   removeQuestion(index: number) {
     this.quizForm.questions.splice(index, 1);
   }
-  
+
   async createQuiz() {
+    console.log('Create Quiz button clicked');
+    // Map UI fields to quizForm before sending
+    this.quizForm.title = this.quizTitle;
+    this.quizForm.description = this.quizDescription;
+    this.quizForm.duration = this.quizDuration;
+    this.quizForm.courseId = this.selectedCourseId;
+    // Map questions to backend format
+    this.quizForm.questions = this.quizQuestions.map(q => ({
+      id: q.id || Date.now().toString(),
+      question: q.question,
+      type: q.type === 'multiple-choice' ? 'multiple_choice' : q.type, // backend expects 'multiple_choice'
+      options: q.options.map((opt: any, idx: number) =>
+        typeof opt === 'object' && opt !== null
+          ? opt // already in backend format
+          : {
+            id: String.fromCharCode(97 + idx), // 'a', 'b', ...
+            text: opt,
+            correct: idx === q.correctAnswer
+          }
+      ),
+      explanation: q.explanation,
+      points: 10 // default points, or add UI for this
+    })) as any;
+
+    console.log('Quiz form data to send:', this.quizForm);
+
     if (!this.quizForm.title || this.quizForm.questions.length === 0) {
       alert('Please fill in quiz title and add at least one question');
       return;
     }
-    
+
     try {
       const response = await this.courseService.createQuiz(this.quizForm).toPromise();
+      console.log('Quiz creation response:', response);
       if (response?.success) {
         alert('Quiz created successfully!');
         this.closeQuizForm();
         await this.loadCourseQuizzes();
+      } else {
+        alert('Quiz creation failed: ' + (response?.message || 'Unknown error'));
       }
     } catch (error) {
       console.error('Error creating quiz:', error);
-      alert('Error creating quiz. Please try again.');
+      let errorMsg = 'Error creating quiz. Please try again.';
+      if (error && typeof error === 'object' && 'message' in error) {
+        errorMsg += ' ' + (error as any).message;
+      }
+      alert(errorMsg);
     }
   }
-  
+
   async submitQuiz() {
     await this.createQuiz();
   }
-  
+
   async loadCourseQuizzes() {
     if (!this.selectedCourseId) return;
-    
+
     this.quizzesLoading = true;
     try {
       const response = await this.courseService.getCourseQuizzes(this.selectedCourseId).toPromise();
@@ -558,7 +587,7 @@ export class InstructorDashboard implements OnInit, OnDestroy {
       this.quizzesLoading = false;
     }
   }
-  
+
   async deleteQuiz(quizId: string) {
     if (confirm('Are you sure you want to delete this quiz?')) {
       try {
@@ -569,11 +598,11 @@ export class InstructorDashboard implements OnInit, OnDestroy {
       }
     }
   }
-  
+
   // Course Selection
   async onCourseSelect() {
     this.selectedCourse = this.myCourses.find(course => course.id === this.selectedCourseId) || null;
-    
+
     if (this.selectedCourse) {
       await Promise.all([
         this.loadCourseLessons(),
@@ -581,7 +610,7 @@ export class InstructorDashboard implements OnInit, OnDestroy {
       ]);
     }
   }
-  
+
   // Form helpers
   addFeature() {
     if (this.newFeature.trim()) {
@@ -589,60 +618,49 @@ export class InstructorDashboard implements OnInit, OnDestroy {
       this.newFeature = '';
     }
   }
-  
+
   removeFeature(index: number) {
     this.courseForm.features.splice(index, 1);
   }
-  
+
   addOutcome() {
     if (this.newOutcome.trim()) {
       this.courseForm.learningOutcomes.push(this.newOutcome.trim());
       this.newOutcome = '';
     }
   }
-  
+
   addLearningOutcome() {
     if (this.newLearningOutcome.trim()) {
       this.courseForm.learningOutcomes.push(this.newLearningOutcome.trim());
       this.newLearningOutcome = '';
     }
   }
-  
+
   removeOutcome(index: number) {
     this.courseForm.learningOutcomes.splice(index, 1);
   }
-  
+
   removeLearningOutcome(index: number) {
     this.courseForm.learningOutcomes.splice(index, 1);
   }
-  
+
   addRequirement() {
     if (this.newRequirement.trim()) {
       this.courseForm.requirements.push(this.newRequirement.trim());
       this.newRequirement = '';
     }
   }
-  
+
   removeRequirement(index: number) {
     this.courseForm.requirements.splice(index, 1);
   }
-  
-  addTargetAudience() {
-    if (this.newTargetAudience.trim()) {
-      this.courseForm.targetAudience.push(this.newTargetAudience.trim());
-      this.newTargetAudience = '';
-    }
-  }
-  
-  removeTargetAudience(index: number) {
-    this.courseForm.targetAudience.splice(index, 1);
-  }
-  
+
   // Messages functionality
   selectConversation(conversation: any) {
     this.activeConversation = conversation;
   }
-  
+
   sendMessage() {
     if (this.newMessage.trim() && this.activeConversation) {
       // Implement message sending logic
@@ -650,24 +668,24 @@ export class InstructorDashboard implements OnInit, OnDestroy {
       this.newMessage = '';
     }
   }
-  
+
   // Navigation
   setCurrentView(view: 'overview' | 'courses' | 'lessons' | 'quizzes' | 'students' | 'messages') {
     this.currentView = view;
     this.isMobileMenuOpen = false;
   }
-  
+
   toggleMobileMenu() {
     this.isMobileMenuOpen = !this.isMobileMenuOpen;
   }
-  
+
   logout() {
     if (confirm('Are you sure you want to logout?')) {
       this.authService.logout();
       this.router.navigate(['/auth/login']);
     }
   }
-  
+
   // Utility methods
   formatDate(date: Date): string {
     return new Date(date).toLocaleDateString('en-US', {
@@ -676,7 +694,7 @@ export class InstructorDashboard implements OnInit, OnDestroy {
       day: 'numeric'
     });
   }
-  
+
   async publishCourse(courseId: string) {
     try {
       const response = await this.courseService.publishCourse(courseId).toPromise();
@@ -689,7 +707,7 @@ export class InstructorDashboard implements OnInit, OnDestroy {
       alert('Error publishing course. Please try again.');
     }
   }
-  
+
   async unpublishCourse(courseId: string) {
     try {
       const response = await this.courseService.unpublishCourse(courseId).toPromise();
